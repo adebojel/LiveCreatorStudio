@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 onOpenAppSettings = { openAppSettings() },
                 onOpenNotificationSettings = { openNotificationSettings() },
                 onEnterPip = { enterCompactMode() },
-                onSpeakInBackground = { speakInBackground(it) },
+                onSpeakInBackground = { text, rate, pitch -> speakInBackground(text, rate, pitch) },
                 inPipMode = pipMode
             )
         }
@@ -72,10 +72,12 @@ class MainActivity : ComponentActivity() {
         startService(Intent(this, LiveBackgroundService::class.java).setAction(LiveBackgroundService.ACTION_STOP))
     }
 
-    private fun speakInBackground(text: String) {
+    private fun speakInBackground(text: String, rate: Float, pitch: Float) {
         val intent = Intent(this, LiveBackgroundService::class.java)
             .setAction(LiveBackgroundService.ACTION_SPEAK)
             .putExtra(LiveBackgroundService.EXTRA_TEXT, text)
+            .putExtra(LiveBackgroundService.EXTRA_RATE, rate)
+            .putExtra(LiveBackgroundService.EXTRA_PITCH, pitch)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(intent) else startService(intent)
     }
 
@@ -130,7 +132,7 @@ fun LiveCreatorApp(
     onOpenAppSettings: () -> Unit,
     onOpenNotificationSettings: () -> Unit,
     onEnterPip: () -> Unit,
-    onSpeakInBackground: (String) -> Unit,
+    onSpeakInBackground: (String, Float, Float) -> Unit,
     inPipMode: Boolean
 ) {
     val context = LocalContext.current
@@ -315,10 +317,13 @@ private fun DashboardScreen(
 }
 
 @Composable
-private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String) -> Unit) {
+private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, Float) -> Unit) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
+    val speechPrefs = remember { context.getSharedPreferences("livecreator_tts", Activity.MODE_PRIVATE) }
     var message by remember { mutableStateOf("Halo! Selamat datang di LiveCreator Studio.") }
+    var speechRate by remember { mutableFloatStateOf(speechPrefs.getFloat("rate", 1.0f).coerceIn(0.5f, 2.0f)) }
+    var speechPitch by remember { mutableFloatStateOf(speechPrefs.getFloat("pitch", 1.0f).coerceIn(0.5f, 2.0f)) }
     var status by remember { mutableStateOf("Menyiapkan mesin suara perangkat…") }
     val tts = remember {
         TextToSpeech(context) { result ->
@@ -334,25 +339,57 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String) -> Unit)
         Text("Text to Speech", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold)
         Text(status, color = Color.LightGray, fontSize = 12.sp)
         OutlinedTextField(
-            value = message, onValueChange = { message = it },
+            value = message, onValueChange = { message = it.take(4000) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Teks untuk dibacakan") }, minLines = 3
+            label = { Text("Teks untuk dibacakan (maks. 4.000 karakter)") }, minLines = 3
         )
+        Text("Kecepatan bicara: ${"%.2f".format(speechRate)}×", color = Color.White, fontSize = 12.sp)
+        Slider(
+            value = speechRate,
+            onValueChange = {
+                speechRate = it
+                speechPrefs.edit().putFloat("rate", it).apply()
+            },
+            valueRange = 0.5f..2.0f
+        )
+        Text("Nada suara: ${"%.2f".format(speechPitch)}×", color = Color.White, fontSize = 12.sp)
+        Slider(
+            value = speechPitch,
+            onValueChange = {
+                speechPitch = it
+                speechPrefs.edit().putFloat("pitch", it).apply()
+            },
+            valueRange = 0.5f..2.0f
+        )
+        OutlinedButton(
+            onClick = {
+                speechRate = 1.0f
+                speechPitch = 1.0f
+                speechPrefs.edit().putFloat("rate", 1.0f).putFloat("pitch", 1.0f).apply()
+                status = "Pengaturan suara dikembalikan ke normal."
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Reset ke normal") }
         Button(
             onClick = {
                 val language = tts.setLanguage(Locale("id", "ID"))
                 if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
                     status = "Bahasa Indonesia belum tersedia pada mesin TTS perangkat."
                 } else {
+                    tts.setSpeechRate(speechRate)
+                    tts.setPitch(speechPitch)
                     tts.speak(message, TextToSpeech.QUEUE_FLUSH, null, "livecreator-preview")
-                    status = "Pratinjau suara berjalan di aplikasi."
+                    status = "Pratinjau suara berjalan dengan pengaturan pilihan."
                 }
             },
             enabled = ready && message.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) { Icon(Icons.Default.PlayArrow, contentDescription = null); Spacer(Modifier.width(6.dp)); Text("Pratinjau") }
         OutlinedButton(
-            onClick = { onSpeakInBackground(message); status = "Permintaan suara latar belakang dikirim ke layanan." },
+            onClick = {
+                onSpeakInBackground(message, speechRate, speechPitch)
+                status = "Permintaan suara latar belakang dikirim dengan kecepatan dan nada pilihan."
+            },
             enabled = message.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) { Icon(Icons.Default.Headphones, contentDescription = null); Spacer(Modifier.width(6.dp)); Text("Bacakan di latar belakang") }
