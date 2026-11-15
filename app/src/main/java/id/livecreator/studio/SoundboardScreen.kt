@@ -211,7 +211,8 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                                     if (activeUri == sound.uri) releaseCurrent()
                                     sounds = sounds.filterNot { it.uri == sound.uri }
                                     saveSounds(prefs, sounds)
-                                    message = "File dihapus dari daftar aplikasi."
+                                    releasePersistedReadPermission(context, Uri.parse(sound.uri))
+                                    message = "File dihapus dari daftar aplikasi dan izin dokumennya dilepas."
                                 },
                                 modifier = Modifier.semantics {
                                     contentDescription = "Hapus ${sound.title} dari pustaka"
@@ -260,7 +261,12 @@ private fun loadSounds(context: Context, prefs: android.content.SharedPreference
             val readable = runCatching {
                 context.contentResolver.openAssetFileDescriptor(Uri.parse(uri), "r")?.use { true } ?: false
             }.getOrDefault(false)
-            if (readable) SoundItem(uri, title) else null
+            if (readable) {
+                SoundItem(uri, title)
+            } else {
+                releasePersistedReadPermission(context, Uri.parse(uri))
+                null
+            }
         }
     }.sortedBy { it.title.lowercase() }
     if (valid.size != stored.size) saveSounds(prefs, valid)
@@ -274,4 +280,19 @@ private fun displayName(context: Context, uri: Uri): String {
         }
     }.getOrNull()
     return name?.takeIf { it.isNotBlank() } ?: ("Audio " + (uri.lastPathSegment ?: "tanpa nama"))
+}
+
+
+/**
+ * Releases the persisted Storage Access Framework read grant when an item is
+ * removed or its source is no longer readable. Android may already have
+ * revoked the grant, so cleanup is deliberately best-effort.
+ */
+private fun releasePersistedReadPermission(context: Context, uri: Uri) {
+    runCatching {
+        context.contentResolver.releasePersistableUriPermission(
+            uri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
+    }
 }
