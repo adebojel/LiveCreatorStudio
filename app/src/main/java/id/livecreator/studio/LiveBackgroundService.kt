@@ -114,6 +114,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         } else {
             startForeground(NOTIFICATION_ID, notification)
         }
+        publishServiceState(true)
     }
 
     private fun buildNotification(): Notification {
@@ -167,10 +168,20 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     }
 
     override fun onDestroy() {
+        publishServiceState(false)
         tts?.stop()
         tts?.shutdown()
         tts = null
         super.onDestroy()
+    }
+
+    private fun publishServiceState(running: Boolean) {
+        sendBroadcast(
+            Intent(ACTION_STATUS)
+                .setPackage(packageName)
+                .putExtra(EXTRA_RUNNING, running)
+                .putExtra(EXTRA_STATUS_TEXT, notificationText)
+        )
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -179,6 +190,9 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         const val ACTION_START = "id.livecreator.studio.action.START"
         const val ACTION_SPEAK = "id.livecreator.studio.action.SPEAK"
         const val ACTION_STOP = "id.livecreator.studio.action.STOP"
+        const val ACTION_STATUS = "id.livecreator.studio.action.STATUS"
+        const val EXTRA_RUNNING = "extra_running"
+        const val EXTRA_STATUS_TEXT = "extra_status_text"
         const val EXTRA_TEXT = "extra_text"
         const val EXTRA_RATE = "extra_rate"
         const val EXTRA_PITCH = "extra_pitch"
