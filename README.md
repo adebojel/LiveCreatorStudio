@@ -4,7 +4,7 @@ Independent Android companion for livestream creators. This clean-room project i
 
 ## Current version
 
-**0.4.3 — TTS preview controls and soundboard permission lifecycle hardening / device testing required.**
+**0.4.4 — foreground service state reporting and dashboard lifecycle accuracy / device testing required.**
 
 **[Unduh APK terbaru dari GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)** · [Lihat semua Releases](https://github.com/adebojel/LiveCreatorStudio/releases)
 
@@ -13,7 +13,7 @@ Independent Android companion for livestream creators. This clean-room project i
 - Kotlin + Jetpack Compose Android application with dark creator dashboard
 - On-device Android TextToSpeech preview with Indonesian locale check, adjustable speech rate and pitch, saved voice preferences, explicit stop control, and playback-completion/error feedback
 - Background TTS queue with per-utterance rate and pitch settings, bounded queue size, and notification feedback for actual playback and engine errors
-- User-started foreground audio service with persistent notification and stop action
+- User-started foreground audio service with persistent notification and stop action; broadcasts actual service start/stop lifecycle state to keep the dashboard indicator synchronized
 - Background TTS request path through the foreground service
 - Android Picture-in-Picture support with a compact creator status panel
 - Local soundboard: validate audio MIME type, retain Android document URI access, persist the library, use asynchronous MediaPlayer preparation, play, stop, and remove clips with playback error handling; release persisted document grants when clips are removed or become inaccessible
@@ -21,7 +21,7 @@ Independent Android companion for livestream creators. This clean-room project i
 - Opt-in auto-start when the user opens the app
 - Optional reboot reminder notification; it asks the user to resume rather than silently forcing a service start
 - Compose semantic labels and standard TalkBack compatibility
-- GitHub Actions workflow for debug APK build artifacts and automatic GitHub Release publishing on updates to `main`
+- GitHub Actions workflow for debug APK build artifacts and automatic GitHub Release publishing on updates to `main`, with per-branch concurrency to cancel stale overlapping builds
 
 ## Not implemented yet
 
