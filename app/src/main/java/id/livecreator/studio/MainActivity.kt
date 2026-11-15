@@ -97,9 +97,6 @@ class MainActivity : ComponentActivity() {
         pipMode = isInPictureInPictureMode
     }
 
-    override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
-    }
 }
 
 @Composable
@@ -111,6 +108,7 @@ fun LiveCreatorApp(
     onSpeakInBackground: (String) -> Unit,
     inPipMode: Boolean
 ) {
+    val context = LocalContext.current
     var selected by remember { mutableStateOf("Dashboard") }
     var backgroundEnabled by remember { mutableStateOf(false) }
     var autoStartOnLaunch by remember {
@@ -121,7 +119,6 @@ fun LiveCreatorApp(
         mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
             .getBoolean("resume_reminder_enabled", true))
     }
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
         if (autoStartOnLaunch) {
             onStartBackground()
