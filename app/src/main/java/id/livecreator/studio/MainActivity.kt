@@ -314,8 +314,6 @@ private fun DashboardScreen(
 }
 
 @Composable
-private var ttsEngineForPreview: TextToSpeech? = null
-
 private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, Float) -> Unit) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
@@ -327,30 +325,32 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
     val tts = remember {
         TextToSpeech(context) { result ->
             ready = result == TextToSpeech.SUCCESS
-            if (ready) {
-                ttsEngineForPreview?.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
-                    override fun onStart(utteranceId: String?) {
-                        status = "Sedang membacakan pratinjau."
-                    }
-                    override fun onDone(utteranceId: String?) {
-                        status = "Pratinjau selesai."
-                    }
-                    override fun onError(utteranceId: String?) {
-                        status = "Pratinjau gagal diputar oleh mesin TTS."
-                    }
-                })
-                status = "Mesin suara siap. Bahasa Indonesia diperiksa saat pemutaran."
+            status = if (result == TextToSpeech.SUCCESS) {
+                "Mesin suara siap. Bahasa Indonesia diperiksa saat pemutaran."
             } else {
-                status = "Mesin TTS gagal dimulai."
+                "Mesin TTS gagal dimulai."
             }
         }
     }
-    ttsEngineForPreview = tts
+    LaunchedEffect(ready, tts) {
+        if (ready) {
+            tts.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) {
+                    status = "Sedang membacakan pratinjau."
+                }
+                override fun onDone(utteranceId: String?) {
+                    status = "Pratinjau selesai."
+                }
+                override fun onError(utteranceId: String?) {
+                    status = "Pratinjau gagal diputar oleh mesin TTS."
+                }
+            })
+        }
+    }
     DisposableEffect(tts) {
         onDispose {
             tts.stop()
             tts.shutdown()
-            if (ttsEngineForPreview === tts) ttsEngineForPreview = null
         }
     }
     Column(modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
