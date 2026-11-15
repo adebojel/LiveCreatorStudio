@@ -41,6 +41,12 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
                 stopSelf()
                 return START_NOT_STICKY
             }
+            ACTION_CLEAR_QUEUE -> {
+                pendingTexts.clear()
+                speaking = false
+                tts?.stop()
+                notificationText = "Antrean dibersihkan; layanan tetap aktif."
+            }
             ACTION_SPEAK -> {
                 intent.getStringExtra(EXTRA_TEXT)?.take(4000)?.takeIf { it.isNotBlank() }?.let { text ->
                     if (pendingTexts.size >= MAX_PENDING_ITEMS) pendingTexts.removeFirst()
@@ -128,6 +134,11 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             Intent(this, StopBackgroundReceiver::class.java).setAction(ACTION_STOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+        val clearQueue = PendingIntent.getBroadcast(
+            this, 3,
+            Intent(this, StopBackgroundReceiver::class.java).setAction(ACTION_CLEAR_QUEUE),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder(this, CHANNEL_ID)
         } else {
@@ -140,7 +151,8 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             .setContentText(notificationText)
             .setContentIntent(openApp)
             .setOngoing(true)
-            .addAction(android.R.drawable.ic_media_pause, "Hentikan", stopService)
+            .addAction(android.R.drawable.ic_media_pause, "Hentikan layanan", stopService)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Hapus antrean", clearQueue)
             .build()
     }
 
@@ -190,6 +202,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         const val ACTION_START = "id.livecreator.studio.action.START"
         const val ACTION_SPEAK = "id.livecreator.studio.action.SPEAK"
         const val ACTION_STOP = "id.livecreator.studio.action.STOP"
+        const val ACTION_CLEAR_QUEUE = "id.livecreator.studio.action.CLEAR_QUEUE"
         const val ACTION_STATUS = "id.livecreator.studio.action.STATUS"
         const val EXTRA_RUNNING = "extra_running"
         const val EXTRA_STATUS_TEXT = "extra_status_text"
