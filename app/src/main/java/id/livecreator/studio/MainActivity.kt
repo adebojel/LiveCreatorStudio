@@ -113,11 +113,21 @@ fun LiveCreatorApp(
 ) {
     var selected by remember { mutableStateOf("Dashboard") }
     var backgroundEnabled by remember { mutableStateOf(false) }
+    var autoStartOnLaunch by remember {
+        mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
+            .getBoolean("auto_start_on_launch", false))
+    }
     var resumeReminder by remember {
         mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
             .getBoolean("resume_reminder_enabled", true))
     }
     val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        if (autoStartOnLaunch) {
+            onStartBackground()
+            backgroundEnabled = true
+        }
+    }
 
     MaterialTheme(colorScheme = darkColorScheme(
         background = Ink, surface = Panel, primary = Violet, secondary = Cyan
@@ -149,6 +159,12 @@ fun LiveCreatorApp(
                 "Alerts" -> InfoScreen("Sound alerts", "Pustaka suara lokal dan perutean event akan dikembangkan berikutnya. Pemicu LIVE belum terhubung.")
                 "AI" -> InfoScreen("AI assistant", "Provider AI belum dikonfigurasi. Build ini belum mengirim pesan ke layanan AI.")
                 "Settings" -> SettingsScreen(
+                    autoStartOnLaunch = autoStartOnLaunch,
+                    onAutoStartChange = {
+                        autoStartOnLaunch = it
+                        context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
+                            .edit().putBoolean("auto_start_on_launch", it).apply()
+                    },
                     resumeReminder = resumeReminder,
                     onResumeReminderChange = {
                         resumeReminder = it
@@ -320,6 +336,8 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String) -> Unit)
 
 @Composable
 private fun SettingsScreen(
+    autoStartOnLaunch: Boolean,
+    onAutoStartChange: (Boolean) -> Unit,
     resumeReminder: Boolean,
     onResumeReminderChange: (Boolean) -> Unit,
     onOpenBatterySettings: () -> Unit
@@ -330,6 +348,13 @@ private fun SettingsScreen(
         Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text("Ketahanan layanan", color = Color.White, fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Aktif otomatis saat aplikasi dibuka", color = Color.White)
+                        Text("Jika diaktifkan, layanan audio dimulai ketika kamu membuka aplikasi.", color = Color.LightGray, fontSize = 11.sp)
+                    }
+                    Switch(checked = autoStartOnLaunch, onCheckedChange = onAutoStartChange)
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text("Pengingat setelah restart", color = Color.White)
