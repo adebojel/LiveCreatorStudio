@@ -158,7 +158,7 @@ fun LiveCreatorApp(
             PipMiniScreen(backgroundEnabled)
         } else Row(Modifier.fillMaxSize().background(Ink)) {
             NavigationRail(containerColor = Panel) {
-                listOf("Dashboard", "TTS", "Alerts", "AI", "Settings").forEach { item ->
+                listOf("Dashboard", "TTS", "Soundboard", "Alerts", "AI", "Settings").forEach { item ->
                     NavigationRailItem(
                         selected = selected == item,
                         onClick = { selected = item },
@@ -166,6 +166,7 @@ fun LiveCreatorApp(
                             Icon(when(item) {
                                 "Dashboard" -> Icons.Default.Dashboard
                                 "TTS" -> Icons.Default.RecordVoiceOver
+                                "Soundboard" -> Icons.Default.LibraryMusic
                                 "Alerts" -> Icons.Default.NotificationsActive
                                 "AI" -> Icons.Default.AutoAwesome
                                 else -> Icons.Default.Settings
@@ -178,6 +179,7 @@ fun LiveCreatorApp(
             }
             when (selected) {
                 "TTS" -> TtsScreen(Modifier.fillMaxSize(), onSpeakInBackground)
+                "Soundboard" -> SoundboardScreen(Modifier.fillMaxSize())
                 "Alerts" -> InfoScreen("Sound alerts", "Pustaka suara lokal dan perutean event akan dikembangkan berikutnya. Pemicu LIVE belum terhubung.")
                 "AI" -> InfoScreen("AI assistant", "Provider AI belum dikonfigurasi. Build ini belum mengirim pesan ke layanan AI.")
                 "Settings" -> SettingsScreen(
