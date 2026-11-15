@@ -24,7 +24,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     private var activeUtteranceId: String? = null
     private var notificationText = "Layanan audio latar belakang aktif."
     private data class SpeechRequest(val text: String, val rate: Float, val pitch: Float)
-    private val pendingTexts = ArrayDeque<SpeechRequest>()
+    private val pendingTexts = BoundedSpeechQueue<SpeechRequest>(MAX_PENDING_ITEMS)
 
     override fun onCreate() {
         super.onCreate()
@@ -52,10 +52,9 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             }
             ACTION_SPEAK -> {
                 intent.getStringExtra(EXTRA_TEXT)?.take(4000)?.takeIf { it.isNotBlank() }?.let { text ->
-                    if (pendingTexts.size >= MAX_PENDING_ITEMS) pendingTexts.removeFirst()
                     val rate = intent.getFloatExtra(EXTRA_RATE, 1.0f).coerceIn(0.5f, 2.0f)
                     val pitch = intent.getFloatExtra(EXTRA_PITCH, 1.0f).coerceIn(0.5f, 2.0f)
-                    pendingTexts.addLast(SpeechRequest(text, rate, pitch))
+                    pendingTexts.enqueue(SpeechRequest(text, rate, pitch))
                 }
             }
         }
@@ -102,7 +101,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             return
         }
 
-        val request = pendingTexts.removeFirst()
+        val request = pendingTexts.dequeue() ?: return
         engine.setSpeechRate(request.rate)
         engine.setPitch(request.pitch)
         speaking = true
