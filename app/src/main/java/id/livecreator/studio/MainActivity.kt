@@ -375,8 +375,12 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
                 } else {
                     tts.setSpeechRate(speechRate)
                     tts.setPitch(speechPitch)
-                    tts.speak(message, TextToSpeech.QUEUE_FLUSH, null, "livecreator-preview")
-                    status = "Pratinjau suara berjalan dengan pengaturan pilihan."
+                    val result = tts.speak(message, TextToSpeech.QUEUE_FLUSH, null, "livecreator-preview")
+                    status = if (result == TextToSpeech.ERROR) {
+                        "Mesin TTS menolak permintaan. Periksa mesin suara perangkat."
+                    } else {
+                        "Permintaan pratinjau dikirim ke mesin suara perangkat."
+                    }
                 }
             },
             enabled = ready && message.isNotBlank(),
