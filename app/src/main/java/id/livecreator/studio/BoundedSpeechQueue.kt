@@ -14,6 +14,9 @@ internal class BoundedSpeechQueue<T>(private val capacity: Int) {
     val size: Int
         get() = items.size
 
+    val isEmpty: Boolean
+        get() = items.isEmpty()
+
     fun enqueue(item: T) {
         if (items.size >= capacity) items.removeFirst()
         items.addLast(item)
