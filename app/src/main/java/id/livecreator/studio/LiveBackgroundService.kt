@@ -95,9 +95,9 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val stopService = PendingIntent.getService(
+        val stopService = PendingIntent.getBroadcast(
             this, 2,
-            Intent(this, LiveBackgroundService::class.java).setAction(ACTION_STOP),
+            Intent(this, StopBackgroundReceiver::class.java).setAction(ACTION_STOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
