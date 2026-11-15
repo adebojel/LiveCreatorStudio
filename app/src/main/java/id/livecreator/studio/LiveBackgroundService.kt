@@ -19,7 +19,7 @@ import java.util.Locale
 class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
-    private var pendingText: String? = null
+    private val pendingTexts = ArrayDeque<String>()
 
     override fun onCreate() {
         super.onCreate()
@@ -36,7 +36,10 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
                 return START_NOT_STICKY
             }
             ACTION_SPEAK -> {
-                pendingText = intent.getStringExtra(EXTRA_TEXT)?.take(4000)
+                intent.getStringExtra(EXTRA_TEXT)?.take(4000)?.let { text ->
+                    if (pendingTexts.size >= MAX_PENDING_ITEMS) pendingTexts.removeFirst()
+                    pendingTexts.addLast(text)
+                }
             }
         }
 
@@ -137,5 +140,6 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         const val EXTRA_TEXT = "extra_text"
         private const val CHANNEL_ID = "livecreator_background"
         private const val NOTIFICATION_ID = 4107
+        private const val MAX_PENDING_ITEMS = 40
     }
 }
