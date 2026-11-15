@@ -21,6 +21,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
     private var speaking = false
+    private var notificationText = "Layanan audio latar belakang aktif."
     private data class SpeechRequest(val text: String, val rate: Float, val pitch: Float)
     private val pendingTexts = ArrayDeque<SpeechRequest>()
 
@@ -57,37 +58,47 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
 
     override fun onInit(status: Int) {
         ttsReady = status == TextToSpeech.SUCCESS
-        if (ttsReady) {
-            tts?.setLanguage(Locale("id", "ID"))
-            tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-                override fun onStart(utteranceId: String?) = Unit
-                override fun onDone(utteranceId: String?) {
-                    speaking = false
-                    speakPendingIfReady()
-                }
-                override fun onError(utteranceId: String?) {
-                    speaking = false
-                    speakPendingIfReady()
-                }
-            })
-            speakPendingIfReady()
+        if (!ttsReady) {
+            pendingTexts.clear()
+            updateNotification("Mesin TTS perangkat gagal diinisialisasi.")
+            return
         }
+        tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) = Unit
+            override fun onDone(utteranceId: String?) {
+                speaking = false
+                if (pendingTexts.isEmpty()) updateNotification("Pembacaan teks selesai.")
+                speakPendingIfReady()
+            }
+            override fun onError(utteranceId: String?) {
+                speaking = false
+                updateNotification("Terjadi kesalahan saat membacakan teks.")
+                speakPendingIfReady()
+            }
+        })
+        speakPendingIfReady()
     }
 
     private fun speakPendingIfReady() {
         val engine = tts ?: return
         if (!ttsReady || speaking || pendingTexts.isEmpty()) return
         val result = engine.setLanguage(Locale("id", "ID"))
-        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) return
+        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+            pendingTexts.clear()
+            updateNotification("Bahasa Indonesia tidak tersedia pada mesin TTS perangkat.")
+            return
+        }
 
         val request = pendingTexts.removeFirst()
         engine.setSpeechRate(request.rate)
         engine.setPitch(request.pitch)
         speaking = true
+        updateNotification("Sedang membacakan teks.")
         val utteranceId = "livecreator-bg-${System.currentTimeMillis()}"
         val resultCode = engine.speak(request.text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
         if (resultCode == TextToSpeech.ERROR) {
             speaking = false
+            updateNotification("Mesin TTS menolak permintaan pembacaan.")
             speakPendingIfReady()
         }
     }
@@ -125,11 +136,16 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         return builder
             .setSmallIcon(android.R.drawable.ic_media_play)
             .setContentTitle("LiveCreator Studio aktif")
-            .setContentText("Layanan audio latar belakang berjalan")
+            .setContentText(notificationText)
             .setContentIntent(openApp)
             .setOngoing(true)
             .addAction(android.R.drawable.ic_media_pause, "Hentikan", stopService)
             .build()
+    }
+
+    private fun updateNotification(text: String) {
+        notificationText = text
+        getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, buildNotification())
     }
 
     private fun createNotificationChannel() {
