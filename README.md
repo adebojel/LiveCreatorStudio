@@ -9,6 +9,7 @@ Independent Android companion for livestream creators. This project is a clean-r
 ### Included
 - Kotlin + Jetpack Compose Android project
 - Initial dark dashboard and navigation
+- On-device Android TextToSpeech preview screen with Indonesian locale check and stop control
 - Android manifest and Gradle configuration
 - GitHub Actions workflow that builds and uploads a debug APK artifact
 
