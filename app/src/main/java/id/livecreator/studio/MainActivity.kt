@@ -160,7 +160,7 @@ fun LiveCreatorApp(
             PipMiniScreen(backgroundEnabled)
         } else Row(Modifier.fillMaxSize().background(Ink)) {
             NavigationRail(containerColor = Panel) {
-                listOf("Dashboard", "TTS", "Soundboard", "Alerts", "AI", "Settings").forEach { item ->
+                listOf("Dashboard", "TTS", "Soundboard", "Settings").forEach { item ->
                     NavigationRailItem(
                         selected = selected == item,
                         onClick = { selected = item },
@@ -169,9 +169,7 @@ fun LiveCreatorApp(
                                 "Dashboard" -> Icons.Default.Dashboard
                                 "TTS" -> Icons.Default.RecordVoiceOver
                                 "Soundboard" -> Icons.Default.LibraryMusic
-                                "Alerts" -> Icons.Default.NotificationsActive
-                                "AI" -> Icons.Default.AutoAwesome
-                                else -> Icons.Default.Settings
+                                                                else -> Icons.Default.Settings
                             }, contentDescription = item,
                                 modifier = Modifier.semantics { contentDescription = "Buka menu $item" })
                         },
@@ -182,8 +180,6 @@ fun LiveCreatorApp(
             when (selected) {
                 "TTS" -> TtsScreen(Modifier.fillMaxSize(), onSpeakInBackground)
                 "Soundboard" -> SoundboardScreen(Modifier.fillMaxSize())
-                "Alerts" -> InfoScreen("Sound alerts", "Pustaka suara lokal dan perutean event akan dikembangkan berikutnya. Pemicu LIVE belum terhubung.")
-                "AI" -> InfoScreen("AI assistant", "Provider AI belum dikonfigurasi. Build ini belum mengirim pesan ke layanan AI.")
                 "Settings" -> SettingsScreen(
                     autoStartOnLaunch = autoStartOnLaunch,
                     onAutoStartChange = {
@@ -213,7 +209,8 @@ fun LiveCreatorApp(
                         onStopBackground()
                         backgroundEnabled = false
                     },
-                    onEnterPip = onEnterPip
+                    onEnterPip = onEnterPip,
+                    onNavigate = { selected = it }
                 )
             }
         }
@@ -250,7 +247,8 @@ private fun DashboardScreen(
     backgroundEnabled: Boolean,
     onStartBackground: () -> Unit,
     onStopBackground: () -> Unit,
-    onEnterPip: () -> Unit
+    onEnterPip: () -> Unit,
+    onNavigate: (String) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -293,15 +291,15 @@ private fun DashboardScreen(
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FeatureCard("Picture-in-Picture", "Panel mini saat pindah aplikasi", Icons.Default.PictureInPicture, Modifier.weight(1f), onEnterPip)
-                FeatureCard("Aksesibilitas", "Kompatibel dengan TalkBack", Icons.Default.AccessibilityNew, Modifier.weight(1f)) {}
+                FeatureCard("Aksesibilitas", "Pengaturan TalkBack Android", Icons.Default.AccessibilityNew, Modifier.weight(1f)) { onNavigate("Settings") }
             }
         }
         item { StatusCard() }
         item {
             Text("Quick tools", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FeatureCard("Text to Speech", "Pratinjau suara Indonesia", Icons.Default.RecordVoiceOver, Modifier.weight(1f)) {}
-                FeatureCard("Sound alerts", "Pustaka suara lokal", Icons.Default.Notifications, Modifier.weight(1f)) {}
+                FeatureCard("Text to Speech", "Pratinjau suara Indonesia", Icons.Default.RecordVoiceOver, Modifier.weight(1f)) { onNavigate("TTS") }
+                FeatureCard("Soundboard", "Pustaka audio perangkat", Icons.Default.LibraryMusic, Modifier.weight(1f)) { onNavigate("Soundboard") }
             }
         }
         item {
