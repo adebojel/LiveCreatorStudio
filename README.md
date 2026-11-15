@@ -4,37 +4,34 @@ Independent Android companion for livestream creators. This clean-room project i
 
 ## Current version
 
-**0.2.0 — early development / device testing required.**
+**0.3.0 — feature preview / device testing required.**
 
 **[Unduh APK terbaru dari GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)** · [Lihat semua Releases](https://github.com/adebojel/LiveCreatorStudio/releases)
 
 ## Implemented in source
 
-- Kotlin + Jetpack Compose Android application
-- Dark creator dashboard and navigation
+- Kotlin + Jetpack Compose Android application with dark creator dashboard
 - On-device Android TextToSpeech preview with Indonesian locale check
-- User-started foreground audio service with persistent notification
+- User-started foreground audio service with persistent notification and stop action
 - Background TTS request path through the foreground service
-- Notification action to stop the background service
 - Android Picture-in-Picture support with a compact creator status panel
-- Battery-optimization settings shortcut
+- Local soundboard: import audio through Android's document picker, retain URI access, persist the library, play, stop, and remove clips
+- Battery-optimization, accessibility, app-permission, and notification settings shortcuts
 - Opt-in auto-start when the user opens the app
 - Optional reboot reminder notification; it asks the user to resume rather than silently forcing a service start
 - Compose semantic labels and standard TalkBack compatibility
 - GitHub Actions workflow for debug APK build artifacts and automatic GitHub Release publishing on updates to `main`
-- Settings shortcuts to Android app permissions and notification controls
 
 ## Not implemented yet
 
 - Real TikTok LIVE event ingestion and authenticated provider session
 - Event-driven comment/gift/follow/share processing
-- Production audio queue, sound packs, per-event routing and mixing
-- Custom sound library and file picker
-- AI provider integrations and local model runtime
-- Persistent user settings/database beyond the small reboot-reminder preference
+- Soundboard playback as a persistent foreground audio session, multi-channel mixing, and event-to-sound automation
+- AI provider integrations and a genuinely executable local model runtime
+- Persistent structured settings/database beyond the soundboard URI list and small preferences
 - Signed production APK and Google Play policy/security review
 
-The application does not fabricate LIVE events or claim that a provider is connected.
+The application does not fabricate LIVE events, fake AI responses, or claim that a provider is connected. The soundboard is a real local-file feature and is not yet connected to livestream events.
 
 ## Background execution and Android limits
 
