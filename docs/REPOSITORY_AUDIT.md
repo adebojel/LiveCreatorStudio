@@ -174,3 +174,68 @@ Status metadata lisensi GitHub: tidak terdeteksi; repository terakhir diperbarui
 - Sanitasi speech rate/pitch membatasi nilai ke rentang 0.5×–2.0× dan mengembalikan nilai non-finite ke 1.0×.
 - Empat unit test baru menguji rentang dan nilai invalid.
 - Tidak ada source code pihak ketiga yang disalin ke aplikasi; integrasi ini memakai AndroidX DataStore.
+
+
+## 11. LocalMind — aplikasi Android AI lokal
+
+Repository: https://github.com/tk85457/LocalMind  
+Lisensi metadata GitHub: MIT.  
+README mendokumentasikan Kotlin, Compose, llama.cpp/JNI, GGUF, pengunduhan model, streaming token, riwayat percakapan lokal, pencarian, dan database Room.
+
+**Nilai guna:** kandidat kuat untuk mempelajari model manager, state generasi, penyimpanan percakapan, dan pemisahan UI/AI runtime.  
+**Risiko:** aplikasi penuh memiliki arsitektur, dependency, dan kebutuhan memori yang berbeda; model GGUF dapat berukuran ratusan MB hingga beberapa GB.  
+**Keputusan:** referensi arsitektur. Tidak mengimpor keseluruhan aplikasi atau runtime ke APK utama sebelum proof-of-concept terukur.
+
+## 12. Hush AI — Android offline LLM
+
+Repository: https://github.com/hushai-app/hushai-android  
+Lisensi metadata GitHub: NOASSERTION; README menyebut Apache 2.0.  
+README mendokumentasikan Qwen3 GGUF, JNI bridge C++ langsung ke llama.cpp, model tier 0.6B–4B, dan kebutuhan model 484 MB–2.5 GB.
+
+**Nilai guna:** contoh integrasi llama.cpp native yang lebih baru dan pembacaan kemampuan RAM perangkat.  
+**Risiko:** model besar, cold start, CPU-only, native build, dan klaim kompatibilitas yang perlu diuji. Lisensi metadata perlu diperiksa dari file LICENSE sebelum source diadopsi.  
+**Keputusan:** referensi riset; tidak ada kode yang disalin.
+
+## 13. ThalzeronLabs — Android on-device LLM
+
+Repository: https://github.com/ThalzeronLabs/android-on-device-llm  
+Lisensi metadata GitHub: Apache-2.0.  
+README mendokumentasikan Compose, llama.cpp, llama-kotlin, model catalog, Room, mode offline, dan screenshot test.
+
+**Nilai guna:** referensi bagaimana menampilkan model catalog, pengelolaan model, dan screenshot tests.  
+**Risiko:** fokus pada ARM64 dan model download; APK demo bukan Play Store release. Demo GIF README menyatakan placeholder pada saat audit, sehingga tidak dianggap bukti runtime.  
+**Keputusan:** referensi arsitektur dan pengujian UI, bukan dependency langsung.
+
+## 14. HexaPlayer — referensi pemutar musik
+
+Repository: https://github.com/OxoGhost01/HexaPlayer  
+Lisensi metadata GitHub: NOASSERTION.  
+README mendokumentasikan playlist, antrean persisten, folder, pencarian, kontrol media, equalizer, dan UI Material/terminal.
+
+**Nilai guna:** inspirasi fitur pustaka dan pengelolaan antrean audio.  
+**Risiko:** metadata lisensi belum jelas; beberapa fitur integrasi pihak ketiga bukan kebutuhan soundboard inti.  
+**Keputusan:** tidak menyalin kode atau aset.
+
+## 15. PulsePlayer-Android — referensi audio/UI
+
+Repository: https://github.com/Shivaanshe/PulsePlayer-Android  
+Lisensi metadata GitHub: GPL-3.0.
+
+**Nilai guna:** inspirasi tampilan glassmorphism, playlist, audio status, dan pola dashboard.  
+**Risiko:** lisensi GPL-3.0 membawa kewajiban distribusi yang tidak boleh diabaikan; README juga menguraikan resolver sumber eksternal yang tidak akan diadopsi.  
+**Keputusan:** pelajari konsep UI secara umum saja; tidak menyalin source, aset, atau dependency.
+
+## 16. Rekomendasi audio engine resmi
+
+Dokumentasi AndroidX Media3: https://developer.android.com/jetpack/androidx/releases/media3  
+Versi stabil yang ditemukan saat audit: **1.11.1** (September 2026); 1.12.0-beta01 tersedia pada November 2026.
+
+**Rencana:** gunakan hanya modul Media3 yang dibutuhkan (ExoPlayer, Session, UI jika perlu) untuk menggantikan MediaPlayer Soundboard setelah desain lifecycle, audio focus, media notification, dan service ownership siap. Jangan mengambil semua modul Media3 atau memakai versi beta pada jalur stabil.
+
+## Status hasil riset repository
+
+- Repository eksternal yang diperiksa pada audit ini: lebih dari 12 kandidat lintas AI lokal, speech-to-text, TTS, media player, database, dan TikTok LIVE.
+- Tidak ada repository pihak ketiga yang dikloning atau disalin utuh.
+- Komponen yang sudah benar-benar diadopsi pada versi 0.5.0 adalah AndroidX Preferences DataStore resmi, bukan source dari sample pihak ketiga.
+- Lisensi yang tidak eksplisit/metadata NOASSERTION diperlakukan sebagai **tidak lolos adopsi kode**.
+- Semua integrasi native AI, LIVE event, dan persistent soundboard tetap memerlukan proof-of-concept dan pengujian perangkat sebelum dinyatakan aktif.

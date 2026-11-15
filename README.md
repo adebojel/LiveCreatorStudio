@@ -84,8 +84,13 @@ Kami meninjau sejumlah proyek publik untuk menemukan komponen yang bisa dipelaja
 
 Kandidat penting:
 - [Llamatik](https://github.com/llamatik/Llamatik) — SDK Kotlin untuk inferensi lokal, agent, memori, RAG, dan speech; lisensi MIT untuk kode inti, tetapi memiliki native build dan kebutuhan perangkat yang harus dievaluasi.
-- [Offline AI Assistant](https://github.com/its-hazratbilal/offline-ai-assistant) — referensi arsitektur Android offline AI, model GGUF, Room, DataStore, dan llama.cpp; lisensi MIT.
+- [LocalMind](https://github.com/tk85457/LocalMind) dan [Offline AI Assistant](https://github.com/its-hazratbilal/offline-ai-assistant) — referensi aplikasi Android offline AI, model GGUF, llama.cpp/JNI, manajemen model, dan riwayat lokal; keduanya menyatakan lisensi MIT.
+- [Hush AI](https://github.com/hushai-app/hushai-android) dan [On-device LLM](https://github.com/ThalzeronLabs/android-on-device-llm) — alternatif Android lokal berbasis llama.cpp; Apache-2.0, dengan biaya model besar, native build, dan kebutuhan RAM/ARM64 yang perlu diperhitungkan.
+- [Parakeet Android](https://github.com/meet30997/parakeet-android-on-device-speech-recognition) — referensi speech-to-text offline berbasis JNI/NeMo-Speech.cpp; MIT, tetapi model sekitar 714 MB dan bukan streaming native sejati.
 - [TikTokLiveJava](https://github.com/jwdeveloper/TikTokLiveJava) dan [TikTok-Live-Connector](https://github.com/zerodytrash/TikTok-Live-Connector) — referensi event LIVE tidak resmi berbasis reverse engineering; **tidak dimasukkan sebagai dependensi produksi**.
+- [SwaraPlayer](https://github.com/kannan-ai/SwaraPlayer) — referensi AndroidX Media3/ExoPlayer dan MediaSessionService; metadata lisensi GitHub belum terverifikasi, jadi tidak diadopsi.
+- [HexaPlayer](https://github.com/OxoGhost01/HexaPlayer) — referensi pengelolaan pustaka, antrean, playlist, dan audio UI; metadata lisensi tidak terdeteksi, tidak disalin.
+- [PulsePlayer-Android](https://github.com/Shivaanshe/PulsePlayer-Android) — referensi UI glassmorphism dan audio service; GPL-3.0, sehingga kode tidak disalin.
 - [MusicPlayer-JetpackCompose](https://github.com/UmairOye/MusicPlayer-JetpackCompose) — referensi pola UI/pengelolaan audio; kode dan aset tidak disalin.
 
 Tidak ada kode pihak ketiga yang disalin secara membabi buta. Lisensi harus diverifikasi untuk setiap komponen dan dependensi sebelum distribusi.
