@@ -21,6 +21,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
     private var speaking = false
+    private var activeUtteranceId: String? = null
     private var notificationText = "Layanan audio latar belakang aktif."
     private data class SpeechRequest(val text: String, val rate: Float, val pitch: Float)
     private val pendingTexts = ArrayDeque<SpeechRequest>()
@@ -36,6 +37,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             ACTION_STOP -> {
                 pendingTexts.clear()
                 speaking = false
+                activeUtteranceId = null
                 tts?.stop()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
@@ -44,6 +46,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             ACTION_CLEAR_QUEUE -> {
                 pendingTexts.clear()
                 speaking = false
+                activeUtteranceId = null
                 tts?.stop()
                 notificationText = "Antrean dibersihkan; layanan tetap aktif."
             }
@@ -72,11 +75,15 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
             override fun onStart(utteranceId: String?) = Unit
             override fun onDone(utteranceId: String?) {
+                if (utteranceId == null || utteranceId != activeUtteranceId) return
+                activeUtteranceId = null
                 speaking = false
                 if (pendingTexts.isEmpty()) updateNotification("Pembacaan teks selesai.")
                 speakPendingIfReady()
             }
             override fun onError(utteranceId: String?) {
+                if (utteranceId == null || utteranceId != activeUtteranceId) return
+                activeUtteranceId = null
                 speaking = false
                 updateNotification("Terjadi kesalahan saat membacakan teks.")
                 speakPendingIfReady()
@@ -101,8 +108,10 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         speaking = true
         updateNotification("Sedang membacakan teks.")
         val utteranceId = "livecreator-bg-${System.currentTimeMillis()}"
+        activeUtteranceId = utteranceId
         val resultCode = engine.speak(request.text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
         if (resultCode == TextToSpeech.ERROR) {
+            activeUtteranceId = null
             speaking = false
             updateNotification("Mesin TTS menolak permintaan pembacaan.")
             speakPendingIfReady()
