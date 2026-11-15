@@ -26,7 +26,7 @@
 
 ## Status proyek
 
-**Versi sumber: 0.4.9 (dalam pengembangan).** Versi ini berisi perbaikan kompilasi antrean TTS, pembaruan dokumentasi, ilustrasi README, dan pembaruan workflow CI. Fitur runtime baru tidak diklaim dalam perubahan dokumentasi ini.
+**Versi sumber: 0.5.0 (dalam pengembangan).** Versi ini memindahkan preferensi aplikasi ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, validasi nilai kecepatan/nada TTS, dan pengujian unit tambahan.
 
 > **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK baru versi 0.4.9 hanya dianggap tersedia setelah GitHub Actions selesai sukses dan asset APK muncul di GitHub Releases. Build debug bukan APK produksi bertanda tangan.
 
@@ -54,6 +54,7 @@ flowchart TD
 - **Antrean TTS latar belakang** berbentuk bounded FIFO dengan kapasitas maksimum 40 permintaan. Ketika penuh, permintaan tertua yang masih menunggu dibuang agar permintaan terbaru tetap masuk.
 - **Foreground audio service** yang dimulai oleh pengguna, notifikasi persisten, tindakan hentikan layanan, serta tindakan hapus antrean.
 - **Proteksi callback TTS usang** agar callback dari utterance yang telah dibatalkan tidak mengubah status playback baru.
+- **Penyimpanan preferensi terpusat** menggunakan Preferences DataStore; pengaturan auto-start, pengingat reboot, speech rate, dan pitch dimigrasikan otomatis dari SharedPreferences lama. Nilai TTS divalidasi sebelum disimpan/dipakai.
 - **Soundboard lokal**: impor audio melalui Android document picker, validasi MIME, persistensi akses URI, penyimpanan daftar sederhana, playback asinkron, play/stop/delete, penanganan error, dan pelepasan URI grant saat item dihapus/tidak dapat diakses.
 - **Picture-in-Picture** untuk panel status ringkas.
 - **Aksesibilitas dasar** melalui semantic labels Compose dan kompatibilitas TalkBack standar.
@@ -131,14 +132,13 @@ CI menjalankan unit test JVM dan build APK pada setiap push ke `main`. Jika buil
 
 ## Rencana pengembangan
 
-1. Stabilkan build dan tambah pengujian unit untuk antrean, lifecycle, serta pengelolaan status TTS.
-2. Pisahkan domain, data, service, dan UI secara bertahap tanpa merusak fitur yang sudah ada.
-3. Tambahkan penyimpanan terstruktur (DataStore/Room) dan migrasi data yang aman.
-4. Tingkatkan soundboard dengan playback lifecycle yang dapat dipulihkan, kategori, urutan, dan kontrol audio yang benar.
-5. Bangun event-provider adapter hanya setelah jalur data LIVE yang sah, stabil, dan dapat diuji tersedia.
-6. Evaluasi AI lokal sebagai modul opsional dengan pemeriksaan RAM/storage, pengunduhan model yang aman, pembatalan generasi, dan fallback yang jelas.
-7. Setelah CI stabil, lakukan pengujian perangkat, aksesibilitas, konsumsi baterai, audio fokus, dan kompatibilitas versi Android.
-8. Siapkan signing release dan pemeriksaan kebijakan Play Store secara terpisah.
+1. Tambahkan pengujian unit untuk lifecycle dan pengelolaan status TTS.
+2. Migrasikan metadata soundboard ke Room dengan mekanisme pemulihan izin URI.
+3. Evaluasi AndroidX Media3 untuk sesi playback soundboard persisten dan audio focus.
+4. Bangun event-provider adapter hanya setelah jalur data LIVE yang sah, stabil, dan dapat diuji tersedia.
+5. Evaluasi AI lokal sebagai modul opsional dengan pemeriksaan RAM/storage, pengunduhan model yang aman, pembatalan generasi, dan fallback yang jelas.
+6. Setelah CI stabil, lakukan pengujian perangkat, aksesibilitas, konsumsi baterai, audio focus, dan kompatibilitas versi Android.
+7. Siapkan signing release dan pemeriksaan kebijakan Play Store secara terpisah.
 
 ## Lisensi
 

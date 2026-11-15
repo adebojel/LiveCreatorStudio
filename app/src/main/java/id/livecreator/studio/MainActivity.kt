@@ -1,7 +1,6 @@
 package id.livecreator.studio
 
 import android.Manifest
-import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.Intent
 import android.content.BroadcastReceiver
@@ -27,6 +26,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -177,14 +179,10 @@ fun LiveCreatorApp(
 ) {
     val context = LocalContext.current
     var selected by remember { mutableStateOf("Dashboard") }
-    var autoStartOnLaunch by remember {
-        mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
-            .getBoolean("auto_start_on_launch", false))
-    }
-    var resumeReminder by remember {
-        mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
-            .getBoolean("resume_reminder_enabled", true))
-    }
+    val settings by context.liveCreatorSettings.data.collectAsState(initial = emptyPreferences())
+    val settingsScope = rememberCoroutineScope()
+    val autoStartOnLaunch = settings[AppSettingKeys.AUTO_START_ON_LAUNCH] ?: false
+    val resumeReminder = settings[AppSettingKeys.RESUME_REMINDER_ENABLED] ?: true
     LaunchedEffect(autoStartOnLaunch, backgroundServiceRunning) {
         if (autoStartOnLaunch && !backgroundServiceRunning) {
             onStartBackground()
@@ -220,16 +218,20 @@ fun LiveCreatorApp(
                 "Soundboard" -> SoundboardScreen(Modifier.fillMaxSize())
                 "Settings" -> SettingsScreen(
                     autoStartOnLaunch = autoStartOnLaunch,
-                    onAutoStartChange = {
-                        autoStartOnLaunch = it
-                        context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
-                            .edit().putBoolean("auto_start_on_launch", it).apply()
+                    onAutoStartChange = { enabled ->
+                        settingsScope.launch {
+                            context.liveCreatorSettings.edit { preferences ->
+                                preferences[AppSettingKeys.AUTO_START_ON_LAUNCH] = enabled
+                            }
+                        }
                     },
                     resumeReminder = resumeReminder,
-                    onResumeReminderChange = {
-                        resumeReminder = it
-                        context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
-                            .edit().putBoolean("resume_reminder_enabled", it).apply()
+                    onResumeReminderChange = { enabled ->
+                        settingsScope.launch {
+                            context.liveCreatorSettings.edit { preferences ->
+                                preferences[AppSettingKeys.RESUME_REMINDER_ENABLED] = enabled
+                            }
+                        }
                     },
                     onOpenBatterySettings = onOpenBatterySettings,
                     onOpenAccessibilitySettings = onOpenAccessibilitySettings,
@@ -349,10 +351,15 @@ private fun DashboardScreen(
 private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, Float) -> Unit) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
-    val speechPrefs = remember { context.getSharedPreferences("livecreator_tts", Activity.MODE_PRIVATE) }
+    val appSettings by context.liveCreatorSettings.data.collectAsState(initial = emptyPreferences())
+    val settingsScope = rememberCoroutineScope()
     var message by remember { mutableStateOf("") }
-    var speechRate by remember { mutableFloatStateOf(speechPrefs.getFloat("rate", 1.0f).coerceIn(0.5f, 2.0f)) }
-    var speechPitch by remember { mutableFloatStateOf(speechPrefs.getFloat("pitch", 1.0f).coerceIn(0.5f, 2.0f)) }
+    var speechRate by remember { mutableFloatStateOf(1.0f) }
+    var speechPitch by remember { mutableFloatStateOf(1.0f) }
+    LaunchedEffect(appSettings) {
+        speechRate = sanitizeSpeechRate(appSettings[AppSettingKeys.SPEECH_RATE] ?: 1.0f)
+        speechPitch = sanitizeSpeechPitch(appSettings[AppSettingKeys.SPEECH_PITCH] ?: 1.0f)
+    }
     var status by remember { mutableStateOf("Menyiapkan mesin suara perangkat…") }
     val tts = remember {
         TextToSpeech(context) { result ->
@@ -402,7 +409,11 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
             value = speechRate,
             onValueChange = {
                 speechRate = it
-                speechPrefs.edit().putFloat("rate", it).apply()
+                settingsScope.launch {
+                    context.liveCreatorSettings.edit { preferences ->
+                        preferences[AppSettingKeys.SPEECH_RATE] = sanitizeSpeechRate(it)
+                    }
+                }
             },
             valueRange = 0.5f..2.0f
         )
@@ -411,7 +422,11 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
             value = speechPitch,
             onValueChange = {
                 speechPitch = it
-                speechPrefs.edit().putFloat("pitch", it).apply()
+                settingsScope.launch {
+                    context.liveCreatorSettings.edit { preferences ->
+                        preferences[AppSettingKeys.SPEECH_PITCH] = sanitizeSpeechPitch(it)
+                    }
+                }
             },
             valueRange = 0.5f..2.0f
         )
@@ -419,7 +434,12 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
             onClick = {
                 speechRate = 1.0f
                 speechPitch = 1.0f
-                speechPrefs.edit().putFloat("rate", 1.0f).putFloat("pitch", 1.0f).apply()
+                settingsScope.launch {
+                    context.liveCreatorSettings.edit { preferences ->
+                        preferences[AppSettingKeys.SPEECH_RATE] = 1.0f
+                        preferences[AppSettingKeys.SPEECH_PITCH] = 1.0f
+                    }
+                }
                 status = "Pengaturan suara dikembalikan ke normal."
             },
             modifier = Modifier.fillMaxWidth()

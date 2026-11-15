@@ -129,3 +129,48 @@ Kontrak ini hanya usulan desain; belum menjadi implementasi dan tidak menghasilk
 ## Kesimpulan
 
 Tidak ada repository yang aman untuk diimpor secara utuh ke aplikasi ini. Pilihan terbaik adalah mengambil pola arsitektur yang relevan, mengisolasi modul, meninjau lisensi, mengukur biaya runtime, dan menguji setiap integrasi. Prioritas saat ini adalah stabilitas aplikasi Android yang sudah ada; AI lokal dan LIVE event ingestion tetap fase terpisah sampai jalur teknis dan legalnya jelas.
+
+
+## 7. SwaraPlayer — referensi AndroidX Media3
+
+Repository: https://github.com/kannan-ai/SwaraPlayer  
+Teknologi README: Jetpack Compose, AndroidX Media3/ExoPlayer, MediaSessionService, kontrol media latar belakang, audio effects, dan DataStore.  
+Status metadata lisensi GitHub: tidak terdeteksi pada pemeriksaan API (README menyebut MIT, tetapi tidak ada metadata lisensi terverifikasi).
+
+**Nilai guna:** referensi teknis untuk migrasi soundboard ke Media3 dan pengelolaan playback melalui MediaSessionService.  
+**Risiko:** proyek ini adalah pemutar audio/video lengkap; fitur equalizer/boost/gesture tidak otomatis cocok dengan kebutuhan soundboard dan perlu diuji secara terpisah.  
+**Keputusan:** referensi arsitektur saja. Tidak menyalin kode atau mengimpor dependency sampai lisensi diverifikasi dan kebutuhan soundboard dirumuskan.
+
+## 8. Parakeet Android — referensi speech-to-text offline
+
+Repository: https://github.com/meet30997/parakeet-android-on-device-speech-recognition  
+Lisensi metadata GitHub: MIT.  
+Teknologi: Kotlin, Compose, JNI, NeMo-Speech.cpp/ggml, model Parakeet TDT 0.6B, pemrosesan lokal ARM64.
+
+**Nilai guna:** kandidat riset untuk transkripsi offline jika kebutuhan voice input berkembang dari Android SpeechRecognizer ke model lokal.  
+**Risiko:** model yang didokumentasikan sekitar 714 MB, membutuhkan NDK/CMake/JNI, ARM64, memori dan ruang penyimpanan besar. README menyebut inferensi chunked dan bukan streaming native sejati.  
+**Keputusan:** jangan tambahkan ke APK utama saat ini. Lakukan benchmark terpisah pada perangkat sasaran dan pastikan pengalaman izin mikrofon, suhu, baterai, serta pengelolaan model layak.
+
+## 9. Sample Compose + Hilt + Room — referensi database
+
+Repository: https://github.com/NicosNicolaou16/SampleComposeWithHiltAndRoom  
+Lisensi metadata GitHub: Apache-2.0.  
+Teknologi: Compose, Room, MVVM, Repository Pattern, Coroutines, Hilt.
+
+**Nilai guna:** referensi pola pemisahan repository dan database untuk migrasi pustaka soundboard dari SharedPreferences ke Room.  
+**Risiko:** sample ini memakai konfigurasi SDK/dependency yang lebih baru; tidak dapat disalin langsung ke proyek yang saat ini compileSdk 35 dan Kotlin/Gradle 8.9.  
+**Keputusan:** referensi arsitektur saja; integrasi Room dilakukan bertahap dan diuji dengan migrasi data.
+
+## 10. DataStoreSample — referensi Preferences DataStore
+
+Repository: https://github.com/emineinan/DataStoreSample  
+Status metadata lisensi GitHub: tidak terdeteksi; repository terakhir diperbarui pada 2023.  
+**Keputusan:** referensi konsep saja. Implementasi aplikasi menggunakan AndroidX Preferences DataStore resmi dan migrasi SharedPreferences bawaan, bukan menyalin source repository tersebut.
+
+## Implementasi dari audit pada versi 0.5.0
+
+- Preferences DataStore menjadi sumber preferensi terpusat untuk auto-start, pengingat reboot, speech rate, dan pitch.
+- SharedPreferences lama dimigrasikan sekali ke DataStore agar pengaturan pengguna tidak hilang saat upgrade.
+- Sanitasi speech rate/pitch membatasi nilai ke rentang 0.5×–2.0× dan mengembalikan nilai non-finite ke 1.0×.
+- Empat unit test baru menguji rentang dan nilai invalid.
+- Tidak ada source code pihak ketiga yang disalin ke aplikasi; integrasi ini memakai AndroidX DataStore.
