@@ -16,6 +16,7 @@ Independent Android companion for livestream creators. This clean-room project i
 - Notification action to stop the background service
 - Android Picture-in-Picture support with a compact creator status panel
 - Battery-optimization settings shortcut
+- Opt-in auto-start when the user opens the app
 - Optional reboot reminder notification; it asks the user to resume rather than silently forcing a service start
 - Compose semantic labels and standard TalkBack compatibility
 - GitHub Actions workflow for debug APK build artifacts
