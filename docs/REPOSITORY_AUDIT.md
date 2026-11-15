@@ -239,3 +239,44 @@ Versi stabil yang ditemukan saat audit: **1.11.1** (September 2026); 1.12.0-beta
 - Komponen yang sudah benar-benar diadopsi pada versi 0.5.0 adalah AndroidX Preferences DataStore resmi, bukan source dari sample pihak ketiga.
 - Lisensi yang tidak eksplisit/metadata NOASSERTION diperlakukan sebagai **tidak lolos adopsi kode**.
 - Semua integrasi native AI, LIVE event, dan persistent soundboard tetap memerlukan proof-of-concept dan pengujian perangkat sebelum dinyatakan aktif.
+
+
+## 17. sherpa-onnx — speech toolkit offline (prioritas riset tinggi)
+
+Repository: https://github.com/k2-fsa/sherpa-onnx  
+Lisensi metadata GitHub: Apache-2.0.  
+Repository aktif dan README mendokumentasikan Android, Kotlin/Java, ARM64, ASR streaming dan non-streaming, TTS lokal, VAD, keyword spotting, speaker diarization, speech enhancement, dan source separation.
+
+**Nilai guna:** kandidat paling lengkap untuk membangun lapisan suara offline terpadu: keyword spotting, speech-to-text streaming, dan neural TTS tanpa harus bergantung pada cloud.  
+**Risiko:** runtime native dan model terpisah; lisensi model/voice berbeda-beda dan wajib diverifikasi satu per satu. Ukuran model, RAM, latency, ABI, konsumsi baterai, serta dukungan Bahasa Indonesia harus diuji pada perangkat target.  
+**Keputusan:** kandidat utama untuk proof-of-concept terpisah. Belum ditambahkan ke APK utama agar ukuran APK, stabilitas build, dan konsumsi RAM tidak membengkak sebelum model Bahasa Indonesia yang sesuai dipilih.
+
+## 18. Vosk Android Demo — referensi ASR offline
+
+Repository: https://github.com/alphacep/vosk-android-demo  
+Lisensi metadata GitHub: Apache-2.0.  
+README menyebut pengenalan suara offline dan speaker identification untuk Android melalui Kaldi/Vosk.
+
+**Nilai guna:** alternatif ASR offline yang dapat dibandingkan dengan sherpa-onnx dari sisi ukuran model, latensi, akurasi Bahasa Indonesia, dan konsumsi memori.  
+**Risiko:** demo bukan aplikasi produksi siap tempel; kualitas bergantung pada model bahasa yang tersedia.  
+**Keputusan:** jadikan baseline pembanding, jangan integrasikan sebelum benchmark Bahasa Indonesia dilakukan.
+
+## 19. HayaiTTS — neural TTS Android
+
+Repository: https://github.com/HayaiApp/HayaiTTS  
+Lisensi metadata GitHub: NOASSERTION; README dan badge menyatakan GPL-3.0.  
+README mendokumentasikan engine TTS Android sistem berbasis sherpa-onnx, model offline multi-voice, streaming synthesis, dan katalog suara.
+
+**Nilai guna:** referensi teknis untuk neural TTS sistem dan pengelolaan model suara.  
+**Risiko:** GPL-3.0 dapat memengaruhi kewajiban distribusi jika kode/binary digabung; model suara memiliki lisensi masing-masing.  
+**Keputusan:** tidak menyalin source atau binary ke aplikasi. Gunakan hanya sebagai referensi arsitektur; implementasi terpisah harus mempertimbangkan lisensi dan kompatibilitas.
+
+## 20. AndroidX Media3 — audio playback resmi
+
+Repository: https://github.com/androidx/media  
+Lisensi metadata GitHub: Apache-2.0.  
+Repository ExoPlayer lama (google/ExoPlayer) sudah deprecated; AndroidX Media3 adalah jalur pengembangan resmi.
+
+**Implementasi 0.5.1:** Soundboard berpindah dari Android MediaPlayer ke AndroidX Media3 ExoPlayer 1.11.1. Playback menggunakan URI dari Storage Access Framework, audio attributes, pengelolaan audio focus, penanganan audio-becoming-noisy, status buffering/playing/completed/error, serta pelepasan player pada dispose.
+
+**Batasan:** sesi soundboard masih terikat pada halaman UI dan dihentikan saat halaman ditutup. MediaSessionService, playback lintas halaman, mixing beberapa suara, dan automasi event belum diimplementasikan.

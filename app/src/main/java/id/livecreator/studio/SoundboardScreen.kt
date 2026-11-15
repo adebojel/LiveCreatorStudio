@@ -2,8 +2,11 @@ package id.livecreator.studio
 
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
-import android.media.MediaPlayer
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -40,7 +43,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     var activeUri by remember { mutableStateOf<String?>(null) }
     var isPreparing by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("Impor file audio dari perangkat untuk membuat pustaka suara.") }
-    var player by remember { mutableStateOf<MediaPlayer?>(null) }
+    var player by remember { mutableStateOf<ExoPlayer?>(null) }
 
     fun releaseCurrent() {
         val current = player
@@ -48,8 +51,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         activeUri = null
         isPreparing = false
         if (current != null) {
-            runCatching { current.setOnCompletionListener(null) }
-            runCatching { current.setOnErrorListener(null) }
+            runCatching { current.stop() }
             runCatching { current.release() }
         }
     }
@@ -86,7 +88,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
 
     fun playSound(sound: SoundItem) {
         releaseCurrent()
-        val next = MediaPlayer()
+        val next = ExoPlayer.Builder(context).build()
         player = next
         activeUri = sound.uri
         isPreparing = true
@@ -94,44 +96,49 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         try {
             next.setAudioAttributes(
                 AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build()
-            )
-            next.setOnPreparedListener { prepared ->
-                if (player === next) {
-                    isPreparing = false
-                    runCatching { prepared.start() }.onSuccess {
-                        message = "Sedang memutar: ${sound.title}"
-                    }.onFailure {
-                        releaseCurrent()
-                        message = "Pemutaran gagal: ${it.message ?: "kesalahan audio"}"
-                    }
-                } else {
-                    runCatching { prepared.release() }
-                }
-            }
-            next.setOnCompletionListener { completed ->
-                runCatching { completed.release() }
-                if (player === next) {
-                    player = null
-                    activeUri = null
-                    isPreparing = false
-                    message = "Pemutaran selesai: ${sound.title}"
-                }
-            }
-            next.setOnErrorListener { failed, what, extra ->
-                runCatching { failed.release() }
-                if (player === next) {
-                    player = null
-                    activeUri = null
-                    isPreparing = false
-                    message = "Audio gagal diputar (kode $what/$extra). Periksa file atau formatnya."
-                }
+                    .setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.AUDIO_CONTENT_TYPE_SONIFICATION)
+                    .build(),
                 true
-            }
-            next.setDataSource(context, Uri.parse(sound.uri))
-            next.prepareAsync()
+            )
+            next.setHandleAudioBecomingNoisy(true)
+            next.addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    if (player !== next) return
+                    when (playbackState) {
+                        Player.STATE_BUFFERING -> {
+                            isPreparing = true
+                            message = "Menyiapkan audio: ${sound.title}"
+                        }
+                        Player.STATE_READY -> {
+                            isPreparing = false
+                            if (next.isPlaying) message = "Sedang memutar: ${sound.title}"
+                        }
+                        Player.STATE_ENDED -> {
+                            releaseCurrent()
+                            message = "Pemutaran selesai: ${sound.title}"
+                        }
+                        Player.STATE_IDLE -> Unit
+                    }
+                }
+
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    if (player === next && isPlaying) {
+                        isPreparing = false
+                        message = "Sedang memutar: ${sound.title}"
+                    }
+                }
+
+                override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                    if (player === next) {
+                        releaseCurrent()
+                        message = "Audio gagal diputar: ${error.errorCodeName}. Periksa file atau formatnya."
+                    }
+                }
+            })
+            next.setMediaItem(MediaItem.fromUri(Uri.parse(sound.uri)))
+            next.prepare()
+            next.play()
         } catch (error: Exception) {
             releaseCurrent()
             message = "Tidak dapat membuka audio: ${error.message ?: "file tidak tersedia"}"

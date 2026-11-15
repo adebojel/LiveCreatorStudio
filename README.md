@@ -26,9 +26,9 @@
 
 ## Status proyek
 
-**Versi sumber: 0.5.0 (dalam pengembangan).** Versi ini memindahkan preferensi aplikasi ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, validasi nilai kecepatan/nada TTS, dan pengujian unit tambahan.
+**Versi sumber: 0.5.1 (dalam pengembangan).** Versi ini memindahkan preferensi aplikasi ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, validasi nilai kecepatan/nada TTS, dan pengujian unit tambahan.
 
-> **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK baru versi 0.4.9 hanya dianggap tersedia setelah GitHub Actions selesai sukses dan asset APK muncul di GitHub Releases. Build debug bukan APK produksi bertanda tangan.
+> **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi 0.5.0 tersedia pada release build-83; versi 0.5.1 sedang dikembangkan dan belum tersedia sampai CI selesai sukses. Build debug bukan APK produksi bertanda tangan.
 
 ## Tampilan dan arsitektur
 
@@ -55,7 +55,8 @@ flowchart TD
 - **Foreground audio service** yang dimulai oleh pengguna, notifikasi persisten, tindakan hentikan layanan, serta tindakan hapus antrean.
 - **Proteksi callback TTS usang** agar callback dari utterance yang telah dibatalkan tidak mengubah status playback baru.
 - **Penyimpanan preferensi terpusat** menggunakan Preferences DataStore; pengaturan auto-start, pengingat reboot, speech rate, dan pitch dimigrasikan otomatis dari SharedPreferences lama. Nilai TTS divalidasi sebelum disimpan/dipakai.
-- **Soundboard lokal**: impor audio melalui Android document picker, validasi MIME, persistensi akses URI, penyimpanan daftar sederhana, playback asinkron, play/stop/delete, penanganan error, dan pelepasan URI grant saat item dihapus/tidak dapat diakses.
+- **Playback soundboard menggunakan AndroidX Media3 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Playback masih berhenti saat halaman Soundboard ditutup; sesi soundboard persisten belum dibuat.
+- **Soundboard lokal**: impor audio melalui Android document picker, validasi MIME, persistensi akses URI, penyimpanan daftar sederhana, playback berbasis AndroidX Media3 ExoPlayer, penanganan audio focus dan audio-becoming-noisy, play/stop/delete, penanganan error, dan pelepasan URI grant saat item dihapus/tidak dapat diakses.
 - **Picture-in-Picture** untuk panel status ringkas.
 - **Aksesibilitas dasar** melalui semantic labels Compose dan kompatibilitas TalkBack standar.
 - **Shortcut Settings** untuk pengaturan notifikasi, aksesibilitas, info aplikasi/izin, dan optimasi baterai.
