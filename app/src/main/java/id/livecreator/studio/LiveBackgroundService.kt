@@ -77,7 +77,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
                 if (utteranceId == null || utteranceId != activeUtteranceId) return
                 activeUtteranceId = null
                 speaking = false
-                if (pendingTexts.isEmpty()) updateNotification("Pembacaan teks selesai.")
+                if (pendingTexts.isEmpty) updateNotification("Pembacaan teks selesai.")
                 speakPendingIfReady()
             }
             override fun onError(utteranceId: String?) {
@@ -93,7 +93,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
 
     private fun speakPendingIfReady() {
         val engine = tts ?: return
-        if (!ttsReady || speaking || pendingTexts.isEmpty()) return
+        if (!ttsReady || speaking || pendingTexts.isEmpty) return
         val result = engine.setLanguage(Locale("id", "ID"))
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
             pendingTexts.clear()
