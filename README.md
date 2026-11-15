@@ -4,7 +4,7 @@ Independent Android companion for livestream creators. This clean-room project i
 
 ## Current version
 
-**0.4.1 — creator audio reliability update / device testing required.**
+**0.4.2 — soundboard permission lifecycle hardening / device testing required.**
 
 **[Unduh APK terbaru dari GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)** · [Lihat semua Releases](https://github.com/adebojel/LiveCreatorStudio/releases)
 
@@ -16,7 +16,7 @@ Independent Android companion for livestream creators. This clean-room project i
 - User-started foreground audio service with persistent notification and stop action
 - Background TTS request path through the foreground service
 - Android Picture-in-Picture support with a compact creator status panel
-- Local soundboard: validate audio MIME type, retain Android document URI access, persist the library, use asynchronous MediaPlayer preparation, play, stop, and remove clips with playback error handling
+- Local soundboard: validate audio MIME type, retain Android document URI access, persist the library, use asynchronous MediaPlayer preparation, play, stop, and remove clips with playback error handling; release persisted document grants when clips are removed or become inaccessible
 - Battery-optimization, accessibility, app-permission, and notification settings shortcuts
 - Opt-in auto-start when the user opens the app
 - Optional reboot reminder notification; it asks the user to resume rather than silently forcing a service start
