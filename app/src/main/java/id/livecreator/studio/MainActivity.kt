@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.BroadcastReceiver
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.app.ActivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -56,12 +57,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val serviceFilter = IntentFilter(LiveBackgroundService.ACTION_STATUS)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(serviceStateReceiver, serviceFilter, RECEIVER_NOT_EXPORTED)
+            registerReceiver(serviceStateReceiver, serviceFilter, android.content.Context.RECEIVER_NOT_EXPORTED)
         } else {
             @Suppress("DEPRECATION")
             registerReceiver(serviceStateReceiver, serviceFilter)
         }
         serviceReceiverRegistered = true
+        backgroundServiceRunning = isBackgroundServiceRunning()
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -81,6 +83,13 @@ class MainActivity : ComponentActivity() {
                 backgroundServiceRunning = backgroundServiceRunning
             )
         }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun isBackgroundServiceRunning(): Boolean {
+        return getSystemService(ActivityManager::class.java)
+            .getRunningServices(Int.MAX_VALUE)
+            .any { it.service.className == LiveBackgroundService::class.java.name }
     }
 
     override fun onDestroy() {
@@ -184,7 +193,7 @@ fun LiveCreatorApp(
         background = Ink, surface = Panel, primary = Violet, secondary = Cyan
     )) {
         if (inPipMode) {
-            PipMiniScreen(backgroundEnabled)
+            PipMiniScreen(backgroundServiceRunning)
         } else Row(Modifier.fillMaxSize().background(Ink)) {
             NavigationRail(containerColor = Panel) {
                 listOf("Dashboard", "TTS", "Soundboard", "Settings").forEach { item ->
