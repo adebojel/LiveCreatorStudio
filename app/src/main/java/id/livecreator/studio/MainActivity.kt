@@ -1,6 +1,15 @@
 package id.livecreator.studio
 
+import android.Manifest
+import android.app.Activity
+import android.app.PictureInPictureParams
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Rational
 import android.speech.tts.TextToSpeech
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,26 +25,90 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
 
 private val Ink = Color(0xFF0B1020)
-private val Panel = Color(0xFF171F35)
+private val Panel = Color(0xCC171F35)
 private val Violet = Color(0xFF9B7BFF)
 private val Cyan = Color(0xFF54D8E8)
 
 class MainActivity : ComponentActivity() {
+    private var pipRequested = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { LiveCreatorApp() }
+        if (Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 4101)
+        }
+        setContent {
+            LiveCreatorApp(
+                onStartBackground = { startBackgroundAudio() },
+                onStopBackground = { stopBackgroundAudio() },
+                onOpenBatterySettings = { openBatterySettings() },
+                onEnterPip = { enterCompactMode() },
+                onSpeakInBackground = { speakInBackground(it) }
+            )
+        }
+    }
+
+    private fun startBackgroundAudio() {
+        val intent = Intent(this, LiveBackgroundService::class.java).setAction(LiveBackgroundService.ACTION_START)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(intent) else startService(intent)
+    }
+
+    private fun stopBackgroundAudio() {
+        startService(Intent(this, LiveBackgroundService::class.java).setAction(LiveBackgroundService.ACTION_STOP))
+    }
+
+    private fun speakInBackground(text: String) {
+        val intent = Intent(this, LiveBackgroundService::class.java)
+            .setAction(LiveBackgroundService.ACTION_SPEAK)
+            .putExtra(LiveBackgroundService.EXTRA_TEXT, text)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(intent) else startService(intent)
+    }
+
+    private fun openBatterySettings() {
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+        } else Intent(Settings.ACTION_SETTINGS)
+        runCatching { startActivity(intent) }
+    }
+
+    private fun enterCompactMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val params = PictureInPictureParams.Builder()
+                .setAspectRatio(Rational(16, 9))
+                .build()
+            enterPictureInPictureMode(params)
+        }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (pipRequested && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) enterCompactMode()
     }
 }
 
 @Composable
-fun LiveCreatorApp() {
+fun LiveCreatorApp(
+    onStartBackground: () -> Unit,
+    onStopBackground: () -> Unit,
+    onOpenBatterySettings: () -> Unit,
+    onEnterPip: () -> Unit,
+    onSpeakInBackground: (String) -> Unit
+) {
     var selected by remember { mutableStateOf("Dashboard") }
+    var backgroundEnabled by remember { mutableStateOf(false) }
+    var resumeReminder by remember { mutableStateOf(true) }
+    val context = LocalContext.current
+
     MaterialTheme(colorScheme = darkColorScheme(
         background = Ink, surface = Panel, primary = Violet, secondary = Cyan
     )) {
@@ -52,56 +125,110 @@ fun LiveCreatorApp() {
                                 "Alerts" -> Icons.Default.NotificationsActive
                                 "AI" -> Icons.Default.AutoAwesome
                                 else -> Icons.Default.Settings
-                            }, contentDescription = item)
+                            }, contentDescription = item,
+                                modifier = Modifier.semantics { contentDescription = "Buka menu $item" })
                         },
                         label = { Text(item, fontSize = 9.sp) }
                     )
                 }
             }
             when (selected) {
-                "TTS" -> TtsScreen(Modifier.fillMaxSize())
-                "Alerts" -> InfoScreen("Sound alerts", "Local sound library and event routing are planned. LIVE event triggers are not connected yet.")
-                "AI" -> InfoScreen("AI assistant", "AI providers are not configured. No messages are sent to an AI service in this build.")
-                "Settings" -> InfoScreen("Settings", "Provider connections and persistent settings will be added in a later milestone.")
-                else -> DashboardScreen(Modifier.fillMaxSize())
+                "TTS" -> TtsScreen(Modifier.fillMaxSize(), onSpeakInBackground)
+                "Alerts" -> InfoScreen("Sound alerts", "Pustaka suara lokal dan perutean event akan dikembangkan berikutnya. Pemicu LIVE belum terhubung.")
+                "AI" -> InfoScreen("AI assistant", "Provider AI belum dikonfigurasi. Build ini belum mengirim pesan ke layanan AI.")
+                "Settings" -> SettingsScreen(
+                    resumeReminder = resumeReminder,
+                    onResumeReminderChange = {
+                        resumeReminder = it
+                        context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
+                            .edit().putBoolean("resume_reminder_enabled", it).apply()
+                    },
+                    onOpenBatterySettings = onOpenBatterySettings
+                )
+                else -> DashboardScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    backgroundEnabled = backgroundEnabled,
+                    onStartBackground = {
+                        onStartBackground()
+                        backgroundEnabled = true
+                    },
+                    onStopBackground = {
+                        onStopBackground()
+                        backgroundEnabled = false
+                    },
+                    onEnterPip = onEnterPip
+                )
             }
         }
     }
 }
 
 @Composable
-private fun DashboardScreen(modifier: Modifier = Modifier) {
+private fun DashboardScreen(
+    modifier: Modifier,
+    backgroundEnabled: Boolean,
+    onStartBackground: () -> Unit,
+    onStopBackground: () -> Unit,
+    onEnterPip: () -> Unit
+) {
     LazyColumn(
-        modifier = modifier.padding(horizontal = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-        contentPadding = PaddingValues(top = 28.dp, bottom = 28.dp)
+        modifier = modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(top = 22.dp, bottom = 28.dp)
     ) {
         item {
-            Text("LIVE CREATOR", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            Text("Dashboard", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            Text("Creator control center", color = Color.LightGray)
+            Text("LIVE CREATOR STUDIO", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Text("Creator hub", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.Bold)
+            Text("Kontrol audio, layanan latar belakang, dan alat kreator.", color = Color.LightGray, fontSize = 12.sp)
         }
-        item { StatusCard() }
-        item { Text("Quick tools", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold) }
         item {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                QuickCard("Text to Speech", "On-device voice preview", Icons.Default.RecordVoiceOver, Modifier.weight(1f))
-                QuickCard("Sound alerts", "Local event sounds", Icons.Default.Notifications, Modifier.weight(1f))
+            Surface(color = Panel, shape = RoundedCornerShape(22.dp), modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.GraphicEq, contentDescription = null, tint = Cyan)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Background audio engine", color = Color.White, fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.weight(1f))
+                        Text(if (backgroundEnabled) "AKTIF" else "NONAKTIF",
+                            color = if (backgroundEnabled) Cyan else Color.LightGray, fontSize = 10.sp)
+                    }
+                    Text("Layanan foreground dengan notifikasi persisten untuk pekerjaan audio yang dimulai pengguna.",
+                        color = Color.LightGray, fontSize = 12.sp)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = onStartBackground, modifier = Modifier.weight(1f)) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = null)
+                            Text("Mulai")
+                        }
+                        OutlinedButton(onClick = onStopBackground, modifier = Modifier.weight(1f)) {
+                            Icon(Icons.Default.Stop, contentDescription = null)
+                            Text("Hentikan")
+                        }
+                    }
+                    Text("Status ini menunjukkan perintah layanan dikirim dari aplikasi; bukan jaminan sistem tidak akan menghentikannya.",
+                        color = Color(0xFFFFD18A), fontSize = 10.sp)
+                }
             }
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                QuickCard("AI assistant", "Provider setup pending", Icons.Default.AutoAwesome, Modifier.weight(1f))
-                QuickCard("Live events", "Not connected", Icons.Default.Sensors, Modifier.weight(1f))
+                FeatureCard("Picture-in-Picture", "Panel mini saat pindah aplikasi", Icons.Default.PictureInPicture, Modifier.weight(1f), onEnterPip)
+                FeatureCard("Aksesibilitas", "Kompatibel dengan TalkBack", Icons.Default.AccessibilityNew, Modifier.weight(1f)) {}
+            }
+        }
+        item { StatusCard() }
+        item {
+            Text("Quick tools", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                FeatureCard("Text to Speech", "Pratinjau suara Indonesia", Icons.Default.RecordVoiceOver, Modifier.weight(1f)) {}
+                FeatureCard("Sound alerts", "Pustaka suara lokal", Icons.Default.Notifications, Modifier.weight(1f)) {}
             }
         }
         item {
             Surface(color = Panel, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Integration status", color = Color.White, fontWeight = FontWeight.Bold)
-                    Text("TikTok LIVE connection is not configured.", color = Color.LightGray)
-                    Text("No live events are simulated. Connect a supported provider before enabling event-driven features.",
-                        color = Color(0xFFFFD18A), fontSize = 12.sp)
+                Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("LIVE integration", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("TikTok LIVE belum terhubung. Tidak ada event palsu atau simulasi koneksi.",
+                        color = Color.LightGray, fontSize = 12.sp)
                 }
             }
         }
@@ -109,7 +236,7 @@ private fun DashboardScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TtsScreen(modifier: Modifier = Modifier) {
+private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String) -> Unit) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("Halo! Selamat datang di LiveCreator Studio.") }
@@ -117,66 +244,104 @@ private fun TtsScreen(modifier: Modifier = Modifier) {
     val tts = remember {
         TextToSpeech(context) { result ->
             ready = result == TextToSpeech.SUCCESS
-            status = if (ready) {
-                "Mesin suara siap. Bahasa Indonesia akan diperiksa saat pratinjau diputar."
-            } else "Mesin TTS gagal dimulai. Periksa layanan Text-to-Speech Android."
+            status = if (ready) "Mesin suara siap. Bahasa Indonesia diperiksa saat pemutaran." else "Mesin TTS gagal dimulai."
         }
     }
     DisposableEffect(tts) {
-        onDispose {
-            tts.stop()
-            tts.shutdown()
-        }
+        onDispose { tts.stop(); tts.shutdown() }
     }
-    Column(
-        modifier.padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
+    Column(modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("AUDIO ENGINE", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-        Text("Text to Speech", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Text(status, color = Color.LightGray, fontSize = 13.sp)
+        Text("Text to Speech", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold)
+        Text(status, color = Color.LightGray, fontSize = 12.sp)
         OutlinedTextField(
-            value = message,
-            onValueChange = { message = it },
+            value = message, onValueChange = { message = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Teks untuk dibacakan") },
-            minLines = 3,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedBorderColor = Violet,
-                unfocusedBorderColor = Color.Gray
-            )
+            label = { Text("Teks untuk dibacakan") }, minLines = 3
         )
         Button(
             onClick = {
                 val language = tts.setLanguage(Locale("id", "ID"))
                 if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    status = "Bahasa Indonesia tidak tersedia. Pasang data suara Indonesia di pengaturan TTS Android."
+                    status = "Bahasa Indonesia belum tersedia pada mesin TTS perangkat."
                 } else {
                     tts.speak(message, TextToSpeech.QUEUE_FLUSH, null, "livecreator-preview")
-                    status = "Membacakan teks menggunakan TTS perangkat."
+                    status = "Pratinjau suara berjalan di aplikasi."
                 }
             },
             enabled = ready && message.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(Icons.Default.PlayArrow, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text("Putar pratinjau suara")
-        }
+        ) { Icon(Icons.Default.PlayArrow, contentDescription = null); Spacer(Modifier.width(6.dp)); Text("Pratinjau") }
         OutlinedButton(
-            onClick = { tts.stop(); status = "Pembacaan dihentikan." },
-            enabled = ready,
+            onClick = { onSpeakInBackground(message); status = "Permintaan suara latar belakang dikirim ke layanan." },
+            enabled = message.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
-        ) { Text("Hentikan suara") }
-        Text(
-            "Pratinjau ini memakai mesin TextToSpeech bawaan Android dan berjalan lokal. Ini belum terhubung ke komentar LIVE.",
-            color = Color.LightGray, fontSize = 12.sp
-        )
+        ) { Icon(Icons.Default.Headphones, contentDescription = null); Spacer(Modifier.width(6.dp)); Text("Bacakan di latar belakang") }
+        Text("Suara latar belakang memakai layanan Android yang dimulai pengguna. Komentar LIVE belum menjadi sumber teks otomatis.",
+            color = Color.LightGray, fontSize = 11.sp)
     }
 }
 
+@Composable
+private fun SettingsScreen(
+    resumeReminder: Boolean,
+    onResumeReminderChange: (Boolean) -> Unit,
+    onOpenBatterySettings: () -> Unit
+) {
+    Column(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Text("PREFERENCES", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Text("Pengaturan", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+        Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("Ketahanan layanan", color = Color.White, fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Pengingat setelah restart", color = Color.White)
+                        Text("Android dapat membatasi auto-start. Aplikasi memberi notifikasi untuk mengaktifkan ulang layanan.",
+                            color = Color.LightGray, fontSize = 11.sp)
+                    }
+                    Switch(checked = resumeReminder, onCheckedChange = onResumeReminderChange)
+                }
+                OutlinedButton(onClick = onOpenBatterySettings, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.BatteryChargingFull, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Buka pengaturan optimasi baterai")
+                }
+                Text("Pengecualian baterai harus dipilih sendiri oleh pengguna. Produsen perangkat dapat menerapkan pembatasan tambahan.",
+                    color = Color(0xFFFFD18A), fontSize = 11.sp)
+            }
+        }
+        Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("Aksesibilitas", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Tombol dan kontrol menggunakan semantik Compose agar dapat dibaca TalkBack. Aktifkan TalkBack melalui pengaturan Aksesibilitas Android.",
+                    color = Color.LightGray, fontSize = 12.sp)
+            }
+        }
+    }
+}
+
+@Composable
+private fun FeatureCard(
+    title: String,
+    subtitle: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        color = Panel,
+        shape = RoundedCornerShape(18.dp),
+        modifier = modifier.semantics { contentDescription = "$title. $subtitle" }
+    ) {
+        Column(Modifier.padding(13.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+            Icon(icon, contentDescription = null, tint = Violet, modifier = Modifier.size(23.dp))
+            Text(title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+            Text(subtitle, color = Color.LightGray, fontSize = 10.sp)
+        }
+    }
+}
 
 @Composable
 private fun InfoScreen(title: String, description: String) {
@@ -191,27 +356,15 @@ private fun InfoScreen(title: String, description: String) {
 
 @Composable
 private fun StatusCard() {
-    Surface(color = Panel, shape = RoundedCornerShape(22.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Surface(color = Panel, shape = RoundedCornerShape(20.dp), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(9.dp).background(Cyan, RoundedCornerShape(50)))
+                Box(Modifier.size(8.dp).background(Cyan, RoundedCornerShape(50)))
                 Spacer(Modifier.width(8.dp))
-                Text("APP STARTED", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("APP READY", color = Cyan, fontSize = 10.sp, fontWeight = FontWeight.Bold)
             }
-            Text("Your live workspace", color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text("Configure audio, alerts and integrations from one place.",
-                color = Color.LightGray, fontSize = 13.sp)
-        }
-    }
-}
-
-@Composable
-private fun QuickCard(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector, modifier: Modifier) {
-    Surface(color = Panel, shape = RoundedCornerShape(18.dp), modifier = modifier) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Icon(icon, contentDescription = null, tint = Violet, modifier = Modifier.size(24.dp))
-            Text(title, color = Color.White, fontWeight = FontWeight.SemiBold)
-            Text(subtitle, color = Color.LightGray, fontSize = 11.sp)
+            Text("Creator workspace", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold)
+            Text("Satu tempat untuk mengelola audio dan fitur kreator.", color = Color.LightGray, fontSize = 12.sp)
         }
     }
 }
