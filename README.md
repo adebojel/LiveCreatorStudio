@@ -4,14 +4,15 @@ Independent Android companion for livestream creators. This clean-room project i
 
 ## Current version
 
-**0.3.0 — feature preview / device testing required.**
+**0.4.0 — creator audio tools preview / device testing required.**
 
 **[Unduh APK terbaru dari GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)** · [Lihat semua Releases](https://github.com/adebojel/LiveCreatorStudio/releases)
 
 ## Implemented in source
 
 - Kotlin + Jetpack Compose Android application with dark creator dashboard
-- On-device Android TextToSpeech preview with Indonesian locale check
+- On-device Android TextToSpeech preview with Indonesian locale check, adjustable speech rate and pitch, and saved voice preferences
+- Background TTS queue with per-utterance rate and pitch settings and bounded queue size
 - User-started foreground audio service with persistent notification and stop action
 - Background TTS request path through the foreground service
 - Android Picture-in-Picture support with a compact creator status panel
