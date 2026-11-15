@@ -8,6 +8,7 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
 import android.speech.tts.TextToSpeech
 import java.util.Locale
@@ -67,9 +68,11 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) return
         while (pendingTexts.isNotEmpty()) {
             val request = pendingTexts.removeFirst()
-            engine.setSpeechRate(request.rate)
-            engine.setPitch(request.pitch)
-            engine.speak(request.text, TextToSpeech.QUEUE_ADD, null, "livecreator-bg-${System.currentTimeMillis()}")
+            val utteranceParams = Bundle().apply {
+                putFloat(TextToSpeech.Engine.KEY_PARAM_RATE, request.rate)
+                putFloat(TextToSpeech.Engine.KEY_PARAM_PITCH, request.pitch)
+            }
+            engine.speak(request.text, TextToSpeech.QUEUE_ADD, utteranceParams, "livecreator-bg-${System.currentTimeMillis()}")
         }
     }
 
