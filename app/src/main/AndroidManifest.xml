@@ -30,6 +30,11 @@
             android:stopWithTask="false" />
 
         <receiver
+            android:name=".StopBackgroundReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
             android:name=".BootReminderReceiver"
             android:enabled="true"
             android:exported="false">
