@@ -4,7 +4,7 @@ Independent Android companion for livestream creators. This clean-room project i
 
 ## Current version
 
-**0.4.6 — background TTS queue cancellation from the persistent notification / device testing required.**
+**0.4.7 — stale TTS completion callback protection after queue cancellation / device testing required.**
 
 **[Unduh APK terbaru dari GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)** · [Lihat semua Releases](https://github.com/adebojel/LiveCreatorStudio/releases)
 
@@ -23,6 +23,7 @@ Independent Android companion for livestream creators. This clean-room project i
 - Optional reboot reminder notification; it asks the user to resume rather than silently forcing a service start
 - Scrollable TTS and settings screens for compact displays; Compose semantic labels and standard TalkBack compatibility
 - Version 0.4.6 adds an explicit notification action to stop current speech and discard queued speech while leaving the foreground service available
+- Version 0.4.7 ignores completion/error callbacks from utterances that were already cancelled, preventing stale callbacks from changing the state of a newer playback request
 - GitHub Actions workflow for debug APK build artifacts and automatic GitHub Release publishing on updates to `main`, with per-branch concurrency to cancel stale overlapping builds
 
 ## Not implemented yet
