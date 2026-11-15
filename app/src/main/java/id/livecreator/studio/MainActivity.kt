@@ -314,6 +314,8 @@ private fun DashboardScreen(
 }
 
 @Composable
+private var ttsEngineForPreview: TextToSpeech? = null
+
 private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, Float) -> Unit) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
@@ -325,11 +327,31 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
     val tts = remember {
         TextToSpeech(context) { result ->
             ready = result == TextToSpeech.SUCCESS
-            status = if (ready) "Mesin suara siap. Bahasa Indonesia diperiksa saat pemutaran." else "Mesin TTS gagal dimulai."
+            if (ready) {
+                ttsEngineForPreview?.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
+                    override fun onStart(utteranceId: String?) {
+                        status = "Sedang membacakan pratinjau."
+                    }
+                    override fun onDone(utteranceId: String?) {
+                        status = "Pratinjau selesai."
+                    }
+                    override fun onError(utteranceId: String?) {
+                        status = "Pratinjau gagal diputar oleh mesin TTS."
+                    }
+                })
+                status = "Mesin suara siap. Bahasa Indonesia diperiksa saat pemutaran."
+            } else {
+                status = "Mesin TTS gagal dimulai."
+            }
         }
     }
+    ttsEngineForPreview = tts
     DisposableEffect(tts) {
-        onDispose { tts.stop(); tts.shutdown() }
+        onDispose {
+            tts.stop()
+            tts.shutdown()
+            if (ttsEngineForPreview === tts) ttsEngineForPreview = null
+        }
     }
     Column(modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("AUDIO ENGINE", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
@@ -375,17 +397,28 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
                 } else {
                     tts.setSpeechRate(speechRate)
                     tts.setPitch(speechPitch)
-                    val result = tts.speak(message, TextToSpeech.QUEUE_FLUSH, null, "livecreator-preview")
-                    status = if (result == TextToSpeech.ERROR) {
-                        "Mesin TTS menolak permintaan. Periksa mesin suara perangkat."
-                    } else {
-                        "Permintaan pratinjau dikirim ke mesin suara perangkat."
+                    val utteranceId = "livecreator-preview-${System.currentTimeMillis()}"
+                    val result = tts.speak(message.trim(), TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+                    if (result == TextToSpeech.ERROR) {
+                        status = "Mesin TTS menolak permintaan. Periksa mesin suara perangkat."
                     }
                 }
             },
             enabled = ready && message.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) { Icon(Icons.Default.PlayArrow, contentDescription = null); Spacer(Modifier.width(6.dp)); Text("Pratinjau") }
+        OutlinedButton(
+            onClick = {
+                tts.stop()
+                status = "Pratinjau dihentikan."
+            },
+            enabled = ready,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.Stop, contentDescription = null)
+            Spacer(Modifier.width(6.dp))
+            Text("Hentikan pratinjau")
+        }
         OutlinedButton(
             onClick = {
                 onSpeakInBackground(message, speechRate, speechPitch)
