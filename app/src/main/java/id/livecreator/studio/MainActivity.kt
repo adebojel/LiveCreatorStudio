@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.content.res.Configuration
 import android.provider.Settings
 import android.util.Rational
 import android.speech.tts.TextToSpeech
@@ -38,7 +39,7 @@ private val Violet = Color(0xFF9B7BFF)
 private val Cyan = Color(0xFF54D8E8)
 
 class MainActivity : ComponentActivity() {
-    private var pipRequested = false
+    private var pipMode by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +54,8 @@ class MainActivity : ComponentActivity() {
                 onStopBackground = { stopBackgroundAudio() },
                 onOpenBatterySettings = { openBatterySettings() },
                 onEnterPip = { enterCompactMode() },
-                onSpeakInBackground = { speakInBackground(it) }
+                onSpeakInBackground = { speakInBackground(it) },
+                inPipMode = pipMode
             )
         }
     }
@@ -90,9 +92,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        pipMode = isInPictureInPictureMode
+    }
+
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        if (pipRequested && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) enterCompactMode()
     }
 }
 
@@ -102,7 +108,8 @@ fun LiveCreatorApp(
     onStopBackground: () -> Unit,
     onOpenBatterySettings: () -> Unit,
     onEnterPip: () -> Unit,
-    onSpeakInBackground: (String) -> Unit
+    onSpeakInBackground: (String) -> Unit,
+    inPipMode: Boolean
 ) {
     var selected by remember { mutableStateOf("Dashboard") }
     var backgroundEnabled by remember { mutableStateOf(false) }
@@ -112,7 +119,9 @@ fun LiveCreatorApp(
     MaterialTheme(colorScheme = darkColorScheme(
         background = Ink, surface = Panel, primary = Violet, secondary = Cyan
     )) {
-        Row(Modifier.fillMaxSize().background(Ink)) {
+        if (inPipMode) {
+            PipMiniScreen(backgroundEnabled)
+        } else Row(Modifier.fillMaxSize().background(Ink)) {
             NavigationRail(containerColor = Panel) {
                 listOf("Dashboard", "TTS", "Alerts", "AI", "Settings").forEach { item ->
                     NavigationRailItem(
@@ -159,6 +168,30 @@ fun LiveCreatorApp(
                     onEnterPip = onEnterPip
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun PipMiniScreen(backgroundEnabled: Boolean) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Ink,
+        shape = RoundedCornerShape(18.dp)
+    ) {
+        Row(
+            Modifier.fillMaxSize().padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                Text("LIVE CREATOR", color = Cyan, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Text("Audio assistant", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text(if (backgroundEnabled) "Background aktif" else "Siap digunakan",
+                    color = Color.LightGray, fontSize = 10.sp)
+            }
+            Icon(Icons.Default.GraphicEq, contentDescription = "Status audio", tint = Cyan,
+                modifier = Modifier.size(28.dp))
         }
     }
 }
