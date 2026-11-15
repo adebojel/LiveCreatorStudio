@@ -8,9 +8,9 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
-import android.os.Bundle
 import android.os.IBinder
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import java.util.Locale
 
 /**
@@ -20,6 +20,7 @@ import java.util.Locale
 class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
+    private var speaking = false
     private data class SpeechRequest(val text: String, val rate: Float, val pitch: Float)
     private val pendingTexts = ArrayDeque<SpeechRequest>()
 
@@ -33,6 +34,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         when (intent?.action) {
             ACTION_STOP -> {
                 pendingTexts.clear()
+                speaking = false
                 tts?.stop()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
@@ -57,22 +59,36 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         ttsReady = status == TextToSpeech.SUCCESS
         if (ttsReady) {
             tts?.setLanguage(Locale("id", "ID"))
+            tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) = Unit
+                override fun onDone(utteranceId: String?) {
+                    speaking = false
+                    speakPendingIfReady()
+                }
+                override fun onError(utteranceId: String?) {
+                    speaking = false
+                    speakPendingIfReady()
+                }
+            })
             speakPendingIfReady()
         }
     }
 
     private fun speakPendingIfReady() {
         val engine = tts ?: return
-        if (!ttsReady || pendingTexts.isEmpty()) return
+        if (!ttsReady || speaking || pendingTexts.isEmpty()) return
         val result = engine.setLanguage(Locale("id", "ID"))
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) return
-        while (pendingTexts.isNotEmpty()) {
-            val request = pendingTexts.removeFirst()
-            val utteranceParams = Bundle().apply {
-                putFloat(TextToSpeech.Engine.KEY_PARAM_RATE, request.rate)
-                putFloat(TextToSpeech.Engine.KEY_PARAM_PITCH, request.pitch)
-            }
-            engine.speak(request.text, TextToSpeech.QUEUE_ADD, utteranceParams, "livecreator-bg-${System.currentTimeMillis()}")
+
+        val request = pendingTexts.removeFirst()
+        engine.setSpeechRate(request.rate)
+        engine.setPitch(request.pitch)
+        speaking = true
+        val utteranceId = "livecreator-bg-${System.currentTimeMillis()}"
+        val resultCode = engine.speak(request.text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+        if (resultCode == TextToSpeech.ERROR) {
+            speaking = false
+            speakPendingIfReady()
         }
     }
 
