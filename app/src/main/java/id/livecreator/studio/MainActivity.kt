@@ -294,7 +294,6 @@ private fun DashboardScreen(
                 FeatureCard("Aksesibilitas", "Pengaturan TalkBack Android", Icons.Default.AccessibilityNew, Modifier.weight(1f)) { onNavigate("Settings") }
             }
         }
-        item { StatusCard() }
         item {
             Text("Quick tools", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -319,7 +318,7 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
     val speechPrefs = remember { context.getSharedPreferences("livecreator_tts", Activity.MODE_PRIVATE) }
-    var message by remember { mutableStateOf("Halo! Selamat datang di LiveCreator Studio.") }
+    var message by remember { mutableStateOf("") }
     var speechRate by remember { mutableFloatStateOf(speechPrefs.getFloat("rate", 1.0f).coerceIn(0.5f, 2.0f)) }
     var speechPitch by remember { mutableFloatStateOf(speechPrefs.getFloat("pitch", 1.0f).coerceIn(0.5f, 2.0f)) }
     var status by remember { mutableStateOf("Menyiapkan mesin suara perangkat…") }
@@ -484,28 +483,3 @@ private fun FeatureCard(
     }
 }
 
-@Composable
-private fun InfoScreen(title: String, description: String) {
-    Column(Modifier.fillMaxSize().padding(22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("LIVE CREATOR", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-        Text(title, color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
-            Text(description, color = Color.LightGray, modifier = Modifier.padding(18.dp))
-        }
-    }
-}
-
-@Composable
-private fun StatusCard() {
-    Surface(color = Panel, shape = RoundedCornerShape(20.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(8.dp).background(Cyan, RoundedCornerShape(50)))
-                Spacer(Modifier.width(8.dp))
-                Text("APP READY", color = Cyan, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-            }
-            Text("Creator workspace", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold)
-            Text("Satu tempat untuk mengelola audio dan fitur kreator.", color = Color.LightGray, fontSize = 12.sp)
-        }
-    }
-}
