@@ -9,6 +9,12 @@ on:
 permissions:
   contents: write
 
+# Keep only the newest build for a branch; avoid publishing stale APKs
+# when several small commits land close together.
+concurrency:
+  group: android-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
