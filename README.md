@@ -4,7 +4,7 @@ Independent Android companion for livestream creators. This clean-room project i
 
 ## Current version
 
-**0.4.4 — foreground service state reporting and dashboard lifecycle accuracy / device testing required.**
+**0.4.5 — foreground service state reporting and compact-screen scrolling improvements / device testing required.**
 
 **[Unduh APK terbaru dari GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)** · [Lihat semua Releases](https://github.com/adebojel/LiveCreatorStudio/releases)
 
@@ -20,7 +20,7 @@ Independent Android companion for livestream creators. This clean-room project i
 - Battery-optimization, accessibility, app-permission, and notification settings shortcuts
 - Opt-in auto-start when the user opens the app
 - Optional reboot reminder notification; it asks the user to resume rather than silently forcing a service start
-- Compose semantic labels and standard TalkBack compatibility
+- Scrollable TTS and settings screens for compact displays; Compose semantic labels and standard TalkBack compatibility
 - GitHub Actions workflow for debug APK build artifacts and automatic GitHub Release publishing on updates to `main`, with per-branch concurrency to cancel stale overlapping builds
 
 ## Not implemented yet
