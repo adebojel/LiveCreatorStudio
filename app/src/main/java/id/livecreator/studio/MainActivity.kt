@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
                 onStartBackground = { startBackgroundAudio() },
                 onStopBackground = { stopBackgroundAudio() },
                 onOpenBatterySettings = { openBatterySettings() },
+                onOpenAccessibilitySettings = { openAccessibilitySettings() },
                 onEnterPip = { enterCompactMode() },
                 onSpeakInBackground = { speakInBackground(it) },
                 inPipMode = pipMode
@@ -83,6 +84,10 @@ class MainActivity : ComponentActivity() {
         runCatching { startActivity(intent) }
     }
 
+    private fun openAccessibilitySettings() {
+        runCatching { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+    }
+
     private fun enterCompactMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val params = PictureInPictureParams.Builder()
@@ -104,6 +109,7 @@ fun LiveCreatorApp(
     onStartBackground: () -> Unit,
     onStopBackground: () -> Unit,
     onOpenBatterySettings: () -> Unit,
+    onOpenAccessibilitySettings: () -> Unit,
     onEnterPip: () -> Unit,
     onSpeakInBackground: (String) -> Unit,
     inPipMode: Boolean
@@ -119,8 +125,8 @@ fun LiveCreatorApp(
         mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
             .getBoolean("resume_reminder_enabled", true))
     }
-    LaunchedEffect(Unit) {
-        if (autoStartOnLaunch) {
+    LaunchedEffect(autoStartOnLaunch) {
+        if (autoStartOnLaunch && !backgroundEnabled) {
             onStartBackground()
             backgroundEnabled = true
         }
@@ -168,7 +174,8 @@ fun LiveCreatorApp(
                         context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
                             .edit().putBoolean("resume_reminder_enabled", it).apply()
                     },
-                    onOpenBatterySettings = onOpenBatterySettings
+                    onOpenBatterySettings = onOpenBatterySettings,
+                    onOpenAccessibilitySettings = onOpenAccessibilitySettings
                 )
                 else -> DashboardScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -337,7 +344,8 @@ private fun SettingsScreen(
     onAutoStartChange: (Boolean) -> Unit,
     resumeReminder: Boolean,
     onResumeReminderChange: (Boolean) -> Unit,
-    onOpenBatterySettings: () -> Unit
+    onOpenBatterySettings: () -> Unit,
+    onOpenAccessibilitySettings: () -> Unit
 ) {
     Column(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text("PREFERENCES", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
@@ -374,6 +382,11 @@ private fun SettingsScreen(
                 Text("Aksesibilitas", color = Color.White, fontWeight = FontWeight.Bold)
                 Text("Tombol dan kontrol menggunakan semantik Compose agar dapat dibaca TalkBack. Aktifkan TalkBack melalui pengaturan Aksesibilitas Android.",
                     color = Color.LightGray, fontSize = 12.sp)
+                OutlinedButton(onClick = onOpenAccessibilitySettings, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.AccessibilityNew, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Buka pengaturan aksesibilitas Android")
+                }
             }
         }
     }
