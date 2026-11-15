@@ -1,78 +1,145 @@
 # LiveCreator Studio
 
-Independent Android companion for livestream creators. This clean-room project is not affiliated with TikTok, TikFinity, or the publisher of TikStream.
+<p align="center">
+  <img src="docs/assets/livecreator-studio-hero.svg" alt="Ilustrasi konseptual dashboard LiveCreator Studio" width="100%"/>
+</p>
 
-## Current version
+<p align="center">
+  <a href="https://github.com/adebojel/LiveCreatorStudio/actions/workflows/android.yml"><img src="https://img.shields.io/github/actions/workflow/status/adebojel/LiveCreatorStudio/android.yml?branch=main&label=Android%20CI" alt="Android CI"/></a>
+  <a href="https://github.com/adebojel/LiveCreatorStudio/releases"><img src="https://img.shields.io/github/v/release/adebojel/LiveCreatorStudio?display_name=tag" alt="Latest release"/></a>
+  <img src="https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white" alt="Android"/>
+  <img src="https://img.shields.io/badge/Kotlin-Compose-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Compose"/>
+  <img src="https://img.shields.io/badge/minSdk-26-blue" alt="Minimum Android API 26"/>
+</p>
 
-**0.4.8 — bounded TTS queue extraction with automated unit-test coverage / device testing required.**
+<p align="center">
+  **Studio pendamping kreator livestream** — dashboard audio, pembacaan teks, dan soundboard lokal dengan fondasi integrasi event yang transparan.
+</p>
 
-**[Unduh APK terbaru dari GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)** · [Lihat semua Releases](https://github.com/adebojel/LiveCreatorStudio/releases)
+<p align="center">
+  <a href="https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk"><strong>Unduh APK terbaru</strong></a> ·
+  <a href="https://github.com/adebojel/LiveCreatorStudio/releases">Semua Releases</a> ·
+  <a href="https://github.com/adebojel/LiveCreatorStudio/actions">Status Build</a>
+</p>
 
-## Implemented in source
+---
 
-- Kotlin + Jetpack Compose Android application with dark creator dashboard
-- On-device Android TextToSpeech preview with Indonesian locale check, adjustable speech rate and pitch, saved voice preferences, explicit stop control, and playback-completion/error feedback
-- Background TTS queue with per-utterance rate and pitch settings, bounded queue size, and notification feedback for actual playback and engine errors
-- User-started foreground audio service with persistent notification and stop action; broadcasts actual service start/stop lifecycle state to keep the dashboard indicator synchronized
-- Background TTS request path through the foreground service
-- Persistent notification actions to clear the active speech and pending TTS queue without stopping the foreground service, or stop the service entirely
-- Android Picture-in-Picture support with a compact creator status panel
-- Local soundboard: validate audio MIME type, retain Android document URI access, persist the library, use asynchronous MediaPlayer preparation, play, stop, and remove clips with playback error handling; release persisted document grants when clips are removed or become inaccessible
-- Battery-optimization, accessibility, app-permission, and notification settings shortcuts
-- Opt-in auto-start when the user opens the app
-- Optional reboot reminder notification; it asks the user to resume rather than silently forcing a service start
-- Scrollable TTS and settings screens for compact displays; Compose semantic labels and standard TalkBack compatibility
-- Version 0.4.6 adds an explicit notification action to stop current speech and discard queued speech while leaving the foreground service available
-- Version 0.4.7 ignores completion/error callbacks from utterances that were already cancelled, preventing stale callbacks from changing the state of a newer playback request
-- Version 0.4.8 isolates the bounded FIFO speech queue into a testable component; CI now runs JVM unit tests before building the APK
-- GitHub Actions workflow for debug APK build artifacts and automatic GitHub Release publishing on updates to `main`, with per-branch concurrency to cancel stale overlapping builds
+## Status proyek
 
-## Not implemented yet
+**Versi sumber: 0.4.9 (dalam pengembangan).** Versi ini berisi perbaikan kompilasi antrean TTS, pembaruan dokumentasi, ilustrasi README, dan pembaruan workflow CI. Fitur runtime baru tidak diklaim dalam perubahan dokumentasi ini.
 
-- Real TikTok LIVE event ingestion and authenticated provider session
-- Event-driven comment/gift/follow/share processing
-- Soundboard playback as a persistent foreground audio session, multi-channel mixing, and event-to-sound automation
-- AI provider integrations and a genuinely executable local model runtime
-- Persistent structured settings/database beyond the soundboard URI list and small preferences
-- Signed production APK and Google Play policy/security review
+> **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK baru versi 0.4.9 hanya dianggap tersedia setelah GitHub Actions selesai sukses dan asset APK muncul di GitHub Releases. Build debug bukan APK produksi bertanda tangan.
 
-The application does not fabricate LIVE events, fake AI responses, or claim that a provider is connected. The soundboard is a real local-file feature and is not yet connected to livestream events.
+## Tampilan dan arsitektur
 
-## Background execution and Android limits
+Ilustrasi di bagian atas adalah **gambar konsep dashboard**, bukan screenshot aplikasi atau bukti fitur. Screenshot perangkat yang sebenarnya baru akan ditambahkan setelah pengujian perangkat dilakukan.
 
-The user can explicitly start a foreground audio service. Android displays a persistent notification with a stop action. The service uses `START_STICKY` as a recovery hint, but Android and device manufacturers may still stop or restrict it.
-
-No Android app can guarantee immunity from battery optimization, force-stop, OEM task managers, or OS resource management. Users can review battery optimization settings from the app. Exemptions are always controlled by Android and the user.
-
-Android versions impose restrictions on launching foreground services from boot broadcasts. The boot receiver therefore posts an optional reminder to reopen the app instead of claiming guaranteed automatic startup.
-
-PiP requires Android 8.0 (API 26) or later and is controlled by the system. TalkBack reads the Compose controls through standard accessibility semantics; this project does not use an accessibility service to inspect or control other apps.
-
-## Build
-
-Open in Android Studio with JDK 17 and Android SDK 35, or run:
-
-```bash
-gradle assembleDebug
+```mermaid
+flowchart TD
+  UI["Jetpack Compose UI"] --> VM["Screen state / ViewModel"]
+  VM --> TTS["Android TextToSpeech"]
+  VM --> SVC["Foreground audio service"]
+  VM --> SB["Local soundboard"]
+  SVC --> Q["Bounded FIFO speech queue"]
+  SVC --> NOTIF["Persistent notification"]
+  SB --> DOC["Android document URI"]
+  SB --> PLAYER["MediaPlayer"]
+  SVC --> ANDROID["Android audio / TTS engine"]
 ```
 
-APK output: `app/build/outputs/apk/debug/app-debug.apk`
+## Fitur yang sudah ada di source
 
-## Download APK
+- **Dashboard Android** berbasis Kotlin dan Jetpack Compose dengan navigasi Dashboard, TTS, Soundboard, dan Settings.
+- **TTS lokal Bahasa Indonesia** menggunakan mesin TextToSpeech perangkat; tersedia preview, pengaturan speech rate dan pitch, penyimpanan preferensi sederhana, tombol stop, serta callback mulai/selesai/error.
+- **Antrean TTS latar belakang** berbentuk bounded FIFO dengan kapasitas maksimum 40 permintaan. Ketika penuh, permintaan tertua yang masih menunggu dibuang agar permintaan terbaru tetap masuk.
+- **Foreground audio service** yang dimulai oleh pengguna, notifikasi persisten, tindakan hentikan layanan, serta tindakan hapus antrean.
+- **Proteksi callback TTS usang** agar callback dari utterance yang telah dibatalkan tidak mengubah status playback baru.
+- **Soundboard lokal**: impor audio melalui Android document picker, validasi MIME, persistensi akses URI, penyimpanan daftar sederhana, playback asinkron, play/stop/delete, penanganan error, dan pelepasan URI grant saat item dihapus/tidak dapat diakses.
+- **Picture-in-Picture** untuk panel status ringkas.
+- **Aksesibilitas dasar** melalui semantic labels Compose dan kompatibilitas TalkBack standar.
+- **Shortcut Settings** untuk pengaturan notifikasi, aksesibilitas, info aplikasi/izin, dan optimasi baterai.
+- **Auto-start opt-in** ketika pengguna membuka aplikasi dan pengingat reboot opsional; aplikasi tidak memaksa Android menjalankan layanan saat boot.
 
-The latest successful build is published to the **Releases → Assets** section as `LiveCreatorStudio-debug.apk`. Use the stable download link below:
+## Yang belum tersedia — tidak boleh dianggap aktif
 
-- [Download LiveCreatorStudio-debug.apk](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)
-- [Open Releases and view APK assets](https://github.com/adebojel/LiveCreatorStudio/releases)
+| Area | Status saat ini |
+|---|---|
+| TikTok LIVE real-time event ingestion | Belum terintegrasi |
+| Komentar, gift, follow, share, like event processor | Belum tersedia |
+| Autentikasi/provider LIVE resmi | Belum tersedia |
+| Soundboard otomatis berdasarkan event | Belum tersedia |
+| Mixing beberapa kanal audio dan sesi soundboard persisten | Belum tersedia |
+| AI cloud provider | Belum tersedia |
+| AI lokal GGUF/llama.cpp | Belum terintegrasi |
+| Speech-to-text streaming | Belum tersedia |
+| Database Room untuk seluruh data aplikasi | Belum tersedia |
+| APK release production-signed | Belum tersedia |
 
-Every push to `main` runs the Android build and, if successful, publishes the APK as an asset named `LiveCreatorStudio-debug.apk` in a GitHub Release. Pull-request builds do not publish releases.
+Aplikasi tidak membuat event LIVE palsu, tidak mensimulasikan AI, dan tidak menampilkan status provider tersambung jika koneksi nyata belum ada.
 
-**Important:** the current package is a debug APK, not a production-signed Play Store release. Install only if you trust this repository and Android allows installation. Play Protect may warn or block sideloaded/debug builds; this project does not bypass or disable Play Protect.
+## Audit repository eksternal
 
-## Integration policy
+Kami meninjau sejumlah proyek publik untuk menemukan komponen yang bisa dipelajari dan diadaptasi. Hasil audit, lisensi, risiko, dan rencana integrasinya dicatat di [docs/REPOSITORY_AUDIT.md](docs/REPOSITORY_AUDIT.md).
 
-Use documented and authorized provider interfaces where available. Undocumented third-party endpoints can break and must be isolated behind replaceable adapters. Never collect TikTok passwords or bypass platform security controls.
+Kandidat penting:
+- [Llamatik](https://github.com/llamatik/Llamatik) — SDK Kotlin untuk inferensi lokal, agent, memori, RAG, dan speech; lisensi MIT untuk kode inti, tetapi memiliki native build dan kebutuhan perangkat yang harus dievaluasi.
+- [Offline AI Assistant](https://github.com/its-hazratbilal/offline-ai-assistant) — referensi arsitektur Android offline AI, model GGUF, Room, DataStore, dan llama.cpp; lisensi MIT.
+- [TikTokLiveJava](https://github.com/jwdeveloper/TikTokLiveJava) dan [TikTok-Live-Connector](https://github.com/zerodytrash/TikTok-Live-Connector) — referensi event LIVE tidak resmi berbasis reverse engineering; **tidak dimasukkan sebagai dependensi produksi**.
+- [MusicPlayer-JetpackCompose](https://github.com/UmairOye/MusicPlayer-JetpackCompose) — referensi pola UI/pengelolaan audio; kode dan aset tidak disalin.
 
-## License
+Tidak ada kode pihak ketiga yang disalin secara membabi buta. Lisensi harus diverifikasi untuk setiap komponen dan dependensi sebelum distribusi.
 
-TBD. No third-party proprietary code, branding, assets, or audio are included.
+## Batasan Android dan keamanan
+
+- Android dan vendor perangkat dapat menghentikan atau membatasi foreground service, termasuk karena force-stop, penghemat baterai, dan kebijakan OEM.
+- `START_STICKY` bukan jaminan layanan hidup terus-menerus.
+- Pengingat setelah reboot meminta pengguna membuka aplikasi; tidak mengklaim auto-start paksa.
+- TalkBack memakai accessibility semantics standar. Aplikasi ini **belum** memiliki AccessibilityService untuk membaca atau mengendalikan aplikasi lain.
+- Jangan memasukkan kata sandi TikTok, cookie sesi, atau token pribadi ke dalam issue, log, README, atau chat.
+- Integrasi provider harus memakai API/akses yang sah dan dapat diganti melalui adapter. Endpoint reverse-engineered dapat berubah dan berisiko melanggar ketentuan platform.
+- Izin Android ditambahkan hanya bila fitur terkait benar-benar diimplementasikan.
+
+## Build dari source
+
+Persyaratan:
+- JDK 17
+- Android SDK 35
+- Gradle 8.9
+- Android Studio yang mendukung Kotlin dan Jetpack Compose pada konfigurasi proyek
+
+Perintah:
+
+```bash
+gradle testDebugUnitTest assembleDebug
+```
+
+Output APK debug:
+
+```text
+app/build/outputs/apk/debug/app-debug.apk
+```
+
+CI menjalankan unit test JVM dan build APK pada setiap push ke `main`. Jika build berhasil, workflow mengunggah APK ke GitHub Actions artifact dan menerbitkannya sebagai asset di GitHub Release.
+
+## Unduh aplikasi
+
+- [Unduh APK terbaru — GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)
+- [Buka halaman Releases dan Assets](https://github.com/adebojel/LiveCreatorStudio/releases)
+- [Lihat hasil GitHub Actions](https://github.com/adebojel/LiveCreatorStudio/actions)
+
+**Catatan instalasi:** file yang dipublikasikan saat ini adalah APK debug, bukan rilis produksi yang ditandatangani untuk Play Store. Android/Play Protect dapat menampilkan peringatan pada APK sideload/debug. Proyek ini tidak menonaktifkan atau melewati perlindungan Android.
+
+## Rencana pengembangan
+
+1. Stabilkan build dan tambah pengujian unit untuk antrean, lifecycle, serta pengelolaan status TTS.
+2. Pisahkan domain, data, service, dan UI secara bertahap tanpa merusak fitur yang sudah ada.
+3. Tambahkan penyimpanan terstruktur (DataStore/Room) dan migrasi data yang aman.
+4. Tingkatkan soundboard dengan playback lifecycle yang dapat dipulihkan, kategori, urutan, dan kontrol audio yang benar.
+5. Bangun event-provider adapter hanya setelah jalur data LIVE yang sah, stabil, dan dapat diuji tersedia.
+6. Evaluasi AI lokal sebagai modul opsional dengan pemeriksaan RAM/storage, pengunduhan model yang aman, pembatalan generasi, dan fallback yang jelas.
+7. Setelah CI stabil, lakukan pengujian perangkat, aksesibilitas, konsumsi baterai, audio fokus, dan kompatibilitas versi Android.
+8. Siapkan signing release dan pemeriksaan kebijakan Play Store secara terpisah.
+
+## Lisensi
+
+Lisensi proyek utama belum ditetapkan. Sampai lisensi resmi ditambahkan, jangan menganggap seluruh source proyek ini bebas digunakan ulang. Lihat [audit repository](docs/REPOSITORY_AUDIT.md) untuk status lisensi sumber eksternal.
