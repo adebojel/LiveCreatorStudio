@@ -4,6 +4,8 @@ import android.Manifest
 import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.Intent
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -40,9 +42,26 @@ private val Cyan = Color(0xFF54D8E8)
 
 class MainActivity : ComponentActivity() {
     private var pipMode by mutableStateOf(false)
+    private var backgroundServiceRunning by mutableStateOf(false)
+    private var serviceReceiverRegistered = false
+    private val serviceStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            if (intent?.action == LiveBackgroundService.ACTION_STATUS) {
+                backgroundServiceRunning = intent.getBooleanExtra(LiveBackgroundService.EXTRA_RUNNING, false)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val serviceFilter = IntentFilter(LiveBackgroundService.ACTION_STATUS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(serviceStateReceiver, serviceFilter, RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(serviceStateReceiver, serviceFilter)
+        }
+        serviceReceiverRegistered = true
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -58,9 +77,18 @@ class MainActivity : ComponentActivity() {
                 onOpenNotificationSettings = { openNotificationSettings() },
                 onEnterPip = { enterCompactMode() },
                 onSpeakInBackground = { text, rate, pitch -> speakInBackground(text, rate, pitch) },
-                inPipMode = pipMode
+                inPipMode = pipMode,
+                backgroundServiceRunning = backgroundServiceRunning
             )
         }
+    }
+
+    override fun onDestroy() {
+        if (serviceReceiverRegistered) {
+            runCatching { unregisterReceiver(serviceStateReceiver) }
+            serviceReceiverRegistered = false
+        }
+        super.onDestroy()
     }
 
     private fun startBackgroundAudio() {
@@ -133,11 +161,11 @@ fun LiveCreatorApp(
     onOpenNotificationSettings: () -> Unit,
     onEnterPip: () -> Unit,
     onSpeakInBackground: (String, Float, Float) -> Unit,
-    inPipMode: Boolean
+    inPipMode: Boolean,
+    backgroundServiceRunning: Boolean
 ) {
     val context = LocalContext.current
     var selected by remember { mutableStateOf("Dashboard") }
-    var backgroundEnabled by remember { mutableStateOf(false) }
     var autoStartOnLaunch by remember {
         mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
             .getBoolean("auto_start_on_launch", false))
@@ -146,10 +174,9 @@ fun LiveCreatorApp(
         mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
             .getBoolean("resume_reminder_enabled", true))
     }
-    LaunchedEffect(autoStartOnLaunch) {
-        if (autoStartOnLaunch && !backgroundEnabled) {
+    LaunchedEffect(autoStartOnLaunch, backgroundServiceRunning) {
+        if (autoStartOnLaunch && !backgroundServiceRunning) {
             onStartBackground()
-            backgroundEnabled = true
         }
     }
 
@@ -200,15 +227,9 @@ fun LiveCreatorApp(
                 )
                 else -> DashboardScreen(
                     modifier = Modifier.fillMaxSize(),
-                    backgroundEnabled = backgroundEnabled,
-                    onStartBackground = {
-                        onStartBackground()
-                        backgroundEnabled = true
-                    },
-                    onStopBackground = {
-                        onStopBackground()
-                        backgroundEnabled = false
-                    },
+                    backgroundEnabled = backgroundServiceRunning,
+                    onStartBackground = onStartBackground,
+                    onStopBackground = onStopBackground,
                     onEnterPip = onEnterPip,
                     onNavigate = { selected = it }
                 )
