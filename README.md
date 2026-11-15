@@ -32,7 +32,7 @@ Independent Android companion for livestream creators. This clean-room project i
 - Custom sound library and file picker
 - AI provider integrations and local model runtime
 - Persistent user settings/database beyond the small reboot-reminder preference
-- Signed production APK, release automation and store compliance review
+- Signed production APK and Google Play policy/security review
 
 The application does not fabricate LIVE events or claim that a provider is connected.
 
@@ -58,12 +58,12 @@ APK output: `app/build/outputs/apk/debug/app-debug.apk`
 
 ## Download APK
 
-The latest successful build is published to the **Releases → Assets** section. Use the stable download link below:
+The latest successful build is published to the **Releases → Assets** section as `LiveCreatorStudio-debug.apk`. Use the stable download link below:
 
 - [Download LiveCreatorStudio-debug.apk](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)
 - [Open Releases and view APK assets](https://github.com/adebojel/LiveCreatorStudio/releases)
 
-Every push to `main` runs the Android build and, if successful, publishes the APK as an asset in a GitHub Release. Pull-request builds do not publish releases.
+Every push to `main` runs the Android build and, if successful, publishes the APK as an asset named `LiveCreatorStudio-debug.apk` in a GitHub Release. Pull-request builds do not publish releases.
 
 **Important:** the current package is a debug APK, not a production-signed Play Store release. Install only if you trust this repository and Android allows installation. Play Protect may warn or block sideloaded/debug builds; this project does not bypass or disable Play Protect.
 
