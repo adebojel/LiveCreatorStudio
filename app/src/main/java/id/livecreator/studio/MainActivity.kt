@@ -416,7 +416,7 @@ private fun SettingsScreen(
                     Text("Atur izin dan notifikasi aplikasi")
                 }
                 OutlinedButton(onClick = onOpenAppSettings, modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Default.AppSettingsAlt, contentDescription = null)
+                    Icon(Icons.Default.Settings, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text("Buka info aplikasi dan semua izin")
                 }
