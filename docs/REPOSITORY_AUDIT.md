@@ -277,6 +277,6 @@ Repository: https://github.com/androidx/media
 Lisensi metadata GitHub: Apache-2.0.  
 Repository ExoPlayer lama (google/ExoPlayer) sudah deprecated; AndroidX Media3 adalah jalur pengembangan resmi.
 
-**Implementasi 0.5.1:** Soundboard berpindah dari Android MediaPlayer ke AndroidX Media3 ExoPlayer 1.11.1. Playback menggunakan URI dari Storage Access Framework, audio attributes, pengelolaan audio focus, penanganan audio-becoming-noisy, status buffering/playing/completed/error, serta pelepasan player pada dispose.
+**Implementasi 0.5.1:** Soundboard berpindah dari Android MediaPlayer ke AndroidX Media3 ExoPlayer 1.9.4. Versi ini dipilih agar tetap kompatibel dengan compileSdk 35 dan Android Gradle Plugin 8.7.3; versi Media3 1.11.1 mensyaratkan compileSdk 36. Playback menggunakan URI dari Storage Access Framework, audio attributes, pengelolaan audio focus, penanganan audio-becoming-noisy, status buffering/playing/completed/error, serta pelepasan player pada dispose.
 
 **Batasan:** sesi soundboard masih terikat pada halaman UI dan dihentikan saat halaman ditutup. MediaSessionService, playback lintas halaman, mixing beberapa suara, dan automasi event belum diimplementasikan.
