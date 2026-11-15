@@ -1,6 +1,8 @@
 package id.livecreator.studio
 
 import android.content.Context
+import android.content.Intent
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -22,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,108 +38,221 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     val prefs = remember { context.getSharedPreferences("livecreator_soundboard", Context.MODE_PRIVATE) }
     var sounds by remember { mutableStateOf(loadSounds(context, prefs)) }
     var activeUri by remember { mutableStateOf<String?>(null) }
-    var message by remember { mutableStateOf("Impor audio milikmu untuk membuat soundboard lokal.") }
+    var isPreparing by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf("Impor file audio dari perangkat untuk membuat pustaka suara.") }
     var player by remember { mutableStateOf<MediaPlayer?>(null) }
 
-    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) {
-            runCatching {
-                context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            val item = SoundItem(uri.toString(), displayName(context, uri))
-            if (sounds.none { it.uri == item.uri }) {
-                sounds = sounds + item
-                saveSounds(prefs, sounds)
-                message = "Audio berhasil ditambahkan."
-            } else message = "Audio tersebut sudah ada di pustaka."
+    fun releaseCurrent() {
+        val current = player
+        player = null
+        activeUri = null
+        isPreparing = false
+        if (current != null) {
+            runCatching { current.setOnCompletionListener(null) }
+            runCatching { current.setOnErrorListener(null) }
+            runCatching { current.release() }
         }
     }
 
-    fun stopAudio() {
-        runCatching { player?.stop() }
-        runCatching { player?.release() }
-        player = null
-        activeUri = null
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        val importResult = runCatching {
+            val mimeType = context.contentResolver.getType(uri)
+            require(mimeType?.startsWith("audio/") == true) { "File yang dipilih bukan tipe audio." }
+            context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { } 
+                ?: error("File tidak dapat dibaca.")
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            SoundItem(uri.toString(), displayName(context, uri))
+        }
+        importResult.onSuccess { item ->
+            if (sounds.none { it.uri == item.uri }) {
+                sounds = (sounds + item).sortedBy { it.title.lowercase() }
+                saveSounds(prefs, sounds)
+                message = "File berhasil diimpor dan izin aksesnya disimpan."
+            } else {
+                message = "File tersebut sudah ada di pustaka."
+            }
+        }.onFailure { error ->
+            message = "Impor gagal: ${error.message ?: "akses file tidak tersedia"}"
+        }
     }
 
-    DisposableEffect(Unit) { onDispose { stopAudio() } }
+    DisposableEffect(Unit) {
+        onDispose { releaseCurrent() }
+    }
 
-    Column(modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    fun playSound(sound: SoundItem) {
+        releaseCurrent()
+        val next = MediaPlayer()
+        player = next
+        activeUri = sound.uri
+        isPreparing = true
+        message = "Membuka audio: ${sound.title}"
+        try {
+            next.setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+            )
+            next.setOnPreparedListener { prepared ->
+                if (player === next) {
+                    isPreparing = false
+                    runCatching { prepared.start() }.onSuccess {
+                        message = "Sedang memutar: ${sound.title}"
+                    }.onFailure {
+                        releaseCurrent()
+                        message = "Pemutaran gagal: ${it.message ?: "kesalahan audio"}"
+                    }
+                } else {
+                    runCatching { prepared.release() }
+                }
+            }
+            next.setOnCompletionListener { completed ->
+                runCatching { completed.release() }
+                if (player === next) {
+                    player = null
+                    activeUri = null
+                    isPreparing = false
+                    message = "Pemutaran selesai: ${sound.title}"
+                }
+            }
+            next.setOnErrorListener { failed, what, extra ->
+                runCatching { failed.release() }
+                if (player === next) {
+                    player = null
+                    activeUri = null
+                    isPreparing = false
+                    message = "Audio gagal diputar (kode $what/$extra). Periksa file atau formatnya."
+                }
+                true
+            }
+            next.setDataSource(context, Uri.parse(sound.uri))
+            next.prepareAsync()
+        } catch (error: Exception) {
+            releaseCurrent()
+            message = "Tidak dapat membuka audio: ${error.message ?: "file tidak tersedia"}"
+        }
+    }
+
+    Column(
+        modifier.fillMaxSize().padding(18.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         Text("CREATOR TOOLKIT", color = Color(0xFF54D8E8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
         Text("Soundboard", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Text("Pustaka efek suara lokal. Pilih file audio dari perangkat, simpan ke daftar, lalu putar atau hentikan kapan saja.", color = Color.LightGray, fontSize = 12.sp)
-        Button(onClick = { picker.launch(arrayOf("audio/*")) }, modifier = Modifier.fillMaxWidth()) {
+        Text(
+            "Impor file audio milikmu, simpan aksesnya, lalu putar atau hentikan dari perangkat.",
+            color = Color.LightGray,
+            fontSize = 12.sp
+        )
+        Button(
+            onClick = { picker.launch(arrayOf("audio/*")) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text("Tambah file audio")
         }
         Surface(color = Color(0xCC171F35), shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-            Text(message, color = Color.LightGray, modifier = Modifier.padding(14.dp), fontSize = 12.sp)
+            Text(
+                message,
+                color = Color.LightGray,
+                modifier = Modifier.padding(14.dp).semantics { contentDescription = message },
+                fontSize = 12.sp
+            )
         }
         if (sounds.isEmpty()) {
             Surface(color = Color(0xCC171F35), shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF9B7BFF))
-                    Text("Belum ada suara", color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Text("Tambahkan file audio dari perangkat. Tidak ada audio contoh atau simulasi.", color = Color.LightGray, fontSize = 11.sp)
+                    Text("Pustaka masih kosong", color = Color.White, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        "Belum ada file audio yang diimpor. Tidak ada audio contoh.",
+                        color = Color.LightGray,
+                        fontSize = 11.sp
+                    )
                 }
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyColumn(
+                modifier = Modifier.weight(1f, fill = true),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(sounds, key = { it.uri }) { sound ->
                     Surface(color = Color(0xCC171F35), shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-                        Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            Modifier.fillMaxWidth().padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF54D8E8))
-                            Text(sound.title, color = Color.White, modifier = Modifier.weight(1f), fontSize = 12.sp, maxLines = 2)
-                            OutlinedButton(onClick = {
-                                stopAudio()
-                                runCatching {
-                                    val next = MediaPlayer.create(context, Uri.parse(sound.uri)) ?: error("Format audio tidak dapat dibuka.")
-                                    next.setOnCompletionListener {
-                                        runCatching { it.release() }
-                                        if (activeUri == sound.uri) {
-                                            player = null
-                                            activeUri = null
-                                            message = "Pemutaran selesai."
-                                        }
-                                    }
-                                    player = next
-                                    activeUri = sound.uri
-                                    next.start()
-                                    message = "Memutar: " + sound.title
-                                }.onFailure {
-                                    stopAudio()
-                                    message = "Gagal memutar audio: " + (it.message ?: "format tidak didukung")
+                            Text(
+                                sound.title,
+                                color = Color.White,
+                                modifier = Modifier.weight(1f),
+                                fontSize = 12.sp,
+                                maxLines = 2
+                            )
+                            OutlinedButton(
+                                onClick = { playSound(sound) },
+                                enabled = activeUri != sound.uri && !isPreparing,
+                                modifier = Modifier.semantics {
+                                    contentDescription = "Putar ${sound.title}"
                                 }
-                            }) { Icon(Icons.Default.PlayArrow, contentDescription = "Putar " + sound.title) }
-                            OutlinedButton(onClick = {
-                                if (activeUri == sound.uri) stopAudio()
-                                sounds = sounds.filterNot { it.uri == sound.uri }
-                                saveSounds(prefs, sounds)
-                                message = "Audio dihapus dari pustaka."
-                            }) { Icon(Icons.Default.Delete, contentDescription = "Hapus " + sound.title) }
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = null)
+                            }
+                            OutlinedButton(
+                                onClick = {
+                                    if (activeUri == sound.uri) releaseCurrent()
+                                    sounds = sounds.filterNot { it.uri == sound.uri }
+                                    saveSounds(prefs, sounds)
+                                    message = "File dihapus dari daftar aplikasi."
+                                },
+                                modifier = Modifier.semantics {
+                                    contentDescription = "Hapus ${sound.title} dari pustaka"
+                                }
+                            ) {
+                                Icon(Icons.Default.Delete, contentDescription = null)
+                            }
                         }
                     }
                 }
             }
         }
         if (activeUri != null) {
-            OutlinedButton(onClick = { stopAudio(); message = "Pemutaran dihentikan." }, modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(
+                onClick = {
+                    releaseCurrent()
+                    message = "Pemutaran dihentikan."
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Icon(Icons.Default.Stop, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text("Hentikan suara")
+                Text(if (isPreparing) "Batalkan pemuatan audio" else "Hentikan suara")
             }
         }
-        Text("Pustaka menyimpan referensi file yang dipilih. Jika file asal dipindah atau dihapus, pilih ulang file tersebut. Pemutaran berlangsung selama layar aplikasi aktif.", color = Color.LightGray, fontSize = 10.sp)
+        Text(
+            "Akses file disimpan melalui izin dokumen Android. Jika sumber file dihapus atau izinnya dicabut, impor ulang file tersebut. Audio berhenti ketika halaman Soundboard ditutup.",
+            color = Color.LightGray,
+            fontSize = 10.sp
+        )
     }
 }
 
 private fun saveSounds(prefs: android.content.SharedPreferences, sounds: List<SoundItem>) {
-    prefs.edit().putStringSet("items", sounds.map { it.uri + "|" + it.title.replace("|", " ") }.toSet()).apply()
+    val entries = sounds.map { it.uri + "|" + it.title.replace("|", " ") }.toSet()
+    prefs.edit().putStringSet("items", entries).apply()
 }
 
 private fun loadSounds(context: Context, prefs: android.content.SharedPreferences): List<SoundItem> {
-    return prefs.getStringSet("items", emptySet()).orEmpty().mapNotNull { entry ->
+    val stored = prefs.getStringSet("items", emptySet()).orEmpty().toList()
+    val valid = stored.mapNotNull { entry ->
         val split = entry.indexOf('|')
         if (split <= 0) null else {
             val uri = entry.substring(0, split)
@@ -146,6 +263,8 @@ private fun loadSounds(context: Context, prefs: android.content.SharedPreference
             if (readable) SoundItem(uri, title) else null
         }
     }.sortedBy { it.title.lowercase() }
+    if (valid.size != stored.size) saveSounds(prefs, valid)
+    return valid
 }
 
 private fun displayName(context: Context, uri: Uri): String {
