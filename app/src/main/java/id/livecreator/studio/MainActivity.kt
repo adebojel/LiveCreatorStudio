@@ -113,7 +113,10 @@ fun LiveCreatorApp(
 ) {
     var selected by remember { mutableStateOf("Dashboard") }
     var backgroundEnabled by remember { mutableStateOf(false) }
-    var resumeReminder by remember { mutableStateOf(true) }
+    var resumeReminder by remember {
+        mutableStateOf(context.getSharedPreferences("livecreator_prefs", Activity.MODE_PRIVATE)
+            .getBoolean("resume_reminder_enabled", true))
+    }
     val context = LocalContext.current
 
     MaterialTheme(colorScheme = darkColorScheme(
