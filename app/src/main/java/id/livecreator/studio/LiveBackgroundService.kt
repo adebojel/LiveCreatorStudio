@@ -19,7 +19,8 @@ import java.util.Locale
 class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
-    private val pendingTexts = ArrayDeque<String>()
+    private data class SpeechRequest(val text: String, val rate: Float, val pitch: Float)
+    private val pendingTexts = ArrayDeque<SpeechRequest>()
 
     override fun onCreate() {
         super.onCreate()
@@ -30,15 +31,18 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_STOP -> {
+                pendingTexts.clear()
                 tts?.stop()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
                 return START_NOT_STICKY
             }
             ACTION_SPEAK -> {
-                intent.getStringExtra(EXTRA_TEXT)?.take(4000)?.let { text ->
+                intent.getStringExtra(EXTRA_TEXT)?.take(4000)?.takeIf { it.isNotBlank() }?.let { text ->
                     if (pendingTexts.size >= MAX_PENDING_ITEMS) pendingTexts.removeFirst()
-                    pendingTexts.addLast(text)
+                    val rate = intent.getFloatExtra(EXTRA_RATE, 1.0f).coerceIn(0.5f, 2.0f)
+                    val pitch = intent.getFloatExtra(EXTRA_PITCH, 1.0f).coerceIn(0.5f, 2.0f)
+                    pendingTexts.addLast(SpeechRequest(text, rate, pitch))
                 }
             }
         }
@@ -62,8 +66,10 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         val result = engine.setLanguage(Locale("id", "ID"))
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) return
         while (pendingTexts.isNotEmpty()) {
-            val text = pendingTexts.removeFirst()
-            engine.speak(text, TextToSpeech.QUEUE_ADD, null, "livecreator-bg-${System.currentTimeMillis()}")
+            val request = pendingTexts.removeFirst()
+            engine.setSpeechRate(request.rate)
+            engine.setPitch(request.pitch)
+            engine.speak(request.text, TextToSpeech.QUEUE_ADD, null, "livecreator-bg-${System.currentTimeMillis()}")
         }
     }
 
@@ -139,6 +145,8 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         const val ACTION_SPEAK = "id.livecreator.studio.action.SPEAK"
         const val ACTION_STOP = "id.livecreator.studio.action.STOP"
         const val EXTRA_TEXT = "extra_text"
+        const val EXTRA_RATE = "extra_rate"
+        const val EXTRA_PITCH = "extra_pitch"
         private const val CHANNEL_ID = "livecreator_background"
         private const val NOTIFICATION_ID = 4107
         private const val MAX_PENDING_ITEMS = 40
