@@ -4,7 +4,7 @@ Independent Android companion for livestream creators. This clean-room project i
 
 ## Current version
 
-**0.4.5 — foreground service state reporting and compact-screen scrolling improvements / device testing required.**
+**0.4.6 — background TTS queue cancellation from the persistent notification / device testing required.**
 
 **[Unduh APK terbaru dari GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)** · [Lihat semua Releases](https://github.com/adebojel/LiveCreatorStudio/releases)
 
@@ -15,12 +15,14 @@ Independent Android companion for livestream creators. This clean-room project i
 - Background TTS queue with per-utterance rate and pitch settings, bounded queue size, and notification feedback for actual playback and engine errors
 - User-started foreground audio service with persistent notification and stop action; broadcasts actual service start/stop lifecycle state to keep the dashboard indicator synchronized
 - Background TTS request path through the foreground service
+- Persistent notification actions to clear the active speech and pending TTS queue without stopping the foreground service, or stop the service entirely
 - Android Picture-in-Picture support with a compact creator status panel
 - Local soundboard: validate audio MIME type, retain Android document URI access, persist the library, use asynchronous MediaPlayer preparation, play, stop, and remove clips with playback error handling; release persisted document grants when clips are removed or become inaccessible
 - Battery-optimization, accessibility, app-permission, and notification settings shortcuts
 - Opt-in auto-start when the user opens the app
 - Optional reboot reminder notification; it asks the user to resume rather than silently forcing a service start
 - Scrollable TTS and settings screens for compact displays; Compose semantic labels and standard TalkBack compatibility
+- Version 0.4.6 adds an explicit notification action to stop current speech and discard queued speech while leaving the foreground service available
 - GitHub Actions workflow for debug APK build artifacts and automatic GitHub Release publishing on updates to `main`, with per-branch concurrency to cancel stale overlapping builds
 
 ## Not implemented yet
