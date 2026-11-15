@@ -57,13 +57,14 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
     }
 
     private fun speakPendingIfReady() {
-        val text = pendingText ?: return
         val engine = tts ?: return
-        if (!ttsReady) return
+        if (!ttsReady || pendingTexts.isEmpty()) return
         val result = engine.setLanguage(Locale("id", "ID"))
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) return
-        pendingText = null
-        engine.speak(text, TextToSpeech.QUEUE_ADD, null, "livecreator-bg-${System.currentTimeMillis()}")
+        while (pendingTexts.isNotEmpty()) {
+            val text = pendingTexts.removeFirst()
+            engine.speak(text, TextToSpeech.QUEUE_ADD, null, "livecreator-bg-${System.currentTimeMillis()}")
+        }
     }
 
     private fun startAsForeground() {
