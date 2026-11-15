@@ -54,6 +54,8 @@ class MainActivity : ComponentActivity() {
                 onStopBackground = { stopBackgroundAudio() },
                 onOpenBatterySettings = { openBatterySettings() },
                 onOpenAccessibilitySettings = { openAccessibilitySettings() },
+                onOpenAppSettings = { openAppSettings() },
+                onOpenNotificationSettings = { openNotificationSettings() },
                 onEnterPip = { enterCompactMode() },
                 onSpeakInBackground = { speakInBackground(it) },
                 inPipMode = pipMode
@@ -88,6 +90,21 @@ class MainActivity : ComponentActivity() {
         runCatching { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
     }
 
+    private fun openAppSettings() {
+        runCatching {
+            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:$packageName")))
+        }
+    }
+
+    private fun openNotificationSettings() {
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+        } else {
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:$packageName"))
+        }
+        runCatching { startActivity(intent) }
+    }
+
     private fun enterCompactMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val params = PictureInPictureParams.Builder()
@@ -110,6 +127,8 @@ fun LiveCreatorApp(
     onStopBackground: () -> Unit,
     onOpenBatterySettings: () -> Unit,
     onOpenAccessibilitySettings: () -> Unit,
+    onOpenAppSettings: () -> Unit,
+    onOpenNotificationSettings: () -> Unit,
     onEnterPip: () -> Unit,
     onSpeakInBackground: (String) -> Unit,
     inPipMode: Boolean
@@ -175,7 +194,9 @@ fun LiveCreatorApp(
                             .edit().putBoolean("resume_reminder_enabled", it).apply()
                     },
                     onOpenBatterySettings = onOpenBatterySettings,
-                    onOpenAccessibilitySettings = onOpenAccessibilitySettings
+                    onOpenAccessibilitySettings = onOpenAccessibilitySettings,
+                    onOpenAppSettings = onOpenAppSettings,
+                    onOpenNotificationSettings = onOpenNotificationSettings
                 )
                 else -> DashboardScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -345,7 +366,9 @@ private fun SettingsScreen(
     resumeReminder: Boolean,
     onResumeReminderChange: (Boolean) -> Unit,
     onOpenBatterySettings: () -> Unit,
-    onOpenAccessibilitySettings: () -> Unit
+    onOpenAccessibilitySettings: () -> Unit,
+    onOpenAppSettings: () -> Unit,
+    onOpenNotificationSettings: () -> Unit
 ) {
     Column(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text("PREFERENCES", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
@@ -386,6 +409,16 @@ private fun SettingsScreen(
                     Icon(Icons.Default.AccessibilityNew, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text("Buka pengaturan aksesibilitas Android")
+                }
+                OutlinedButton(onClick = onOpenNotificationSettings, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.NotificationsActive, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Atur izin dan notifikasi aplikasi")
+                }
+                OutlinedButton(onClick = onOpenAppSettings, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.AppSettingsAlt, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Buka info aplikasi dan semua izin")
                 }
             }
         }
