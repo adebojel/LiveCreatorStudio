@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun stopBackgroundAudio() {
-        startService(Intent(this, LiveBackgroundService::class.java).setAction(LiveBackgroundService.ACTION_STOP))
+        stopService(Intent(this, LiveBackgroundService::class.java))
     }
 
     private fun speakInBackground(text: String, rate: Float, pitch: Float) {
