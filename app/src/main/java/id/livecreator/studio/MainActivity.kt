@@ -118,9 +118,7 @@ private fun TtsScreen(modifier: Modifier = Modifier) {
         TextToSpeech(context) { result ->
             ready = result == TextToSpeech.SUCCESS
             status = if (ready) {
-                val languageResult = ttsLanguagePlaceholder()
-                if (languageResult) "Mesin suara siap. Suara menggunakan layanan TTS Android."
-                else "Mesin siap, tetapi bahasa Indonesia mungkin belum tersedia pada perangkat."
+                "Mesin suara siap. Bahasa Indonesia akan diperiksa saat pratinjau diputar."
             } else "Mesin TTS gagal dimulai. Periksa layanan Text-to-Speech Android."
         }
     }
@@ -179,7 +177,6 @@ private fun TtsScreen(modifier: Modifier = Modifier) {
     }
 }
 
-private fun ttsLanguagePlaceholder(): Boolean = true
 
 @Composable
 private fun InfoScreen(title: String, description: String) {
