@@ -20,6 +20,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -383,7 +385,10 @@ private fun TtsScreen(modifier: Modifier, onSpeakInBackground: (String, Float, F
             tts.shutdown()
         }
     }
-    Column(modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(
+        modifier.verticalScroll(rememberScrollState()).padding(18.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         Text("AUDIO ENGINE", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
         Text("Text to Speech", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold)
         Text(status, color = Color.LightGray, fontSize = 12.sp)
@@ -473,7 +478,10 @@ private fun SettingsScreen(
     onOpenAppSettings: () -> Unit,
     onOpenNotificationSettings: () -> Unit
 ) {
-    Column(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(18.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
         Text("PREFERENCES", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
         Text("Pengaturan", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
         Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
