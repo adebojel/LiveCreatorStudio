@@ -1,8 +1,8 @@
 package id.livecreator.studio
 
 /**
- * Curated sound packs from Kenney.nl. The upstream asset pages and each pack's
- * included License.txt identify these packs as Creative Commons Zero (CC0 1.0).
+ * Curated CC0 sound packs from Kenney.nl and reviewed OpenGameArt archive sources.
+ * The upstream asset pages/source index identify these packs as Creative Commons Zero (CC0 1.0).
  * Keep the original source and license visible in the app and repository.
  */
 internal data class SoundPack(
