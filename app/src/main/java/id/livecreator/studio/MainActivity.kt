@@ -74,6 +74,8 @@ class MainActivity : ComponentActivity() {
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 4101)
+        } else {
+            showOverlayPermissionStep()
         }
         setContent {
             LiveCreatorApp(
@@ -88,6 +90,41 @@ class MainActivity : ComponentActivity() {
                 backgroundServiceRunning = backgroundServiceRunning
             )
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 4101) showOverlayPermissionStep()
+    }
+
+    private fun showOverlayPermissionStep() {
+        val prefs = getSharedPreferences("first_run_permissions", MODE_PRIVATE)
+        if (prefs.getBoolean("overlay_step_seen", false)) return
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Izin Floating Control")
+            .setMessage(
+                "Tahap 2 dari 2. Floating Control membutuhkan izin Tampil di atas aplikasi lain agar bola kontrol dapat muncul di atas aplikasi lain. Izin ini opsional; TTS dan Soundboard tetap dapat digunakan tanpa mengaktifkannya. Tidak diperlukan izin mikrofon atau kamera untuk fitur yang tersedia saat ini."
+            )
+            .setPositiveButton("Atur izin") { _, _ ->
+                prefs.edit().putBoolean("overlay_step_seen", true).apply()
+                if (!Settings.canDrawOverlays(this)) {
+                    runCatching {
+                        startActivity(Intent(
+                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:$packageName")
+                        ))
+                    }
+                }
+            }
+            .setNegativeButton("Nanti") { _, _ ->
+                prefs.edit().putBoolean("overlay_step_seen", true).apply()
+            }
+            .setOnCancelListener {
+                prefs.edit().putBoolean("overlay_step_seen", true).apply()
+            }
+            .show()
     }
 
     @Suppress("DEPRECATION")
