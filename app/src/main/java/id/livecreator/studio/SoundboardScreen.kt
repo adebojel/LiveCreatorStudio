@@ -256,8 +256,9 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 }
             }
         } else {
+            val visibleSounds = sounds.filter { it.title.contains(searchQuery, ignoreCase = true) }
             LazyColumn(modifier = Modifier.weight(1f, fill = true), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(sounds, key = { it.uri }) { sound ->
+                items(visibleSounds, key = { it.uri }) { sound ->
                     Surface(color = Color(0xAA1A2940), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x3347CDE8)), modifier = Modifier.fillMaxWidth()) {
                         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Icon(Icons.Default.LibraryMusic, contentDescription = "Audio", tint = Color(0xFF66DDF1))
