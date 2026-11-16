@@ -15,7 +15,7 @@ No audio picker or manual import is needed for the starter library. If the devic
 
 ## Full optional library
 
-The Soundboard screen also offers a one-tap download of all fifteen curated ZIP packs:
+The Soundboard screen also offers a one-tap download of all sixteen curated ZIP packs:
 
 | Pack | Upstream count | Source |
 |---|---:|---|
@@ -34,11 +34,12 @@ The Soundboard screen also offers a one-tap download of all fifteen curated ZIP 
 | Zombie Sounds | 24 | OpenGameArt / artisticdude |
 | Footsteps Surfaces | 8 | OpenGameArt / TinyWorlds |
 | Battle Sound Effects | 4 | OpenGameArt / Ogrebane |
-| **Total** | **1,374** | |
+| Retro UI Sound Pack | 70 | OpenGameArt / StumpyStrust |
+| **Total** | **1,444** | |
 
 The counts are upstream catalog counts, not a promise that every archive entry is playable. The app counts actual supported audio files after extraction.
 
-The OpenGameArt packs above are five ZIP archives marked CC0 in the reviewed source index. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
+The OpenGameArt packs above are six ZIP archives marked CC0 in the reviewed sources. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
 
 ## Licensing and attribution
 
@@ -47,7 +48,7 @@ All ten pack pages are listed as Creative Commons CC0 by the upstream source ind
 - Creator: Kenney / kenney.nl
 - License: [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
 - Official license guidance: [Kenney Support](https://kenney.nl/support)
-- Exact pack URLs and upstream counts: [open-game-sfx-index SOURCES.md](https://github.com/Mcamento8/open-game-sfx-index/blob/main/SOURCES.md)
+- Exact pack URLs and upstream counts: [open-game-sfx-index SOURCES.md](https://github.com/Mcamento8/open-game-sfx-index/blob/main/SOURCES.md). The added Retro UI Sound Pack is marked CC0 on [its OpenGameArt page](https://opengameart.org/content/sound-pack).
 
 ## Download and storage behavior
 
