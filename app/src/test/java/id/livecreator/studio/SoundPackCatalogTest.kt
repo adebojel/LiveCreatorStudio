@@ -12,7 +12,7 @@ class SoundPackCatalogTest {
             assertTrue(pack.archiveUrl.startsWith("https://"))
             assertTrue(pack.sourceUrl.startsWith("https://"))
             assertTrue(
-                pack.archiveUrl.contains("kenney.nl/") || pack.archiveUrl.contains("opengameart.org/")
+                pack.archiveUrl.contains("kenney.nl/") || pack.archiveUrl.contains("opengameart.org/") || pack.archiveUrl.contains("sfxmint.com/")
             )
         }
     }
@@ -24,8 +24,8 @@ class SoundPackCatalogTest {
     }
 
     @Test
-    fun allEighteenCuratedPacksContainMoreThanFifteenHundredAssets() {
-        assertEquals(18, SoundPackCatalog.packs.size)
-        assertEquals(1_584, SoundPackCatalog.packs.sumOf { it.assetCount })
+    fun allThirtyTwoCuratedPacksContainMoreThanSixteenHundredAssets() {
+        assertEquals(32, SoundPackCatalog.packs.size)
+        assertEquals(1_697, SoundPackCatalog.packs.sumOf { it.assetCount })
     }
 }
