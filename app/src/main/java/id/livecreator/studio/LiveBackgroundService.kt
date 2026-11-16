@@ -155,7 +155,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             @Suppress("DEPRECATION")
             Notification.Builder(this)
         }
-        return builder
+        builder
             .setSmallIcon(android.R.drawable.ic_media_play)
             .setContentTitle("LiveCreator Studio")
             .setContentText(notificationText)
@@ -169,7 +169,13 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             .setLocalOnly(true)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+
+        // This API is available from Android 12 (API 31); keep minSdk 26 compatible.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            builder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+        }
+
+        return builder
             .addAction(android.R.drawable.ic_media_pause, "Matikan", stopService)
             .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Bersihkan", clearQueue)
             .build()
