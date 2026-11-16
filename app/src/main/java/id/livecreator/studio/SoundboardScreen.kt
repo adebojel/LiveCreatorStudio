@@ -190,7 +190,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
             Surface(color = Color(0x5538CDE0), shape = RoundedCornerShape(50)) {
                 Text("${sounds.size} suara", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
             }
-            Surface(color = Color(0x559B7BFF), shape = RoundedCornerShape(50)) {
+            Surface(color = Color(0x5553DDF2), shape = RoundedCornerShape(50)) {
                 Text("${SoundPackCatalog.packs.size} paket CC0", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
             }
         }
@@ -274,7 +274,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         if (sounds.isEmpty()) {
             Surface(color = Color(0x99192339), shape = RoundedCornerShape(18.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x554E74A2)), modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF9B7BFF))
+                    Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF53DDF2))
                     Text("Pustaka masih kosong", color = Color.White, fontWeight = FontWeight.SemiBold)
                     Text("Belum ada file audio. Impor MP3/WAV atau gunakan tes speaker untuk memeriksa keluaran suara.", color = Color.LightGray, fontSize = 11.sp)
                 }
