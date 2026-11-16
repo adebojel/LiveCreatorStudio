@@ -46,7 +46,8 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     var controller by remember { mutableStateOf<MediaController?>(null) }
     var activeUri by remember { mutableStateOf<String?>(null) }
     var isPreparing by remember { mutableStateOf(false) }
-    var message by remember { mutableStateOf("Impor file audio dari perangkat untuk membuat pustaka suara.") }
+    var message by remember { mutableStateOf("Pustaka suara CC0 sedang disiapkan otomatis pada penggunaan pertama.") }
+    val packState by SoundPackInstaller.state.collectAsState()
 
     val playerListener = remember {
         object : Player.Listener {
@@ -177,7 +178,36 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("CREATOR TOOLKIT", color = Color(0xFF54D8E8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
         Text("Soundboard", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Text("Impor audio lokal dan kendalikan playback melalui sesi media Android.", color = Color.LightGray, fontSize = 12.sp)
+        Text("Paket suara CC0 diunduh otomatis saat aplikasi pertama kali dibuka. Impor manual tetap tersedia sebagai pilihan.", color = Color.LightGray, fontSize = 12.sp)
+        OutlinedButton(
+            onClick = { scope.launch { SoundPackInstaller.installAll(context) } },
+            enabled = packState !is SoundPackInstallState.Downloading,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.LibraryMusic, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Unduh semua paket suara (10 paket)")
+        }
+        when (val state = packState) {
+            is SoundPackInstallState.Downloading -> {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                Text("Mengunduh paket ${state.packTitle}…", color = Color(0xFF54D8E8), fontSize = 11.sp)
+            }
+            is SoundPackInstallState.Installed -> Text(
+                "${state.packTitle}: ${state.soundCount} suara siap digunakan.",
+                color = Color(0xFF79D7A5), fontSize = 11.sp
+            )
+            is SoundPackInstallState.Failed -> {
+                Text("Unduhan ${state.packTitle} tertunda: ${state.reason}", color = Color(0xFFFFC078), fontSize = 11.sp)
+                TextButton(onClick = { scope.launch { SoundPackInstaller.ensureStarterPacks(context) } }) {
+                    Text("Coba unduh ulang paket awal")
+                }
+            }
+            SoundPackInstallState.Idle -> Text(
+                "Paket awal: 210 suara. Tersedia 10 paket dengan sekitar 730 aset CC0.",
+                color = Color.LightGray, fontSize = 11.sp
+            )
+        }
         Button(onClick = { picker.launch(arrayOf("audio/*")) }, modifier = Modifier.fillMaxWidth()) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(Modifier.width(8.dp))
