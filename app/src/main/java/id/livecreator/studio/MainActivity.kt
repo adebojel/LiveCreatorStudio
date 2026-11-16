@@ -533,8 +533,8 @@ private fun SettingsScreen(
                 Text("Kontrol mengambang", color = Color.White, fontWeight = FontWeight.Bold)
                 val overlayPrefs = context.getSharedPreferences("floating_control", android.content.Context.MODE_PRIVATE)
                 var overlayEnabled by remember { mutableStateOf(overlayPrefs.getBoolean("enabled", false)) }
-                var bubbleSize by remember { mutableFloatStateOf(overlayPrefs.getFloat("size", 58f)) }
-                var bubbleOpacity by remember { mutableFloatStateOf(overlayPrefs.getFloat("opacity", 0.82f)) }
+                var bubbleSize by remember { mutableFloatStateOf(sanitizeFloatingBubbleSize(overlayPrefs.getFloat("size", 58f))) }
+                var bubbleOpacity by remember { mutableFloatStateOf(sanitizeFloatingBubbleOpacity(overlayPrefs.getFloat("opacity", 0.82f))) }
                 val overlayAllowed = Settings.canDrawOverlays(context)
                 Text("Bola kontrol transparan yang dapat digeser di atas aplikasi lain. Izin tampil di atas aplikasi lain diperlukan.", color = Color.LightGray, fontSize = 11.sp)
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -562,14 +562,14 @@ private fun SettingsScreen(
                 }
                 Text("Ukuran bola: ${bubbleSize.toInt()} dp", color = Color.White, fontSize = 12.sp)
                 Slider(value = bubbleSize, onValueChange = { value ->
-                    bubbleSize = value
-                    overlayPrefs.edit().putFloat("size", value).apply()
+                    bubbleSize = sanitizeFloatingBubbleSize(value)
+                    overlayPrefs.edit().putFloat("size", bubbleSize).apply()
                     context.startService(Intent(context, FloatingControlService::class.java).setAction(FloatingControlService.ACTION_REFRESH))
                 }, valueRange = 44f..84f)
                 Text("Transparansi: ${(bubbleOpacity * 100).toInt()}%", color = Color.White, fontSize = 12.sp)
                 Slider(value = bubbleOpacity, onValueChange = { value ->
-                    bubbleOpacity = value
-                    overlayPrefs.edit().putFloat("opacity", value).apply()
+                    bubbleOpacity = sanitizeFloatingBubbleOpacity(value)
+                    overlayPrefs.edit().putFloat("opacity", bubbleOpacity).apply()
                     context.startService(Intent(context, FloatingControlService::class.java).setAction(FloatingControlService.ACTION_REFRESH))
                 }, valueRange = 0.25f..1f)
                 OutlinedButton(onClick = {
