@@ -53,8 +53,22 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     var isPreparing by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var sourceFilter by remember { mutableStateOf("Semua") }
+    var selectedCategory by remember { mutableStateOf("Semua") }
+    var showCategoryDialog by remember { mutableStateOf(false) }
+    var showPackDialog by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("Pustaka suara CC0 sedang disiapkan otomatis pada penggunaan pertama.") }
     val packState by SoundPackInstaller.state.collectAsState()
+    data class SoundCategory(val title: String, val icon: String, val packIds: List<String>)
+    val categories = listOf(
+        SoundCategory("Semua", "✨", SoundPackCatalog.packs.map { it.id }),
+        SoundCategory("Lucu & Reaksi", "😂", listOf("oga-zombies", "oga-512-retro", "oga-sound-effects-pack-2", "voiceover-pack-fighter")),
+        SoundCategory("Meme & UI", "🎭", listOf("ui-audio", "interface-sounds", "digital-audio", "oga-retro-ui")),
+        SoundCategory("Game & Retro", "🎮", listOf("oga-512-retro", "oga-rpg-pack", "oga-battle", "rpg-audio")),
+        SoundCategory("Impact & Aksi", "💥", listOf("impact-sounds", "sci-fi-sounds", "oga-battle")),
+        SoundCategory("Sci-Fi & Teknologi", "⚡", listOf("sci-fi-sounds", "digital-audio", "oga-sound-effects-pack-2")),
+        SoundCategory("Suara & Jingle", "🎙️", listOf("voiceover-pack", "voiceover-pack-fighter", "music-jingles")),
+        SoundCategory("Langkah & Lingkungan", "👣", listOf("oga-footsteps", "oga-zombies"))
+    )
 
     val playerListener = remember {
         object : Player.Listener {
@@ -224,43 +238,75 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
             )
         }
 
-        Text("Pilih paket suara", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-        Text("Paket awal diunduh otomatis saat pertama kali aplikasi dibuka. Paket lain bisa dipilih satu per satu atau diunduh sekaligus. Setelah terpasang, audio dapat digunakan offline.",
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(onClick = { showCategoryDialog = true }, modifier = Modifier.weight(1f)) {
+                Text("☷  Kategori: $selectedCategory", maxLines = 1, fontSize = 11.sp)
+            }
+            OutlinedButton(onClick = { showPackDialog = true }, modifier = Modifier.weight(1f)) {
+                Icon(Icons.Default.LibraryMusic, contentDescription = null)
+                Spacer(Modifier.width(5.dp))
+                Text("Daftar paket", fontSize = 11.sp)
+            }
+        }
+        Text("Paket awal diunduh otomatis. Pilih kategori untuk menyaring suara, atau buka daftar paket untuk mengunduh satu per satu. Audio yang terpasang bisa diputar offline.",
             color = Color.LightGray, fontSize = 11.sp)
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            items(SoundPackCatalog.packs, key = { it.id }) { pack ->
-                val installed = SoundPackInstaller.isInstalled(context, pack)
-                Surface(
-                    color = Color(0x66192339),
-                    shape = RoundedCornerShape(12.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x3349C9E4))
-                ) {
-                    Row(
-                        Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 7.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                            Text(pack.title, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                            Text(
-                                if (installed) "Terpasang • offline"
-                                else if (pack.includedInStarter) "Paket awal • unduh otomatis"
-                                else "Opsional • sekitar ${pack.assetCount} aset sumber",
-                                color = if (installed) Color(0xFF79D7A5) else Color.LightGray,
-                                fontSize = 10.sp
-                            )
-                        }
-                        TextButton(
-                            onClick = { scope.launch { SoundPackInstaller.install(context, pack.id) } },
-                            enabled = !installed && packState !is SoundPackInstallState.Downloading
-                        ) {
-                            Text(if (installed) "Siap" else "Unduh", fontSize = 11.sp)
+        if (showCategoryDialog) {
+            AlertDialog(
+                onDismissRequest = { showCategoryDialog = false },
+                title = { Text("Pilih kategori suara") },
+                text = {
+                    LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
+                        items(categories, key = { it.title }) { category ->
+                            TextButton(
+                                onClick = {
+                                    selectedCategory = category.title
+                                    showCategoryDialog = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("${category.icon}   ${category.title}", modifier = Modifier.fillMaxWidth())
+                            }
                         }
                     }
+                },
+                confirmButton = { TextButton(onClick = { showCategoryDialog = false }) { Text("Tutup") } }
+            )
+        }
+        if (showPackDialog) {
+            AlertDialog(
+                onDismissRequest = { showPackDialog = false },
+                title = { Text("Semua paket suara") },
+                text = {
+                    LazyColumn(modifier = Modifier.heightIn(max = 460.dp)) {
+                        items(SoundPackCatalog.packs, key = { it.id }) { pack ->
+                            val installed = SoundPackInstaller.isInstalled(context, pack)
+                            Row(
+                                Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(pack.title, color = Color.White, fontSize = 12.sp)
+                                    Text(
+                                        if (installed) "Terpasang • offline" else "CC0 • sekitar ${pack.assetCount} aset sumber",
+                                        color = if (installed) Color(0xFF79D7A5) else Color.LightGray,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                                TextButton(
+                                    onClick = { scope.launch { SoundPackInstaller.install(context, pack.id) } },
+                                    enabled = !installed && packState !is SoundPackInstallState.Downloading
+                                ) { Text(if (installed) "Siap" else "Unduh") }
+                            }
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { showPackDialog = false }) { Text("Selesai") } },
+                dismissButton = {
+                    TextButton(onClick = { showPackDialog = false; scope.launch { SoundPackInstaller.installAll(context) } }) {
+                        Text("Unduh semua")
+                    }
                 }
-            }
+            )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf("Semua", "Paket CC0", "Impor").forEach { filter ->
@@ -327,7 +373,11 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                     "Impor" -> !isPackSound
                     else -> true
                 }
-                matchesSearch && matchesSource
+                val category = categories.firstOrNull { it.title == selectedCategory } ?: categories.first()
+                val matchesCategory = selectedCategory == "Semua" ||
+                    (isPackSound && category.packIds.any { sound.uri.contains("/$it/") }) ||
+                    (!isPackSound && selectedCategory == "Semua")
+                matchesSearch && matchesSource && matchesCategory
             }
             if (visibleSounds.isEmpty()) {
                 Text("Tidak ada suara yang cocok dengan pencarian atau filter ini.", color = Color.LightGray, fontSize = 12.sp)
