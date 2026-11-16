@@ -183,7 +183,7 @@ internal object SoundPackInstaller {
             readTimeout = 45_000
             instanceFollowRedirects = true
             requestMethod = "GET"
-            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.6.2")
+            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.6.3")
             setRequestProperty("Accept", "application/zip, application/octet-stream, */*")
             setRequestProperty("Referer", pack.sourceUrl)
         }
