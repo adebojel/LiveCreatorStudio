@@ -7,6 +7,8 @@
     <application
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:label="LiveCreator Studio"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:allowBackup="false"
         android:supportsRtl="true">
 
