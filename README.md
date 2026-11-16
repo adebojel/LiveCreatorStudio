@@ -49,7 +49,7 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.6.4 (final QA candidate). Semua fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi. Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
+**Versi source:** 0.6.4 (final QA candidate). Semua fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
 
 ## ◈ Status rilis dan validasi 0.6.4
 
