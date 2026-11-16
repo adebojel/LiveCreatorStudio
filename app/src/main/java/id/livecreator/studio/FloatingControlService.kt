@@ -45,8 +45,8 @@ class FloatingControlService : Service() {
         }
         if (panel != null) return
         val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
-        val size = prefs.getFloat("size", 58f).toInt().coerceIn(44, 84)
-        val opacity = prefs.getFloat("opacity", 0.82f).coerceIn(0.25f, 1f)
+        val size = sanitizeFloatingBubbleSize(prefs.getFloat("size", 58f)).toInt()
+        val opacity = sanitizeFloatingBubbleOpacity(prefs.getFloat("opacity", 0.82f))
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
