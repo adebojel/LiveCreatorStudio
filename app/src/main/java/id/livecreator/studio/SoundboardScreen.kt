@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,13 +34,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private data class SoundItem(val uri: String, val title: String)
-
 @Composable
 fun SoundboardScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences("livecreator_soundboard", Context.MODE_PRIVATE) }
-    var sounds by remember { mutableStateOf(loadSounds(context, prefs)) }
+    val sounds by SoundboardStore.observe(context).collectAsState(initial = emptyList())
+    val scope = rememberCoroutineScope()
     var activeUri by remember { mutableStateOf<String?>(null) }
     var isPreparing by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("Impor file audio dari perangkat untuk membuat pustaka suara.") }
@@ -71,8 +70,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         }
         importResult.onSuccess { item ->
             if (sounds.none { it.uri == item.uri }) {
-                sounds = (sounds + item).sortedBy { it.title.lowercase() }
-                saveSounds(prefs, sounds)
+                scope.launch { SoundboardStore.save(context, (sounds + item).sortedBy { it.title.lowercase() }) }
                 message = "File berhasil diimpor dan izin aksesnya disimpan."
             } else {
                 message = "File tersebut sudah ada di pustaka."
@@ -216,8 +214,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                             OutlinedButton(
                                 onClick = {
                                     if (activeUri == sound.uri) releaseCurrent()
-                                    sounds = sounds.filterNot { it.uri == sound.uri }
-                                    saveSounds(prefs, sounds)
+                                    scope.launch { SoundboardStore.save(context, sounds.filterNot { it.uri == sound.uri }) }
                                     releasePersistedReadPermission(context, Uri.parse(sound.uri))
                                     message = "File dihapus dari daftar aplikasi dan izin dokumennya dilepas."
                                 },
@@ -251,33 +248,6 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
             fontSize = 10.sp
         )
     }
-}
-
-private fun saveSounds(prefs: android.content.SharedPreferences, sounds: List<SoundItem>) {
-    val entries = sounds.map { it.uri + "|" + it.title.replace("|", " ") }.toSet()
-    prefs.edit().putStringSet("items", entries).apply()
-}
-
-private fun loadSounds(context: Context, prefs: android.content.SharedPreferences): List<SoundItem> {
-    val stored = prefs.getStringSet("items", emptySet()).orEmpty().toList()
-    val valid = stored.mapNotNull { entry ->
-        val split = entry.indexOf('|')
-        if (split <= 0) null else {
-            val uri = entry.substring(0, split)
-            val title = entry.substring(split + 1)
-            val readable = runCatching {
-                context.contentResolver.openAssetFileDescriptor(Uri.parse(uri), "r")?.use { true } ?: false
-            }.getOrDefault(false)
-            if (readable) {
-                SoundItem(uri, title)
-            } else {
-                releasePersistedReadPermission(context, Uri.parse(uri))
-                null
-            }
-        }
-    }.sortedBy { it.title.lowercase() }
-    if (valid.size != stored.size) saveSounds(prefs, valid)
-    return valid
 }
 
 private fun displayName(context: Context, uri: Uri): String {

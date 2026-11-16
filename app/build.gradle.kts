@@ -10,8 +10,8 @@ android {
         applicationId = "id.livecreator.studio"
         minSdk = 26
         targetSdk = 35
-        versionCode = 15
-        versionName = "0.5.1"
+        versionCode = 16
+        versionName = "0.5.2"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

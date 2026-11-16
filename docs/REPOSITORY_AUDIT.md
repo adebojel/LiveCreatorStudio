@@ -280,3 +280,94 @@ Repository ExoPlayer lama (google/ExoPlayer) sudah deprecated; AndroidX Media3 a
 **Implementasi 0.5.1:** Soundboard berpindah dari Android MediaPlayer ke AndroidX Media3 ExoPlayer 1.9.4. Versi ini dipilih agar tetap kompatibel dengan compileSdk 35 dan Android Gradle Plugin 8.7.3; versi Media3 1.11.1 mensyaratkan compileSdk 36. Playback menggunakan URI dari Storage Access Framework, audio attributes, pengelolaan audio focus, penanganan audio-becoming-noisy, status buffering/playing/completed/error, serta pelepasan player pada dispose.
 
 **Batasan:** sesi soundboard masih terikat pada halaman UI dan dihentikan saat halaman ditutup. MediaSessionService, playback lintas halaman, mixing beberapa suara, dan automasi event belum diimplementasikan.
+
+
+## 21. OfflineVoiceAI-Android — facade STT/TTS offline
+
+Repository: https://github.com/edgeaitechnologies/offline-voice-ai
+README mendokumentasikan Kotlin API coroutine-friendly yang membungkus Vosk untuk STT dan sherpa-onnx untuk TTS, termasuk chunked/streamed synthesis dan auto-stop berbasis silence timeout.
+
+**Nilai guna:** kandidat untuk merancang satu interface suara yang dapat diganti backend-nya, tanpa mengikat UI ke engine tertentu.
+**Risiko:** lisensi dan artefak rilis harus diverifikasi pada commit yang akan dipakai; model bahasa dan voice model harus ditinjau lisensinya secara terpisah.
+**Keputusan:** kandidat proof-of-concept; belum ditambahkan sebagai dependency.
+
+## 22. LocalSLM — Android LLM berbasis llama.cpp/JNI
+
+Repository: https://github.com/rushi-gulum/LocalSLM
+README mendokumentasikan Kotlin + Compose, JNI/C++, llama.cpp CPU/ARM NEON, Room, DataStore, WorkManager, model manager, GGUF validation, dan export percakapan.
+
+**Nilai guna:** contoh end-to-end untuk manajemen model dan inferensi lokal di Android.
+**Risiko:** memerlukan NDK/native build dan model eksternal; kompatibilitas AGP/Kotlin dan lisensi pada commit spesifik harus diverifikasi.
+**Keputusan:** referensi arsitektur untuk proof-of-concept, tidak menyalin source secara langsung.
+
+## 23. OffHand — offline-first voice agent dengan persetujuan tindakan
+
+Repository: https://github.com/MRDarshan7/OffHand
+README mendokumentasikan LLM lokal, grammar-constrained decoding, Vosk, OCR offline, Room, WorkManager outbox, serta konfirmasi manusia sebelum tindakan sensitif.
+
+**Nilai guna:** pola keselamatan yang relevan untuk agent kreator: model boleh menyusun tindakan, tetapi tindakan eksternal harus melalui preview, izin, dan persetujuan pengguna.
+**Risiko:** contoh email/laptop bridge dan konfigurasi SMTP tidak boleh diaktifkan tanpa threat model, secret handling, dan pembatasan tindakan.
+**Keputusan:** adopsi prinsip desain human-in-the-loop; tidak mengimpor keseluruhan aplikasi.
+
+## 24. OpenDroid — autonomous Android agent
+
+Repository: https://github.com/JMAN730/opendroid
+README mendeskripsikan agen Android berbasis LLM lokal/remote dan otomasi UI melalui Accessibility.
+
+**Nilai guna:** referensi perencanaan multi-langkah, tool registry, dan eksekusi tindakan berbasis izin.
+**Risiko:** otomasi UI dapat melakukan tindakan yang tidak diinginkan, AccessibilityService sangat sensitif, dan klaim "production-ready" dari pemilik repo bukan hasil audit independen.
+**Keputusan:** riset desain saja. Tidak menambahkan AccessibilityService atau kemampuan mengendalikan aplikasi lain tanpa fitur eksplisit, disclosure, kontrol pengguna, dan pengujian keamanan.
+
+## 25. AVA Android Assistant — referensi multi-provider
+
+Repository: https://github.com/crftsmnd/ava-android-assistant
+README mendokumentasikan wake word, Android SpeechRecognizer, TTS, beberapa backend AI, shortcut aplikasi, overlay, dan AccessibilityService. README menyatakan lisensi MIT.
+
+**Nilai guna:** referensi adapter AI provider dan command registry.
+**Risiko:** beberapa kemampuan system-control dibatasi Android modern dan memerlukan izin khusus atau konfirmasi; klaim kemampuan repo tidak berarti dapat digunakan tanpa batas di semua perangkat.
+**Keputusan:** referensi arsitektur, bukan salin-tempel.
+
+## 26. Sanna — voice-first agent dan automasi
+
+Repository: https://github.com/sannabotdev/sannabotapp
+README mendeskripsikan assistant voice-first, rangkaian tindakan multi-langkah, Accessibility-based app control, notifikasi, dan scheduled tasks.
+
+**Nilai guna:** referensi orchestration dan interaksi berbasis suara.
+**Risiko:** lisensi, keamanan aksi lintas aplikasi, dan batasan platform perlu diaudit sebelum adopsi.
+**Keputusan:** tidak mengambil source atau binary sampai lisensi dan izin tiap kemampuan diverifikasi.
+
+## 27. VoicePing Android Offline Transcribe — multi-engine ASR
+
+Repository: https://github.com/voiceping-ai/android-offline-transcribe
+README mendokumentasikan beberapa backend ASR (sherpa-onnx, whisper.cpp, Qwen ASR, Android SpeechRecognizer), VAD, chunking, metrik sistem, dan pengujian.
+
+**Nilai guna:** referensi benchmark yang lebih kaya untuk memilih ASR Bahasa Indonesia berdasarkan akurasi, latency, RAM, baterai, dan dukungan streaming.
+**Risiko:** banyak backend berarti dependency/native footprint besar; setup membutuhkan NDK/CMake dan model.
+**Keputusan:** gunakan sebagai daftar kandidat benchmark, bukan memasukkan semua engine ke APK.
+
+## 28. Media3 + MediaSession audio player — referensi lifecycle
+
+Repository: https://github.com/skaftab-in/android-music-player
+README mendokumentasikan Media3 ExoPlayer, MediaSessionService, Room playlists, foreground media notification, Bluetooth/lock-screen controls, dan audio focus. Lisensi repository perlu diperiksa pada file LICENSE sebelum source digunakan.
+
+**Nilai guna:** rujukan langsung untuk tahap berikutnya: memindahkan kepemilikan player dari Composable ke service dan memisahkan playback lifecycle dari navigasi UI.
+**Keputusan:** gunakan API resmi AndroidX Media3; jangan menyalin kode repository sebelum lisensi dan dependency diverifikasi.
+
+## 29. Media playback service modern — referensi tambahan
+
+Repository: https://github.com/alsaeeddev/android-video-music-player
+README mendokumentasikan Media3, MediaSession, Room, DataStore, MediaStore, dan service playback latar belakang.
+
+**Nilai guna:** contoh pemisahan PlayerController dari layar dan state Flow untuk playback.
+**Risiko:** kebutuhan aplikasi ini lebih kecil daripada pemutar musik/video penuh; izin media library yang tidak diperlukan tidak boleh ditambahkan.
+**Keputusan:** ambil prinsip arsitektur saja, gunakan Storage Access Framework yang sudah dipakai aplikasi.
+
+## 30. Prioritas implementasi berdasarkan riset 21–29
+
+1. **Sudah diadopsi pada source 0.5.2:** metadata soundboard dipindahkan ke Preferences DataStore dengan migrasi SharedPreferences dan kompatibilitas format record lama.
+2. **Berikutnya:** MediaSessionService resmi untuk soundboard; gunakan media session, bukan service buatan dari repo eksternal.
+3. **Berikutnya:** voice pipeline modular dengan adapter STT/TTS dan benchmark Bahasa Indonesia; permission mikrofon baru ditambahkan ketika fitur rekam/pengenalan suara benar-benar diimplementasikan.
+4. **Berikutnya:** proof-of-concept local LLM dengan model download terpisah, validasi checksum, batas storage/RAM, dan tombol stop.
+5. **Selanjutnya:** event adapter LIVE yang sah; setiap tindakan otomatis harus melewati rule engine, batas rate, audit log, dan konfigurasi persetujuan pengguna.
+
+Tidak ada repository yang diunduh atau digabungkan secara utuh. Integrasi source eksternal memerlukan lisensi eksplisit, atribusi, pemeriksaan dependency/transitive dependency, dan review keamanan.
