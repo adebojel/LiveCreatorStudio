@@ -521,6 +521,7 @@ private fun SettingsScreen(
     onOpenAppSettings: () -> Unit,
     onOpenNotificationSettings: () -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
