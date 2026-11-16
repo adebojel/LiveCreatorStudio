@@ -26,7 +26,7 @@
 
 ## Status proyek
 
-**Versi sumber: 0.5.5 (dalam pengembangan).** Versi ini memindahkan metadata pustaka Soundboard ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, sekaligus mempertahankan kompatibilitas format data versi sebelumnya.
+**Versi sumber: 0.5.6 (dalam pengembangan).** Versi ini memindahkan metadata pustaka Soundboard ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, sekaligus mempertahankan kompatibilitas format data versi sebelumnya.
 
 > **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi yang tercantum pada halaman Releases adalah build sukses terbaru. APK debug bukan APK produksi bertanda tangan. Build debug bukan APK produksi bertanda tangan.
 
@@ -152,3 +152,12 @@ CI menjalankan unit test JVM dan build APK pada setiap push ke `main`. Jika buil
 ## Lisensi
 
 Lisensi proyek utama belum ditetapkan. Sampai lisensi resmi ditambahkan, jangan menganggap seluruh source proyek ini bebas digunakan ulang. Lihat [audit repository](docs/REPOSITORY_AUDIT.md) untuk status lisensi sumber eksternal.
+
+
+### Fondasi integrasi TikTok LIVE (0.5.6)
+
+- Ditambahkan kontrak provider read-only yang memisahkan koneksi LIVE dari Compose UI, normalisasi event, dan mesin aksi kreator.
+- Skema event mencakup chat, gift/combo, follow, share, like, join, subscription, question, battle, poll, caption, moderation, viewer count, room info, dan status live. Daftar ini adalah format internal yang bisa didukung adapter; bukan klaim bahwa seluruh event sudah diterima.
+- Status koneksi dan capability harus dilaporkan adapter berdasarkan hasil koneksi nyata. Provider wajib menyatakan apakah API resmi atau bukan.
+- Envelope tidak menyediakan field cookie, session token, atau raw payload agar kredensial tidak masuk ke riwayat event.
+- **Belum ada adapter TikTok yang terhubung pada versi ini.** TikTokLiveJava sedang dievaluasi sebagai POC read-only; protokolnya tidak resmi dan dapat berubah. Event likes juga dapat tidak selalu dikirim oleh upstream.
