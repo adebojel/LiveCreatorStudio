@@ -487,7 +487,6 @@ private fun SettingsScreen(
     resumeReminder: Boolean,
     onResumeReminderChange: (Boolean) -> Unit,
     onOpenBatterySettings: () -> Unit,
-    onOpenAccessibilitySettings: () -> Unit,
     onOpenAppSettings: () -> Unit,
     onOpenNotificationSettings: () -> Unit
 ) {
