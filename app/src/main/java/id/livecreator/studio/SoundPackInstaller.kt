@@ -136,7 +136,7 @@ internal object SoundPackInstaller {
                 val label = installedFile.nameWithoutExtension
                     .replace('_', ' ')
                     .replace('-', ' ')
-                    .replace(Regex("\\\\s+"), " ")
+                    .replace(Regex("\\s+"), " ")
                     .trim()
                 SoundItem(
                     Uri.fromFile(installedFile).toString(),
