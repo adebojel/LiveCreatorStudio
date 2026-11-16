@@ -137,14 +137,16 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val stopService = PendingIntent.getBroadcast(
+        // Route notification controls directly to this service. This avoids an
+        // intermediate receiver and guarantees ACTION_STOP reaches onStartCommand.
+        val stopService = PendingIntent.getService(
             this, 2,
-            Intent(this, StopBackgroundReceiver::class.java).setAction(ACTION_STOP),
+            Intent(this, LiveBackgroundService::class.java).setAction(ACTION_STOP),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val clearQueue = PendingIntent.getBroadcast(
+        val clearQueue = PendingIntent.getService(
             this, 3,
-            Intent(this, StopBackgroundReceiver::class.java).setAction(ACTION_CLEAR_QUEUE),
+            Intent(this, LiveBackgroundService::class.java).setAction(ACTION_CLEAR_QUEUE),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -159,7 +161,8 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             .setContentText(notificationText)
             .setContentIntent(openApp)
             .setOngoing(true)
-            .addAction(android.R.drawable.ic_media_pause, "Hentikan layanan", stopService)
+            .setOnlyAlertOnce(true)
+            .addAction(android.R.drawable.ic_media_pause, "Matikan layanan", stopService)
             .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Hapus antrean", clearQueue)
             .build()
     }
