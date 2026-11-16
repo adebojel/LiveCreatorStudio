@@ -378,3 +378,41 @@ Tidak ada repository yang diunduh atau digabungkan secara utuh. Integrasi source
 AndroidX Media3 diperbarui secara terkoordinasi dari 1.9.4 ke **1.11.1**, rilis stabil terbaru yang tercantum pada AndroidX release index saat pembaruan ini. Versi 1.12.0-beta01 tidak dipakai karena masih prarilis. Modul `media3-exoplayer` dan `media3-session` memakai versi yang sama. Percobaan CI pertama mengungkap syarat compileSdk 36; AGP/Gradle sedang diselaraskan ke AGP 8.13.2 dan Gradle 8.13 sebelum validasi ulang. Interaksi notifikasi sistem, lockscreen, headset, dan Bluetooth tetap memerlukan uji perangkat.
 
 Rujukan resmi: https://developer.android.com/jetpack/androidx/releases/media3
+
+
+## 19. TikTokLiveJava — kandidat konektor Android/JVM untuk POC read-only
+
+Repository: https://github.com/jwdeveloper/TikTokLiveJava  
+Lisensi: MIT; file `license.txt` pada branch `master` diperiksa langsung dan memuat grant izin penggunaan, modifikasi, distribusi, serta kewajiban menyertakan notice.  
+Rilis README: `1.13.0-Release`; POM root yang diperiksa menunjukkan `1.13.1-Release`.  
+Teknologi: Java 16 bytecode, WebSocket, Gson, Protocol Buffers, SLF4J.  
+Event yang didokumentasikan: komentar, room info/viewers/likes, gift dan gift combo, subscribe, follow, share, question, emote, join, koneksi dan error.
+
+**Nilai guna:** kandidat paling dekat untuk POC koneksi langsung di Android/JVM karena ditulis dalam Java dan memiliki API event listener.  
+**Batasan/risiko:** tetap memakai internal TikTok WebCast, bukan API resmi; protokol dapat berubah, event dapat terlewat, dan kompatibilitas Android harus dibuktikan. Client membawa dependency transitive (protobuf, Gson, Java-WebSocket, SLF4J) dan dibangun dengan target Java 16; perlu audit minSdk 26, network lifecycle, reconnect, battery, R8/proguard, ukuran APK, dan aturan Google Play/TikTok. README juga menyediakan metode sendChat; aplikasi kita harus membatasi POC hanya untuk ingest/read-only dan tidak mengaktifkan aksi tulis.  
+**Keputusan:** kandidat utama POC Android read-only setelah build stabil. Jangan menambahkan ke jalur produksi sebelum uji dependency resolution, emulator/device, legal/platform terms, privacy, and event coverage. Tidak ada cookie/session ID atau kredensial TikTok yang diminta/disimpan.
+
+## 20. tiklive — referensi dashboard/overlay/event relay
+
+Repository: https://github.com/talkaboutdesign/tiklive  
+Lisensi: MIT (metadata repository).  
+Fitur README: typed JSON events untuk chat, gifts, likes, follows, shares, joins, subscriptions, viewer counts; browser dashboard, chat/alert/goal overlays, demo mode, TTS, sounds, GIF/video, OBS scene actions.  
+**Batasan:** runtime utama Node/Bun dan desktop macOS/Windows; bukan library Android native yang bisa ditempel langsung ke Compose. Konektor menggunakan private web protocol, read-only; README menyatakan event dapat terlewat saat reconnect.  
+**Keputusan:** adopsi pola UI/overlay, event schema, demo/test fixture, dan action mapping saja; bukan binary/runtime Node di APK.
+
+## 21. TikTok LIVE Toolkit — referensi workflow kompetitor
+
+Repository: https://github.com/onykage/tiktok-live-toolkit  
+README menggambarkan event relay, trigger-action, OBS overlays, Discord bot, chatbot, loyalty points, analytics, dan lebih dari 20 event types. Repository masih sangat muda (2 commits saat pemeriksaan).  
+**Keputusan:** gunakan sebagai daftar ide fitur, bukan sumber kode produksi sebelum audit lisensi, kualitas, keamanan, dan stabilitas lebih lanjut.
+
+## Arsitektur integrasi LIVE yang ditetapkan
+
+- Provider adapter terpisah dari Compose UI; UI tidak membuka socket langsung.
+- Ingest read-only lebih dahulu: connect state, chat, gifts/combos, follow, share, likes, joins, subscribe, questions, room/viewer counters, disconnect/error.
+- Normalisasi ke `CreatorEvent`, dedup by event/message ID, bounded queue, reconnect with backoff, rate limits, event timestamp, raw payload opt-in only.
+- Event router menghubungkan aturan pengguna ke TTS, soundboard, counters/goals, overlay/widget, dan history. Setiap aksi harus bisa dimatikan dan diuji dengan fixture.
+- Demo events harus diberi label DEMO dan tidak pernah mengubah status koneksi LIVE.
+- Tidak menjanjikan "membaca seluruh yang ada": private/moderated/deleted messages, hidden fields, platform-only signals, and events not emitted by upstream protocol cannot be guaranteed.
+- Fitur tulis (mengirim komentar/aksi ke TikTok) tidak termasuk POC dan memerlukan jalur resmi serta penilaian kebijakan tersendiri.
+
