@@ -268,7 +268,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         } else {
             val visibleSounds = sounds.filter { sound ->
                 val matchesSearch = sound.title.contains(searchQuery, ignoreCase = true)
-                val isPackSound = sound.uri.startsWith("file:", ignoreCase = true)
+                val isPackSound = isPackSoundUri(sound.uri)
                 val matchesSource = when (sourceFilter) {
                     "Paket CC0" -> isPackSound
                     "Impor" -> !isPackSound
