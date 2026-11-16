@@ -436,7 +436,7 @@ private fun packEmoji(pack: SoundPack): String = when (packCategory(pack)) {
 private fun soundCategory(title: String): String {
     val value = title.lowercase()
     return when {
-        listOf("laugh", "funny", "boing", "silly", "bloop", "blung", "plup", "uah", "kiss", "giggle").any(value::contains) -> "Lucu"
+        listOf("laugh", "funny", "boing", "silly", "bloop", "blung", "plup", "uah", "kiss", "giggle").any { keyword -> value.contains(keyword) } -> "Lucu"
         listOf("meme", "fail", "wow", "bruh", "troll").any(value::contains) -> "Meme"
         listOf("game", "coin", "level", "retro", "arcade", "rpg", "battle").any(value::contains) -> "Game"
         listOf("ui", "button", "click", "interface", "menu").any(value::contains) -> "UI"
