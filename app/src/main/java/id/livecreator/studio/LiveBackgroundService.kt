@@ -155,15 +155,29 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             @Suppress("DEPRECATION")
             Notification.Builder(this)
         }
-        return builder
+        builder
             .setSmallIcon(android.R.drawable.ic_media_play)
-            .setContentTitle("LiveCreator Studio aktif")
+            .setContentTitle("LiveCreator Studio")
             .setContentText(notificationText)
+            .setSubText("AUDIO LATAR • AKTIF")
             .setContentIntent(openApp)
+            .setCategory(Notification.CATEGORY_SERVICE)
+            .setVisibility(Notification.VISIBILITY_PRIVATE)
+            .setColor(android.graphics.Color.rgb(0, 217, 255))
+            .setColorized(false)
+            .setShowWhen(false)
+            .setLocalOnly(true)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .addAction(android.R.drawable.ic_media_pause, "Matikan layanan", stopService)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Hapus antrean", clearQueue)
+
+        // This API is available from Android 12 (API 31); keep minSdk 26 compatible.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            builder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+        }
+
+        return builder
+            .addAction(android.R.drawable.ic_media_pause, "Matikan", stopService)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Bersihkan", clearQueue)
             .build()
     }
 
