@@ -1,9 +1,8 @@
 package id.livecreator.studio
 
 /**
- * Curated CC0 sound packs from Kenney.nl and reviewed OpenGameArt archive sources.
- * The upstream asset pages/source index identify these packs as Creative Commons Zero (CC0 1.0).
- * Keep the original source and license visible in the app and repository.
+ * Curated sound packs from Kenney.nl, OpenGameArt, and SFXMint.
+ * Keep source attribution visible and never assume every OpenGameArt upload has the same license.
  */
 internal data class SoundPack(
     val id: String,
@@ -12,7 +11,8 @@ internal data class SoundPack(
     val archiveUrl: String,
     val sourceUrl: String,
     val includedInStarter: Boolean = false,
-    val creator: String = "Kenney (kenney.nl)"
+    val creator: String = "Kenney (kenney.nl)",
+    val license: String = if (creator.startsWith("Kenney") || creator.startsWith("SFXMint")) "CC0-1.0" else "See source page"
 )
 
 internal object SoundPackCatalog {

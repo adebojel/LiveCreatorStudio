@@ -25,7 +25,7 @@ internal sealed interface SoundPackInstallState {
 }
 
 /**
- * Downloads and safely extracts the curated CC0 packs into app-private storage.
+ * Downloads and safely extracts curated audio packs into app-private storage.
  * The installer never downloads arbitrary URLs: only reviewed catalog entries on kenney.nl, opengameart.org, and sfxmint.com are accepted. Starter packs are retried on the next app launch if offline.
  */
 internal object SoundPackInstaller {
@@ -130,8 +130,8 @@ internal object SoundPackInstaller {
 
             File(staging, "LICENSES.txt").writeText(
                 "${pack.title}\nCreator: ${pack.creator}\n" +
-                    "Source: ${pack.sourceUrl}\nLicense: Creative Commons Zero 1.0 (CC0)\n" +
-                    "License URL: https://creativecommons.org/publicdomain/zero/1.0/\n" +
+                    "Source: ${pack.sourceUrl}\nLicense: ${pack.license}\n" +
+                    (if (pack.license == "CC0-1.0") "License URL: https://creativecommons.org/publicdomain/zero/1.0/\n" else "Verify the license on the source page before redistribution.\n") +
                     "Original pack license is included in the upstream archive when provided.\n"
             )
 
@@ -182,7 +182,7 @@ internal object SoundPackInstaller {
             readTimeout = 45_000
             instanceFollowRedirects = true
             requestMethod = "GET"
-            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.6.4")
+            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.7.0")
             setRequestProperty("Accept", "application/zip, application/octet-stream, */*")
             setRequestProperty("Referer", pack.sourceUrl)
         }
