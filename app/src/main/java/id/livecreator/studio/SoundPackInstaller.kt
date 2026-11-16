@@ -166,7 +166,7 @@ internal object SoundPackInstaller {
             val status = connection.responseCode
             require(status in 200..299) { "Server paket mengembalikan HTTP $status." }
             require(connection.url.protocol == "https" &&
-                connection.url.host.endsWith("kenney.nl", ignoreCase = true)) {
+                (connection.url.host.equals("kenney.nl", ignoreCase = true) || connection.url.host.endsWith(".kenney.nl", ignoreCase = true))) {
                 "Pengalihan ke host unduhan yang tidak diizinkan."
             }
             val expected = connection.contentLengthLong
