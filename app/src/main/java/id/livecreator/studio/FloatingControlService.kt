@@ -127,6 +127,7 @@ class FloatingControlService : Service() {
             if (prefs.getBoolean("right", false)) displayWidth - width else 0
         } else prefs.getInt("x", dp(8))
         val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
         val lp = WindowManager.LayoutParams(
