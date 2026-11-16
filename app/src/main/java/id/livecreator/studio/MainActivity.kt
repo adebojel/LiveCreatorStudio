@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
         }
         serviceReceiverRegistered = true
         backgroundServiceRunning = isBackgroundServiceRunning()
+        restoreFloatingControlIfAllowed()
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -100,6 +101,14 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         // Reconcile UI state after notification shade actions or returning from Settings.
         backgroundServiceRunning = isBackgroundServiceRunning()
+        restoreFloatingControlIfAllowed()
+    }
+
+    private fun restoreFloatingControlIfAllowed() {
+        val enabled = getSharedPreferences("floating_control", MODE_PRIVATE).getBoolean("enabled", false)
+        if (enabled && Settings.canDrawOverlays(this)) {
+            startService(Intent(this, FloatingControlService::class.java).setAction(FloatingControlService.ACTION_SHOW))
+        }
     }
 
     override fun onDestroy() {
