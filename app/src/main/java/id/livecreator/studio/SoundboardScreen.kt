@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +55,9 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     var isPreparing by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var sourceFilter by remember { mutableStateOf("Semua") }
+    var soundCategoryFilter by remember { mutableStateOf("Semua") }
+    var packCategoryFilter by remember { mutableStateOf("Semua") }
+    var showPackCatalog by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("Pustaka suara CC0 sedang disiapkan otomatis pada penggunaan pertama.") }
     val packState by SoundPackInstaller.state.collectAsState()
 
@@ -224,40 +229,59 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
             )
         }
 
-        Text("Pilih paket suara", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-        Text("Paket awal diunduh otomatis saat pertama kali aplikasi dibuka. Paket lain bisa dipilih satu per satu atau diunduh sekaligus. Setelah terpasang, audio dapat digunakan offline.",
-            color = Color.LightGray, fontSize = 11.sp)
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            items(SoundPackCatalog.packs, key = { it.id }) { pack ->
-                val installed = SoundPackInstaller.isInstalled(context, pack)
+        OutlinedButton(onClick = { showPackCatalog = true }, modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Default.LibraryMusic, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Katalog paket • pilih kategori & unduh")
+        }
+        if (showPackCatalog) {
+            Dialog(onDismissRequest = { showPackCatalog = false }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
                 Surface(
-                    color = Color(0x66192339),
-                    shape = RoundedCornerShape(12.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x3349C9E4))
+                    modifier = Modifier.fillMaxWidth(0.94f).fillMaxHeight(0.82f),
+                    color = Color(0xFF101D32), shape = RoundedCornerShape(24.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF42D9F2))
                 ) {
-                    Row(
-                        Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 7.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                            Text(pack.title, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                            Text(
-                                if (installed) "Terpasang • offline"
-                                else if (pack.includedInStarter) "Paket awal • unduh otomatis"
-                                else "Opsional • sekitar ${pack.assetCount} aset sumber",
-                                color = if (installed) Color(0xFF79D7A5) else Color.LightGray,
-                                fontSize = 10.sp
-                            )
+                    Column(Modifier.fillMaxSize().padding(14.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text("Katalog Soundboard", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                                Text("Pilih kategori, tes suara, lalu unduh", color = Color.LightGray, fontSize = 11.sp)
+                            }
+                            TextButton(onClick = { showPackCatalog = false }) { Text("Tutup") }
                         }
-                        TextButton(
-                            onClick = { scope.launch { SoundPackInstaller.install(context, pack.id) } },
-                            enabled = !installed && packState !is SoundPackInstallState.Downloading
-                        ) {
-                            Text(if (installed) "Siap" else "Unduh", fontSize = 11.sp)
+                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            listOf("Semua", "Lucu", "Game", "Film", "UI", "Voice").forEach { category ->
+                                FilterChip(selected = packCategoryFilter == category, onClick = { packCategoryFilter = category }, label = { Text(category, fontSize = 10.sp) })
+                            }
                         }
+                        OutlinedButton(
+                            onClick = { scope.launch { SoundPackInstaller.installAll(context) } },
+                            enabled = packState !is SoundPackInstallState.Downloading,
+                            modifier = Modifier.fillMaxWidth()
+                        ) { Text("⬇  Unduh semua paket") }
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(7.dp), modifier = Modifier.weight(1f)) {
+                            val categorizedPacks = SoundPackCatalog.packs.filter { pack ->
+                                packCategoryFilter == "Semua" || packCategory(pack) == packCategoryFilter
+                            }
+                            items(categorizedPacks, key = { it.id }) { pack ->
+                                val installed = SoundPackInstaller.isInstalled(context, pack)
+                                Surface(color = Color(0xCC1B2B43), shape = RoundedCornerShape(14.dp),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x5547CDE8))) {
+                                    Row(Modifier.fillMaxWidth().padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                                        Column(Modifier.weight(1f)) {
+                                            Text("${packEmoji(pack)}  ${pack.title}", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                            Text(if (installed) "Terpasang • offline" else "${packCategory(pack)} • ~${pack.assetCount} aset sumber",
+                                                color = if (installed) Color(0xFF79D7A5) else Color.LightGray, fontSize = 10.sp)
+                                        }
+                                        TextButton(onClick = { scope.launch { SoundPackInstaller.install(context, pack.id) } },
+                                            enabled = !installed && packState !is SoundPackInstallState.Downloading) {
+                                            Text(if (installed) "Siap" else "Unduh")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Text("Jumlah aktual mengikuti file audio yang didukung dan berhasil diekstrak.", color = Color.LightGray, fontSize = 10.sp)
                     }
                 }
             }
@@ -274,6 +298,11 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                         labelColor = Color.LightGray
                     )
                 )
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            listOf("Semua", "Lucu", "Meme", "Game", "UI", "Alam", "Lainnya").forEach { category ->
+                FilterChip(selected = soundCategoryFilter == category, onClick = { soundCategoryFilter = category }, label = { Text(category, fontSize = 10.sp) })
             }
         }
         OutlinedTextField(
@@ -327,7 +356,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                     "Impor" -> !isPackSound
                     else -> true
                 }
-                matchesSearch && matchesSource
+                matchesSearch && matchesSource && (soundCategoryFilter == "Semua" || soundCategory(sound.title) == soundCategoryFilter)
             }
             if (visibleSounds.isEmpty()) {
                 Text("Tidak ada suara yang cocok dengan pencarian atau filter ini.", color = Color.LightGray, fontSize = 12.sp)
@@ -382,3 +411,36 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     }
 }
 
+
+private fun packCategory(pack: SoundPack): String {
+    val id = pack.id.lowercase()
+    return when {
+        id.contains("weird") || id.contains("laugh") || id.contains("zombie") -> "Lucu"
+        id.contains("retro") || id.contains("rpg") || id.contains("battle") || id.contains("arcade") -> "Game"
+        id.contains("voice") -> "Voice"
+        id.contains("ui") || id.contains("interface") || id.contains("digital") -> "UI"
+        id.contains("sci-fi") || id.contains("impact") || id.contains("casino") || id.contains("music") -> "Film"
+        else -> "Semua"
+    }
+}
+
+private fun packEmoji(pack: SoundPack): String = when (packCategory(pack)) {
+    "Lucu" -> "😂"
+    "Game" -> "🎮"
+    "Voice" -> "🎙"
+    "UI" -> "✨"
+    "Film" -> "🎬"
+    else -> "🎧"
+}
+
+private fun soundCategory(title: String): String {
+    val value = title.lowercase()
+    return when {
+        listOf("laugh", "funny", "boing", "silly", "bloop", "blung", "plup", "uah", "kiss", "giggle").any(value::contains) -> "Lucu"
+        listOf("meme", "fail", "wow", "bruh", "troll").any(value::contains) -> "Meme"
+        listOf("game", "coin", "level", "retro", "arcade", "rpg", "battle").any(value::contains) -> "Game"
+        listOf("ui", "button", "click", "interface", "menu").any(value::contains) -> "UI"
+        listOf("rain", "wind", "water", "footstep", "bird", "animal", "thunder").any(value::contains) -> "Alam"
+        else -> "Lainnya"
+    }
+}
