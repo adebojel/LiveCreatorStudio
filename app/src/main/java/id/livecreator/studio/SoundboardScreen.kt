@@ -190,7 +190,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
             Surface(color = Color(0x5538CDE0), shape = RoundedCornerShape(50)) {
                 Text("${sounds.size} suara", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
             }
-            Surface(color = Color(0x559B7BFF), shape = RoundedCornerShape(50)) {
+            Surface(color = Color(0x5553DDF2), shape = RoundedCornerShape(50)) {
                 Text("${SoundPackCatalog.packs.size} paket CC0", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
             }
         }
@@ -222,6 +222,45 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 "Paket awal: 210 suara. Tersedia ${SoundPackCatalog.packs.size} paket dengan sekitar 1.444 aset CC0.",
                 color = Color.LightGray, fontSize = 11.sp
             )
+        }
+
+        Text("Pilih paket suara", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        Text("Paket awal diunduh otomatis saat pertama kali aplikasi dibuka. Paket lain bisa dipilih satu per satu atau diunduh sekaligus. Setelah terpasang, audio dapat digunakan offline.",
+            color = Color.LightGray, fontSize = 11.sp)
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            items(SoundPackCatalog.packs, key = { it.id }) { pack ->
+                val installed = SoundPackInstaller.isInstalled(context, pack)
+                Surface(
+                    color = Color(0x66192339),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x3349C9E4))
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 7.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(pack.title, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                            Text(
+                                if (installed) "Terpasang • offline"
+                                else if (pack.includedInStarter) "Paket awal • unduh otomatis"
+                                else "Opsional • sekitar ${pack.assetCount} aset sumber",
+                                color = if (installed) Color(0xFF79D7A5) else Color.LightGray,
+                                fontSize = 10.sp
+                            )
+                        }
+                        TextButton(
+                            onClick = { scope.launch { SoundPackInstaller.install(context, pack.id) } },
+                            enabled = !installed && packState !is SoundPackInstallState.Downloading
+                        ) {
+                            Text(if (installed) "Siap" else "Unduh", fontSize = 11.sp)
+                        }
+                    }
+                }
+            }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf("Semua", "Paket CC0", "Impor").forEach { filter ->
@@ -274,7 +313,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         if (sounds.isEmpty()) {
             Surface(color = Color(0x99192339), shape = RoundedCornerShape(18.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x554E74A2)), modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF9B7BFF))
+                    Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF53DDF2))
                     Text("Pustaka masih kosong", color = Color.White, fontWeight = FontWeight.SemiBold)
                     Text("Belum ada file audio. Impor MP3/WAV atau gunakan tes speaker untuk memeriksa keluaran suara.", color = Color.LightGray, fontSize = 11.sp)
                 }

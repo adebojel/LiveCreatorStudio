@@ -105,6 +105,12 @@ internal object SoundPackCatalog {
             "https://opengameart.org/sites/default/files/archive_3.zip",
             "https://opengameart.org/content/sound-pack",
             creator = "StumpyStrust (OpenGameArt)"
+        ),
+        SoundPack(
+            "oga-sound-effects-pack-2", "Retro Arcade SFX Pack 2", 110,
+            "https://opengameart.org/sites/default/files/Sound%20effects%20Pack%202.zip",
+            "https://opengameart.org/content/sound-effects-pack-2",
+            creator = "phoenix1291 / SwissArcadeGameEntertainment (OpenGameArt)"
         )
     )
 

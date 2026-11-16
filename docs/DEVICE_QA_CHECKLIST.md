@@ -1,4 +1,4 @@
-# Checklist QA perangkat — LiveCreator Studio 0.6.0
+# Checklist QA perangkat — LiveCreator Studio 0.6.2
 
 Checklist ini membedakan pemeriksaan otomatis CI dari pengujian yang wajib dilakukan pada perangkat Android fisik. Jangan menandai langkah perangkat sebagai lulus hanya berdasarkan hasil kompilasi.
 
@@ -24,9 +24,9 @@ Checklist ini membedakan pemeriksaan otomatis CI dari pengujian yang wajib dilak
 
 - [ ] Aktifkan bola kontrol dari Settings; izin overlay diminta hanya saat fitur diaktifkan.
 - [ ] Berikan izin **Tampil di atas aplikasi lain**; bola muncul setelah kembali ke aplikasi.
-- [ ] Geser bola ke beberapa sisi layar; pastikan posisi tersimpan dan bola tetap dapat dijangkau.
+- [ ] Geser bola melewati garis tengah layar ke kiri/kanan; pastikan bola menempel magnetis ke tepi dengan grip 16 dp terlihat dan dapat ditarik kembali.
 - [ ] Ketuk bola untuk membuka/menutup panel; uji seluruh aksi layanan, buka aplikasi, sembunyikan, dan tutup panel.
-- [ ] Ubah ukuran 44–84 dp dan transparansi 25–100%; perubahan diterapkan tanpa crash.
+- [ ] Ubah ukuran 36–64 dp dan transparansi 25–100%; perubahan diterapkan tanpa crash.
 - [ ] Uji label TalkBack/aksesibilitas pada bola dan tombol panel; target aksi minimal 48 dp.
 - [ ] Cabut izin overlay dari Settings Android; pastikan aplikasi tetap dapat dibuka dan bola tidak memaksa tampil.
 - [ ] Matikan fitur, tutup aplikasi, lalu buka ulang; bola tidak muncul kembali.

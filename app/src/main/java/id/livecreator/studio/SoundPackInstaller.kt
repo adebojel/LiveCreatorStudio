@@ -34,7 +34,7 @@ internal object SoundPackInstaller {
     private const val MAX_EXTRACTED_BYTES = 240L * 1024L * 1024L
     private const val MAX_ENTRIES = 1_500
     private const val MAX_AUDIO_FILE_BYTES = 24L * 1024L * 1024L
-    private val supportedExtensions = setOf("ogg", "wav", "mp3", "flac", "m4a", "aac")
+    private val supportedExtensions = setOf("ogg", "wav", "mp3", "flac", "m4a", "aac", "opus", "aiff", "aif", "weba")
     private val mutex = Mutex()
 
     private val mutableState = MutableStateFlow<SoundPackInstallState>(SoundPackInstallState.Idle)
@@ -42,36 +42,44 @@ internal object SoundPackInstaller {
 
     suspend fun ensureStarterPacks(context: Context) {
         mutex.withLock {
+            var firstFailure: Pair<String, String>? = null
             for (pack in SoundPackCatalog.starterPacks) {
                 if (!isInstalled(context, pack)) {
                     runCatching { installPackLocked(context, pack) }
-                        .onFailure {
-                            mutableState.value = SoundPackInstallState.Failed(
-                                pack.title, it.message ?: "Unduhan belum berhasil"
-                            )
-                            return
+                        .onFailure { error ->
+                            if (firstFailure == null) {
+                                firstFailure = pack.title to (error.message ?: "Unduhan belum berhasil")
+                            }
                         }
                 }
+            }
+            firstFailure?.let { (title, reason) ->
+                mutableState.value = SoundPackInstallState.Failed(title, reason)
             }
         }
     }
 
     suspend fun installAll(context: Context) {
         mutex.withLock {
+            var firstFailure: Pair<String, String>? = null
             for (pack in SoundPackCatalog.packs) {
                 if (!isInstalled(context, pack)) {
                     runCatching { installPackLocked(context, pack) }
-                        .onFailure {
-                            mutableState.value = SoundPackInstallState.Failed(
-                                pack.title, it.message ?: "Unduhan belum berhasil"
-                            )
-                            return
+                        .onFailure { error ->
+                            if (firstFailure == null) {
+                                firstFailure = pack.title to (error.message ?: "Unduhan belum berhasil")
+                            }
                         }
                 }
             }
-            mutableState.value = SoundPackInstallState.Installed(
-                "Semua paket", SoundPackCatalog.packs.sumOf { it.assetCount }
-            )
+            val installedCount = SoundPackCatalog.packs
+                .filter { isInstalled(context, it) }
+                .sumOf { audioFiles(packDirectory(context, it)).size }
+            firstFailure?.let { (title, reason) ->
+                mutableState.value = SoundPackInstallState.Failed(title, reason)
+            } ?: run {
+                mutableState.value = SoundPackInstallState.Installed("Semua paket", installedCount)
+            }
         }
     }
 
@@ -112,7 +120,7 @@ internal object SoundPackInstaller {
             downloadArchive(pack, archive)
             if (!staging.mkdirs()) error("Folder sementara paket tidak dapat dibuat.")
             val extracted = extractAudio(archive, staging)
-            if (extracted.isEmpty()) error("Paket tidak berisi file audio yang didukung.")
+            if (extracted.isEmpty()) error("Arsip berhasil dibuka, tetapi tidak ditemukan audio OGG, WAV, MP3, FLAC, M4A, AAC, OPUS, AIFF, atau WEBA. Periksa arsip sumber paket.")
 
             File(staging, "LICENSES.txt").writeText(
                 "${pack.title}\nCreator: ${pack.creator}\n" +
@@ -167,7 +175,9 @@ internal object SoundPackInstaller {
             readTimeout = 45_000
             instanceFollowRedirects = true
             requestMethod = "GET"
-            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.5.9")
+            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.6.2")
+            setRequestProperty("Accept", "application/zip, application/octet-stream, */*")
+            setRequestProperty("Referer", pack.sourceUrl)
         }
         try {
             val status = connection.responseCode

@@ -13,7 +13,7 @@
   <a href="https://github.com/adebojel/LiveCreatorStudio/actions/workflows/android.yml"><img src="https://img.shields.io/github/actions/workflow/status/adebojel/LiveCreatorStudio/android.yml?branch=main&label=Android%20CI&logo=githubactions" alt="Android CI"></a>
   <a href="https://github.com/adebojel/LiveCreatorStudio/releases"><img src="https://img.shields.io/github/v/release/adebojel/LiveCreatorStudio?display_name=tag&label=release" alt="Release"></a>
   <img src="https://img.shields.io/badge/Android-API%2026%2B-3DDC84?logo=android&logoColor=white" alt="Android API 26+">
-  <img src="https://img.shields.io/badge/Kotlin-Compose-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Compose">
+  <img src="https://img.shields.io/badge/Kotlin-Compose-00C8D7?logo=kotlin&logoColor=white" alt="Kotlin Compose">
   <img src="https://img.shields.io/badge/Media3-audio%20engine-00C8D7" alt="Media3">
 </p>
 
@@ -42,14 +42,14 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Soundboard Media3 / MediaSession | Tersedia di source |
 | Impor audio dan pustaka paket CC0 | Tersedia di source |
 | Floating Control overlay opsional | Tersedia di source; perlu QA perangkat |
-| Picture-in-Picture | Tersedia di source |
+| Picture-in-Picture | Dihapus dari navigasi dan manifest |
 | Adapter TikTok LIVE resmi | Belum terintegrasi |
 | Event chat/gift/follow/share real-time | Belum tersedia |
 | AI cloud / AI lokal | Belum tersedia |
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.6.1 (pengembangan). Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
+**Versi source:** 0.6.2 (pengembangan). Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
 
 ## ✧ Fitur saat ini
 
@@ -69,13 +69,16 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 - Playback menggunakan AndroidX Media3 ExoPlayer dan MediaSessionService.
 - Kontrol media dapat tampil pada notifikasi media, lockscreen, headset, dan perangkat Bluetooth yang kompatibel.
 - Impor audio melalui Android document picker, dengan salinan lokal di penyimpanan privat aplikasi.
-- Paket suara CC0 dapat dipasang untuk penggunaan offline; sumber dan lisensi dicatat per paket.
+- Tiga paket awal diunduh otomatis pada peluncuran pertama saat internet tersedia; pengguna juga dapat memilih paket satu per satu atau mengunduh seluruh katalog 17 paket. Setelah terpasang, suara dapat dipakai offline.
+- Arsip ZIP diambil langsung dari sumber resmi katalog saat runtime, bukan disisipkan ke APK atau disalin sebagai asset GitHub Release; sumber dan lisensi dicatat per paket.
 - Pencarian, filter sumber, play/stop, serta penghapusan file impor.
 - Penghapusan file dibatasi ke folder impor aplikasi agar aset paket tidak terhapus.
 
 ### 4. Floating Control
-- Bola overlay transparan yang dapat digeser dan disesuaikan ukuran/opasitasnya.
+- Bola overlay glass RGB berukuran 36–64 dp, dapat digeser, lalu menempel magnetis ke sisi kiri/kanan dengan grip 16 dp tetap terlihat.
 - Pintasan untuk kontrol layanan audio.
+- Ukuran default diperkecil; opasitas dapat diatur dan posisi dock disimpan.
+- Onboarding izin berurutan: notifikasi Android lebih dahulu, lalu penjelasan izin overlay opsional; mikrofon/kamera tidak diminta karena tidak dipakai fitur saat ini.
 - Memerlukan izin overlay Android yang diberikan secara eksplisit dan nonaktif secara default.
 - Tidak membaca layar, tidak mengendalikan aplikasi lain, dan bukan kontrol Quick Settings/notification shade.
 
