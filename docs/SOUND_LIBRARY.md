@@ -35,11 +35,12 @@ The Soundboard screen now lets users download each of the sixteen curated ZIP pa
 | Footsteps Surfaces | 8 | OpenGameArt / TinyWorlds |
 | Battle Sound Effects | 4 | OpenGameArt / Ogrebane |
 | Retro UI Sound Pack | 70 | OpenGameArt / StumpyStrust |
-| **Total** | **1,444** | |
+| Retro Arcade SFX Pack 2 | 110 | OpenGameArt / phoenix1291 |
+| **Total** | **1,554** | |
 
 The counts are upstream catalog counts, not a promise that every archive entry is playable. The app counts actual supported audio files after extraction.
 
-The OpenGameArt packs above are six ZIP archives marked CC0 in the reviewed sources. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
+The OpenGameArt packs above include ZIP archives marked CC0 in the reviewed sources. Retro Arcade SFX Pack 2 adds 110 unique effects across 11 themed folders; the page identifies CC0 and lists MP3/OGG/WAV/FLAC formats. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
 
 ## Licensing and attribution
 
@@ -58,7 +59,7 @@ All ten pack pages are listed as Creative Commons CC0 by the upstream source ind
 - Enforces archive, entry-count, per-file, and total extracted-size limits.
 - Retains a local license/source note with each pack.
 - The first-run starter download needs internet access. Users can also select optional packs individually or download all packs. Once installed, those sounds play offline. ZIP archives are downloaded directly from the original catalog sources at runtime; they are not embedded inside the APK or attached as separate GitHub Release assets.
-- The app does not mirror or rehost third-party files on its website; it downloads the original upstream archives directly.
+- The app does not mirror or rehost third-party files on its website; it downloads the original upstream archives directly. Individual pack installation is available in Soundboard, alongside the download-all action.
 
 ## Why other libraries are not included automatically
 
