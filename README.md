@@ -42,14 +42,14 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Soundboard Media3 / MediaSession | Tersedia di source |
 | Impor audio dan pustaka paket CC0 | Tersedia di source |
 | Floating Control overlay opsional | Tersedia di source; perlu QA perangkat |
-| Picture-in-Picture | Tersedia di source |
+| Picture-in-Picture | Dihapus dari navigasi dan manifest |
 | Adapter TikTok LIVE resmi | Belum terintegrasi |
 | Event chat/gift/follow/share real-time | Belum tersedia |
 | AI cloud / AI lokal | Belum tersedia |
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.6.1 (pengembangan). Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
+**Versi source:** 0.6.2 (pengembangan). Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
 
 ## ✧ Fitur saat ini
 
@@ -74,9 +74,9 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 - Penghapusan file dibatasi ke folder impor aplikasi agar aset paket tidak terhapus.
 
 ### 4. Floating Control
-- Bola overlay transparan yang dapat digeser dan disesuaikan ukuran/opasitasnya.
+- Bola overlay glass RGB berukuran 36–64 dp, dapat digeser, lalu menempel magnetis ke sisi kiri/kanan dengan grip 16 dp tetap terlihat.
 - Pintasan untuk kontrol layanan audio.
-- Memerlukan izin overlay Android yang diberikan secara eksplisit dan nonaktif secara default.
+- Ukuran default diperkecil; opasitas dapat diatur dan posisi dock disimpan. Memerlukan izin overlay Android yang diberikan secara eksplisit dan nonaktif secara default.
 - Tidak membaca layar, tidak mengendalikan aplikasi lain, dan bukan kontrol Quick Settings/notification shade.
 
 ### 5. Arsitektur dan kualitas
