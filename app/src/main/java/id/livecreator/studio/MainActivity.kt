@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -95,6 +96,12 @@ class MainActivity : ComponentActivity() {
             .any { it.service.className == LiveBackgroundService::class.java.name }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Reconcile UI state after notification shade actions or returning from Settings.
+        backgroundServiceRunning = isBackgroundServiceRunning()
+    }
+
     override fun onDestroy() {
         if (serviceReceiverRegistered) {
             runCatching { unregisterReceiver(serviceStateReceiver) }
@@ -110,6 +117,7 @@ class MainActivity : ComponentActivity() {
 
     private fun stopBackgroundAudio() {
         stopService(Intent(this, LiveBackgroundService::class.java))
+        backgroundServiceRunning = false
     }
 
     private fun speakInBackground(text: String, rate: Float, pitch: Float) {
@@ -188,8 +196,12 @@ fun LiveCreatorApp(
     )) {
         if (inPipMode) {
             PipMiniScreen(backgroundServiceRunning)
-        } else Row(Modifier.fillMaxSize().background(Ink).windowInsetsPadding(WindowInsets.safeDrawing)) {
-            NavigationRail(containerColor = Panel) {
+        } else Row(
+            Modifier.fillMaxSize()
+                .background(Brush.verticalGradient(listOf(Color(0xFF0A1020), Color(0xFF101A31), Color(0xFF111329))))
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+        ) {
+            NavigationRail(containerColor = Color(0x99131D33)) {
                 listOf("Dashboard", "TTS", "Soundboard", "Settings").forEach { item ->
                     NavigationRailItem(
                         selected = selected == item,
@@ -301,13 +313,23 @@ private fun DashboardScreen(
                     Text("Layanan foreground dengan notifikasi persisten untuk pekerjaan audio yang dimulai pengguna.",
                         color = Color.LightGray, fontSize = 12.sp)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = onStartBackground, modifier = Modifier.weight(1f)) {
+                        Button(
+                            onClick = onStartBackground,
+                            enabled = !backgroundEnabled,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Icon(Icons.Default.PlayArrow, contentDescription = null)
-                            Text("Mulai")
+                            Spacer(Modifier.width(5.dp))
+                            Text(if (backgroundEnabled) "Aktif" else "Mulai")
                         }
-                        OutlinedButton(onClick = onStopBackground, modifier = Modifier.weight(1f)) {
+                        OutlinedButton(
+                            onClick = onStopBackground,
+                            enabled = backgroundEnabled,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Icon(Icons.Default.Stop, contentDescription = null)
-                            Text("Hentikan")
+                            Spacer(Modifier.width(5.dp))
+                            Text("Matikan")
                         }
                     }
                     Text("Status ini menunjukkan perintah layanan dikirim dari aplikasi; bukan jaminan sistem tidak akan menghentikannya.",
