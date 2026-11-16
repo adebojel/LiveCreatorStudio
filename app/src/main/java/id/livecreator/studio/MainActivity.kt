@@ -43,7 +43,7 @@ import java.util.Locale
 
 private val Ink = Color(0xFF0B1020)
 private val Panel = Color(0xCC171F35)
-private val Violet = Color(0xFF9B7BFF)
+private val Violet = Color(0xFF53DDF2)
 private val Cyan = Color(0xFF54D8E8)
 
 class MainActivity : ComponentActivity() {
@@ -201,7 +201,7 @@ fun LiveCreatorApp(
     }
 
     MaterialTheme(colorScheme = darkColorScheme(
-        background = Ink, surface = Panel, primary = Violet, secondary = Cyan
+        background = Ink, surface = Panel, primary = Cyan, secondary = Color(0xFFB7F7FF)
     )) {
         if (inPipMode) {
             PipMiniScreen(backgroundServiceRunning)
@@ -348,7 +348,6 @@ private fun DashboardScreen(
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FeatureCard("Picture-in-Picture", "Panel mini saat pindah aplikasi", Icons.Default.PictureInPicture, Modifier.weight(1f), onEnterPip)
                 FeatureCard("Pengaturan Kreator", "Notifikasi, baterai, dan layanan audio", Icons.Default.Tune, Modifier.weight(1f)) { onNavigate("Settings") }
             }
         }
@@ -533,10 +532,10 @@ private fun SettingsScreen(
                 Text("Kontrol mengambang", color = Color.White, fontWeight = FontWeight.Bold)
                 val overlayPrefs = context.getSharedPreferences("floating_control", android.content.Context.MODE_PRIVATE)
                 var overlayEnabled by remember { mutableStateOf(overlayPrefs.getBoolean("enabled", false)) }
-                var bubbleSize by remember { mutableFloatStateOf(sanitizeFloatingBubbleSize(overlayPrefs.getFloat("size", 58f))) }
+                var bubbleSize by remember { mutableFloatStateOf(sanitizeFloatingBubbleSize(overlayPrefs.getFloat("size", 42f))) }
                 var bubbleOpacity by remember { mutableFloatStateOf(sanitizeFloatingBubbleOpacity(overlayPrefs.getFloat("opacity", 0.82f))) }
                 val overlayAllowed = Settings.canDrawOverlays(context)
-                Text("Bola kontrol transparan yang dapat digeser di atas aplikasi lain. Izin tampil di atas aplikasi lain diperlukan.", color = Color.LightGray, fontSize = 11.sp)
+                Text("Bola kontrol glass RGB berukuran ringkas. Geser ke kiri atau kanan untuk menempel otomatis di tepi layar; tarik kembali untuk memunculkannya.", color = Color.LightGray, fontSize = 11.sp)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text("Aktifkan Floating Control", color = Color.White)
@@ -565,7 +564,7 @@ private fun SettingsScreen(
                     bubbleSize = sanitizeFloatingBubbleSize(value)
                     overlayPrefs.edit().putFloat("size", bubbleSize).apply()
                     context.startService(Intent(context, FloatingControlService::class.java).setAction(FloatingControlService.ACTION_REFRESH))
-                }, valueRange = 44f..84f)
+                }, valueRange = 36f..64f)
                 Text("Transparansi: ${(bubbleOpacity * 100).toInt()}%", color = Color.White, fontSize = 12.sp)
                 Slider(value = bubbleOpacity, onValueChange = { value ->
                     bubbleOpacity = sanitizeFloatingBubbleOpacity(value)
@@ -642,7 +641,7 @@ private fun FeatureCard(
         modifier = modifier.semantics { contentDescription = "$title. $subtitle" }
     ) {
         Column(Modifier.padding(13.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-            Icon(icon, contentDescription = null, tint = Violet, modifier = Modifier.size(23.dp))
+            Icon(icon, contentDescription = null, tint = Cyan, modifier = Modifier.size(23.dp))
             Text(title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
             Text(subtitle, color = Color.LightGray, fontSize = 10.sp)
         }
