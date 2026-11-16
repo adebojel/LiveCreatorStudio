@@ -99,6 +99,12 @@ internal object SoundPackCatalog {
             "https://opengameart.org/sites/default/files/battle_sound_effects_0.zip",
             "https://opengameart.org/content/battle-sound-effects",
             creator = "Ogrebane (OpenGameArt)"
+        ),
+        SoundPack(
+            "oga-retro-ui", "Retro UI Sound Pack", 70,
+            "https://opengameart.org/sites/default/files/archive_3.zip",
+            "https://opengameart.org/content/sound-pack",
+            creator = "StumpyStrust (OpenGameArt)"
         )
     )
 
