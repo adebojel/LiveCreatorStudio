@@ -83,12 +83,6 @@ internal object SoundPackCatalog {
             creator = "artisticdude (OpenGameArt)"
         ),
         SoundPack(
-            "oga-levelup-powerup", "Level Up & Power Up", 13,
-            "https://opengameart.org/sites/default/files/SoundPack01.zip",
-            "https://opengameart.org/content/level-up-power-up-coin-get-13-sounds",
-            creator = "wobbleboxx (OpenGameArt)"
-        ),
-        SoundPack(
             "oga-zombies", "Zombie Sounds", 24,
             "https://opengameart.org/sites/default/files/zombies.zip",
             "https://opengameart.org/content/zombies-sound-pack",
