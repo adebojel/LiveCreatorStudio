@@ -224,7 +224,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 }
             }
             SoundPackInstallState.Idle -> Text(
-                "Paket awal: 210 suara. Tersedia ${SoundPackCatalog.packs.size} paket dengan sekitar 1.444 aset CC0.",
+                "Paket awal: 210 suara. Tersedia ${SoundPackCatalog.packs.size} paket dengan sekitar 1.699 aset sumber CC0.",
                 color = Color.LightGray, fontSize = 11.sp
             )
         }
@@ -250,7 +250,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                             TextButton(onClick = { showPackCatalog = false }) { Text("Tutup") }
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            listOf("Semua", "Lucu", "Game", "Film", "UI", "Voice").forEach { category ->
+                            listOf("Semua", "Lucu", "Meme", "Game", "Film", "UI", "Voice").forEach { category ->
                                 FilterChip(selected = packCategoryFilter == category, onClick = { packCategoryFilter = category }, label = { Text(category, fontSize = 10.sp) })
                             }
                         }
@@ -415,11 +415,12 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
 private fun packCategory(pack: SoundPack): String {
     val id = pack.id.lowercase()
     return when {
-        id.contains("weird") || id.contains("laugh") || id.contains("zombie") -> "Lucu"
-        id.contains("retro") || id.contains("rpg") || id.contains("battle") || id.contains("arcade") -> "Game"
+        id.contains("kiss") || id.contains("laugh") || id.contains("boing") || id.contains("zombie") -> "Lucu"
+        id.contains("weird") || id.contains("100-cc0") -> "Meme"
+        id.contains("gunshot") || id.contains("retro") || id.contains("rpg") || id.contains("battle") || id.contains("arcade") -> "Game"
         id.contains("voice") -> "Voice"
         id.contains("ui") || id.contains("interface") || id.contains("digital") -> "UI"
-        id.contains("sci-fi") || id.contains("impact") || id.contains("casino") || id.contains("music") -> "Film"
+        id.contains("sci-fi") || id.contains("impact") || id.contains("casino") || id.contains("music") || id.contains("thunder") || id.contains("applause") || id.contains("magic") || id.contains("camera-flash") -> "Film"
         else -> "Semua"
     }
 }

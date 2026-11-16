@@ -49,7 +49,7 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.6.2 (pengembangan). Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
+**Versi source:** 0.6.3 (pengembangan). Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
 
 ## ✧ Fitur saat ini
 
@@ -69,8 +69,8 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 - Playback menggunakan AndroidX Media3 ExoPlayer dan MediaSessionService.
 - Kontrol media dapat tampil pada notifikasi media, lockscreen, headset, dan perangkat Bluetooth yang kompatibel.
 - Impor audio melalui Android document picker, dengan salinan lokal di penyimpanan privat aplikasi.
-- Tiga paket awal diunduh otomatis pada peluncuran pertama saat internet tersedia; pengguna juga dapat memilih paket satu per satu atau mengunduh seluruh katalog 18 paket. Setelah terpasang, suara dapat dipakai offline.
-- Arsip ZIP diambil langsung dari sumber resmi katalog saat runtime, bukan disisipkan ke APK atau disalin sebagai asset GitHub Release; sumber dan lisensi dicatat per paket.
+- Tiga paket awal diunduh otomatis pada peluncuran pertama saat internet tersedia; pengguna juga dapat memilih paket satu per satu atau mengunduh seluruh katalog 34 paket. Katalog mencakup laugh/giggle, kiss, gunshot, thunder, applause, cartoon boing, magic poof, camera flash, dan 100 Weird & Everyday SFX. Setelah terpasang, suara dapat dipakai offline.
+- Arsip ZIP dan file MP3 individual diambil langsung dari sumber CC0 saat runtime, bukan disisipkan ke APK atau disalin sebagai asset GitHub Release; sumber dan lisensi dicatat per paket. SFXMint menyatakan asetnya CC0 1.0 dan mengizinkan direct hotlink; efek dari sumber ini dibuat dengan AI/procedural synthesis.
 - Pencarian, filter sumber, play/stop, serta penghapusan file impor.
 - Penghapusan file dibatasi ke folder impor aplikasi agar aset paket tidak terhapus.
 
