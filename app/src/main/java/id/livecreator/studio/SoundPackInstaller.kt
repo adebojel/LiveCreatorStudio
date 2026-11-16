@@ -119,7 +119,14 @@ internal object SoundPackInstaller {
         try {
             downloadArchive(pack, archive)
             if (!staging.mkdirs()) error("Folder sementara paket tidak dapat dibuat.")
-            val extracted = extractAudio(archive, staging)
+            val sourceExtension = pack.archiveUrl.substringBefore('?').substringAfterLast('.', "").lowercase(Locale.ROOT)
+            val extracted = if (sourceExtension in supportedExtensions) {
+                val directAudio = File(staging, "1_${pack.id}.${sourceExtension}")
+                archive.copyTo(directAudio, overwrite = true)
+                listOf(directAudio)
+            } else {
+                extractAudio(archive, staging)
+            }
             if (extracted.isEmpty()) error("Arsip berhasil dibuka, tetapi tidak ditemukan audio OGG, WAV, MP3, FLAC, M4A, AAC, OPUS, AIFF, atau WEBA. Periksa arsip sumber paket.")
 
             File(staging, "LICENSES.txt").writeText(
@@ -167,7 +174,8 @@ internal object SoundPackInstaller {
         val source = URL(pack.archiveUrl)
         require(source.protocol == "https" &&
             (source.host.equals("kenney.nl", ignoreCase = true) ||
-                source.host.equals("opengameart.org", ignoreCase = true))) {
+                source.host.equals("opengameart.org", ignoreCase = true) ||
+                source.host.equals("sfxmint.com", ignoreCase = true))) {
             "Sumber paket tidak diizinkan."
         }
         val connection = (source.openConnection() as HttpURLConnection).apply {
@@ -186,7 +194,9 @@ internal object SoundPackInstaller {
                 (connection.url.host.equals("kenney.nl", ignoreCase = true) ||
                     connection.url.host.endsWith(".kenney.nl", ignoreCase = true) ||
                     connection.url.host.equals("opengameart.org", ignoreCase = true) ||
-                    connection.url.host.endsWith(".opengameart.org", ignoreCase = true))) {
+                    connection.url.host.endsWith(".opengameart.org", ignoreCase = true) ||
+                    connection.url.host.equals("sfxmint.com", ignoreCase = true) ||
+                    connection.url.host.endsWith(".sfxmint.com", ignoreCase = true))) {
                 "Pengalihan ke host unduhan yang tidak diizinkan."
             }
             val expected = connection.contentLengthLong
