@@ -157,13 +157,21 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
         }
         return builder
             .setSmallIcon(android.R.drawable.ic_media_play)
-            .setContentTitle("LiveCreator Studio aktif")
+            .setContentTitle("LiveCreator Studio")
             .setContentText(notificationText)
+            .setSubText("AUDIO LATAR • AKTIF")
             .setContentIntent(openApp)
+            .setCategory(Notification.CATEGORY_SERVICE)
+            .setVisibility(Notification.VISIBILITY_PRIVATE)
+            .setColor(0xFF00D9FF)
+            .setColorized(false)
+            .setShowWhen(false)
+            .setLocalOnly(true)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .addAction(android.R.drawable.ic_media_pause, "Matikan layanan", stopService)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Hapus antrean", clearQueue)
+            .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+            .addAction(android.R.drawable.ic_media_pause, "Matikan", stopService)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Bersihkan", clearQueue)
             .build()
     }
 
