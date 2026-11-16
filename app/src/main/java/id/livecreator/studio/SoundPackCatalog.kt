@@ -11,7 +11,8 @@ internal data class SoundPack(
     val assetCount: Int,
     val archiveUrl: String,
     val sourceUrl: String,
-    val includedInStarter: Boolean = false
+    val includedInStarter: Boolean = false,
+    val creator: String = "Kenney (kenney.nl)"
 )
 
 internal object SoundPackCatalog {
@@ -68,6 +69,43 @@ internal object SoundPackCatalog {
             "voiceover-pack-fighter", "Voiceover Pack Fighter", 45,
             "https://kenney.nl/media/pages/assets/voiceover-pack-fighter/6ceb77c6f1-1677589837/kenney_voiceover-pack-fighter.zip",
             "https://kenney.nl/assets/voiceover-pack-fighter"
+        )
+        ,
+        SoundPack(
+            "oga-512-retro", "Retro 8-bit Effects", 512,
+            "https://opengameart.org/sites/default/files/The%20Essential%20Retro%20Video%20Game%20Sound%20Effects%20Collection%20%5B512%20sounds%5D.zip",
+            "https://opengameart.org/content/512-sound-effects-8-bit-style",
+            creator = "SubspaceAudio (OpenGameArt)"
+        ),
+        SoundPack(
+            "oga-rpg-pack", "OpenGameArt RPG Sound Pack", 96,
+            "https://opengameart.org/sites/default/files/rpg_sound_pack.zip",
+            "https://opengameart.org/content/rpg-sound-pack",
+            creator = "artisticdude (OpenGameArt)"
+        ),
+        SoundPack(
+            "oga-levelup-powerup", "Level Up & Power Up", 13,
+            "https://opengameart.org/sites/default/files/SoundPack01.zip",
+            "https://opengameart.org/content/level-up-power-up-coin-get-13-sounds",
+            creator = "wobbleboxx (OpenGameArt)"
+        ),
+        SoundPack(
+            "oga-zombies", "Zombie Sounds", 24,
+            "https://opengameart.org/sites/default/files/zombies.zip",
+            "https://opengameart.org/content/zombies-sound-pack",
+            creator = "artisticdude (OpenGameArt)"
+        ),
+        SoundPack(
+            "oga-footsteps", "Footsteps Surfaces", 8,
+            "https://opengameart.org/sites/default/files/%5Bkdd%5DDifferentSteps_0.zip",
+            "https://opengameart.org/content/different-steps-on-wood-stone-leaves-gravel-and-mud",
+            creator = "TinyWorlds (OpenGameArt)"
+        ),
+        SoundPack(
+            "oga-battle", "Battle Sound Effects", 4,
+            "https://opengameart.org/sites/default/files/battle_sound_effects_0.zip",
+            "https://opengameart.org/content/battle-sound-effects",
+            creator = "Ogrebane (OpenGameArt)"
         )
     )
 
