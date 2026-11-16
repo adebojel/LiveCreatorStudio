@@ -6,7 +6,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import android.provider.OpenableColumns
+import android.media.AudioManager
+import android.media.ToneGenerator
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -130,12 +131,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         val importResult = runCatching {
-            val mimeType = context.contentResolver.getType(uri)
-            require(mimeType?.startsWith("audio/") == true) { "File yang dipilih bukan tipe audio." }
-            context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { }
-                ?: error("File tidak dapat dibaca.")
-            context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            SoundItem(uri.toString(), displayName(context, uri))
+            SoundboardFileImport.import(context, uri)
         }
         importResult.onSuccess { item ->
             if (sounds.none { it.uri == item.uri }) {
@@ -188,6 +184,20 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
             Spacer(Modifier.width(8.dp))
             Text("Tambah file audio")
         }
+        OutlinedButton(
+            onClick = {
+                val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 75)
+                val started = tone.startTone(ToneGenerator.TONE_PROP_ACK, 450)
+                message = if (started) "Nada tes singkat diputar. Jika tidak terdengar, periksa volume media perangkat."
+                    else "Nada tes tidak dapat dimulai pada perangkat ini."
+                Handler(Looper.getMainLooper()).postDelayed({ tone.release() }, 650)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.GraphicEq, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Tes speaker tanpa file audio")
+        }
         Surface(color = Color(0xCC171F35), shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
             Text(message, color = Color.LightGray, modifier = Modifier.padding(14.dp).semantics { contentDescription = message }, fontSize = 12.sp)
         }
@@ -196,7 +206,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF9B7BFF))
                     Text("Pustaka masih kosong", color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Text("Belum ada file audio yang diimpor. Tidak ada audio contoh.", color = Color.LightGray, fontSize = 11.sp)
+                    Text("Belum ada file audio. Impor MP3/WAV atau gunakan tes speaker untuk memeriksa keluaran suara.", color = Color.LightGray, fontSize = 11.sp)
                 }
             }
         } else {
@@ -213,7 +223,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                             OutlinedButton(onClick = {
                                 if (activeUri == sound.uri) stopPlayback()
                                 scope.launch { SoundboardStore.save(context, sounds.filterNot { it.uri == sound.uri }) }
-                                releasePersistedReadPermission(context, Uri.parse(sound.uri))
+                                SoundboardFileImport.delete(context, Uri.parse(sound.uri))
                                 message = "File dihapus dari daftar aplikasi dan izin dokumennya dilepas."
                             }, modifier = Modifier.semantics { contentDescription = "Hapus ${sound.title} dari pustaka" }) {
                                 Icon(Icons.Default.Delete, contentDescription = null)
@@ -237,17 +247,3 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     }
 }
 
-private fun displayName(context: Context, uri: Uri): String {
-    val name = runCatching {
-        context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) cursor.getString(0) else null
-        }
-    }.getOrNull()
-    return name?.takeIf { it.isNotBlank() } ?: ("Audio " + (uri.lastPathSegment ?: "tanpa nama"))
-}
-
-private fun releasePersistedReadPermission(context: Context, uri: Uri) {
-    runCatching {
-        context.contentResolver.releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-}
