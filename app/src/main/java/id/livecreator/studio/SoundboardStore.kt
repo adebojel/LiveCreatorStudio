@@ -13,12 +13,19 @@ import kotlinx.coroutines.flow.map
  *
  * Existing SharedPreferences entries are migrated automatically. The decoder
  * accepts the legacy pipe-delimited format so upgrades preserve imported files.
- * URI permissions remain owned by Android's Storage Access Framework.
+ * Pack audio is stored under files/soundboard/packs; imported audio is stored
+ * directly under files/soundboard.
  */
 internal data class SoundItem(val uri: String, val title: String)
 
-/** Pack audio lives in app-private files; user-imported audio uses Storage Access Framework URIs. */
-internal fun isPackSoundUri(uri: String): Boolean = uri.startsWith("file:", ignoreCase = true)
+/**
+ * Distinguishes bundled pack assets from imported files copied into the app's
+ * private soundboard directory. Do not classify every file:// URI as a pack:
+ * imported files are also represented by file URIs.
+ */
+internal fun isPackSoundUri(uri: String): Boolean =
+    uri.startsWith("file:", ignoreCase = true) &&
+        uri.contains("/soundboard/packs/", ignoreCase = true)
 
 private val Context.soundboardDataStore by preferencesDataStore(
     name = "livecreator_soundboard_store",

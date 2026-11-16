@@ -1,197 +1,181 @@
-# LiveCreator Studio
+# ◈ LiveCreator Studio
 
 <p align="center">
-  <a href="https://adebojel.github.io/LiveCreatorStudio/"><strong>🌐 Website Resmi</strong></a> ·
-  <a href="https://adebojel.github.io/LiveCreatorStudio/features.html">Fitur</a> ·
-  <a href="https://adebojel.github.io/LiveCreatorStudio/download.html">Unduh</a> ·
-  <a href="https://adebojel.github.io/LiveCreatorStudio/support.html">Bantuan</a> ·
-  <a href="https://adebojel.github.io/LiveCreatorStudio/privacy.html">Privacy Policy</a> ·
-  <a href="https://adebojel.github.io/LiveCreatorStudio/terms.html">Terms of Service</a>
+  <img src="docs/assets/livecreator-studio-hero.svg" alt="LiveCreator Studio — ilustrasi konsep antarmuka audio creator bergaya glassmorphism 3D" width="100%">
 </p>
 
 <p align="center">
-  <img src="docs/assets/livecreator-studio-hero.svg" alt="Ilustrasi konseptual dashboard LiveCreator Studio" width="100%"/>
+  <strong>ANDROID · KOTLIN · JETPACK COMPOSE · MEDIA3</strong><br>
+  <em>Creator Audio Companion — kendali TTS, soundboard lokal, dan layanan audio dalam satu studio.</em>
 </p>
 
 <p align="center">
-  <a href="https://github.com/adebojel/LiveCreatorStudio/actions/workflows/android.yml"><img src="https://img.shields.io/github/actions/workflow/status/adebojel/LiveCreatorStudio/android.yml?branch=main&label=Android%20CI" alt="Android CI"/></a>
-  <a href="https://github.com/adebojel/LiveCreatorStudio/releases"><img src="https://img.shields.io/github/v/release/adebojel/LiveCreatorStudio?display_name=tag" alt="Latest release"/></a>
-  <img src="https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white" alt="Android"/>
-  <img src="https://img.shields.io/badge/Kotlin-Compose-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Compose"/>
-  <img src="https://img.shields.io/badge/minSdk-26-blue" alt="Minimum Android API 26"/>
+  <a href="https://github.com/adebojel/LiveCreatorStudio/actions/workflows/android.yml"><img src="https://img.shields.io/github/actions/workflow/status/adebojel/LiveCreatorStudio/android.yml?branch=main&label=Android%20CI&logo=githubactions" alt="Android CI"></a>
+  <a href="https://github.com/adebojel/LiveCreatorStudio/releases"><img src="https://img.shields.io/github/v/release/adebojel/LiveCreatorStudio?display_name=tag&label=release" alt="Release"></a>
+  <img src="https://img.shields.io/badge/Android-API%2026%2B-3DDC84?logo=android&logoColor=white" alt="Android API 26+">
+  <img src="https://img.shields.io/badge/Kotlin-Compose-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Compose">
+  <img src="https://img.shields.io/badge/Media3-audio%20engine-00C8D7" alt="Media3">
 </p>
 
 <p align="center">
-  **Studio pendamping kreator livestream** — dashboard audio, pembacaan teks, dan soundboard lokal dengan fondasi integrasi event yang transparan.
-</p>
-
-<p align="center">
-  <a href="https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk"><strong>Unduh APK terbaru</strong></a> ·
+  <a href="https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk"><strong>⬇ DOWNLOAD APK TERBARU</strong></a> ·
   <a href="https://github.com/adebojel/LiveCreatorStudio/releases">Semua Releases</a> ·
-  <a href="https://github.com/adebojel/LiveCreatorStudio/actions">Status Build</a>
+  <a href="https://adebojel.github.io/LiveCreatorStudio/">Website proyek</a>
 </p>
 
 ---
 
-## Website dan status integrasi
+## ✦ Tentang proyek
 
-Website proyek: https://adebojel.github.io/LiveCreatorStudio/
+LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Android. Fokus saat ini adalah audio yang dapat dijalankan secara lokal: text-to-speech (TTS), soundboard, antrean ucapan, dan kontrol layanan audio melalui notifikasi Android.
 
-- [Fitur](https://adebojel.github.io/LiveCreatorStudio/features.html)
-- [Panduan unduhan dan rilis](https://adebojel.github.io/LiveCreatorStudio/download.html)
-- [Pusat bantuan](https://adebojel.github.io/LiveCreatorStudio/support.html)
-- [Status integrasi TikTok](https://adebojel.github.io/LiveCreatorStudio/integration.html)
-- [Kebijakan Privasi](https://adebojel.github.io/LiveCreatorStudio/privacy.html)
-- [Ketentuan Layanan](https://adebojel.github.io/LiveCreatorStudio/terms.html)
+> **Transparansi visual:** gambar hero di atas adalah artwork konseptual bergaya glassmorphism/neon 3D, bukan screenshot aplikasi, bukan hasil render dari perangkat, dan bukan indikator bahwa seluruh modul sudah aktif.
 
-**Penting:** aplikasi Android belum tersedia di Google Play. APK yang dibangun CI saat ini adalah APK debug untuk pengujian, bukan rilis produksi. Integrasi TikTok resmi (Login Kit/Share Kit) dan konektor LIVE belum aktif. Jangan mengajukan app review Android sebelum persyaratan distribusi toko aplikasi, signing release, implementasi nyata, dan video demo terpenuhi. Lihat [TikTok review readiness](docs/TIKTOK_REVIEW_READINESS.md).
+## ◈ Status pengembangan
 
+| Komponen | Status |
+|---|---|
+| Dashboard Kotlin + Jetpack Compose | Tersedia di source |
+| TTS Android lokal | Tersedia di source |
+| Antrean TTS bounded FIFO | Tersedia di source |
+| Foreground audio service + notifikasi | Tersedia di source |
+| Soundboard Media3 / MediaSession | Tersedia di source |
+| Impor audio dan pustaka paket CC0 | Tersedia di source |
+| Floating Control overlay opsional | Tersedia di source; perlu QA perangkat |
+| Picture-in-Picture | Tersedia di source |
+| Adapter TikTok LIVE resmi | Belum terintegrasi |
+| Event chat/gift/follow/share real-time | Belum tersedia |
+| AI cloud / AI lokal | Belum tersedia |
+| Speech-to-text streaming | Belum tersedia |
+| APK production-signed | Belum tersedia |
 
-## Status proyek
+**Versi source:** 0.6.1 (pengembangan). Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
 
-**Versi sumber: 0.6.0 (dalam pengembangan).** Versi ini menambahkan pustaka soundboard CC0 otomatis: 210 suara awal diunduh saat aplikasi pertama kali dibuka, dengan opsi mengunduh seluruh 16 paket (sekitar 1.444 aset) dan tetap mendukung impor audio manual.
+## ✧ Fitur saat ini
 
-> **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi yang tercantum pada halaman Releases adalah build sukses terbaru. APK debug bukan APK produksi bertanda tangan. Build debug bukan APK produksi bertanda tangan.
+### 1. Text-to-speech lokal
+- Menggunakan mesin Android TextToSpeech pada perangkat.
+- Preview teks, pengaturan speech rate dan pitch, serta kontrol stop.
+- Antrean ucapan bounded FIFO dengan kapasitas maksimum 40 item.
+- Callback TTS yang sudah usang tidak boleh mengubah status playback terbaru.
 
-## Tampilan dan arsitektur
+### 2. Audio service dan notifikasi
+- Foreground service dimulai oleh tindakan pengguna.
+- Notifikasi menyediakan kontrol layanan dan pengelolaan antrean.
+- Status direkonsiliasi saat aplikasi kembali ke foreground.
+- Android/OEM tetap dapat membatasi layanan karena kebijakan baterai, force-stop, atau kondisi sistem.
 
-Ilustrasi di bagian atas adalah **gambar konsep dashboard**, bukan screenshot aplikasi atau bukti fitur. Screenshot perangkat yang sebenarnya baru akan ditambahkan setelah pengujian perangkat dilakukan.
+### 3. Soundboard dan pustaka audio
+- Playback menggunakan AndroidX Media3 ExoPlayer dan MediaSessionService.
+- Kontrol media dapat tampil pada notifikasi media, lockscreen, headset, dan perangkat Bluetooth yang kompatibel.
+- Impor audio melalui Android document picker, dengan salinan lokal di penyimpanan privat aplikasi.
+- Paket suara CC0 dapat dipasang untuk penggunaan offline; sumber dan lisensi dicatat per paket.
+- Pencarian, filter sumber, play/stop, serta penghapusan file impor.
+- Penghapusan file dibatasi ke folder impor aplikasi agar aset paket tidak terhapus.
+
+### 4. Floating Control
+- Bola overlay transparan yang dapat digeser dan disesuaikan ukuran/opasitasnya.
+- Pintasan untuk kontrol layanan audio.
+- Memerlukan izin overlay Android yang diberikan secara eksplisit dan nonaktif secara default.
+- Tidak membaca layar, tidak mengendalikan aplikasi lain, dan bukan kontrol Quick Settings/notification shade.
+
+### 5. Arsitektur dan kualitas
+- UI Jetpack Compose dengan layanan audio terpisah dari lifecycle layar.
+- Preferences DataStore dengan migrasi preferensi lama.
+- Tes unit JVM untuk antrean, penyimpanan, sanitasi preferensi, katalog paket, dan kontrak event.
+- GitHub Actions menjalankan `testDebugUnitTest` dan `assembleDebug`.
+
+## ⌘ Arsitektur ringkas
 
 ```mermaid
 flowchart TD
-  UI["Jetpack Compose UI"] --> VM["Screen state / ViewModel"]
-  VM --> TTS["Android TextToSpeech"]
-  VM --> SVC["Foreground audio service"]
-  VM --> SB["Local soundboard"]
-  SVC --> Q["Bounded FIFO speech queue"]
-  SVC --> NOTIF["Persistent notification"]
-  SB --> DOC["Android document URI"]
+  UI["Jetpack Compose UI"] --> APP["App state / settings"]
+  APP --> TTS["Android TextToSpeech"]
+  APP --> AUDIO["Foreground audio service"]
+  APP --> SB["Soundboard library"]
+  AUDIO --> QUEUE["Bounded FIFO queue"]
+  AUDIO --> NOTIF["Persistent notification"]
+  SB --> STORE["Preferences DataStore"]
   SB --> CTRL["MediaController"]
   CTRL --> SESSION["MediaSessionService"]
-  SESSION --> PLAYER["Media3 ExoPlayer + MediaSession"]
-  SVC --> ANDROID["Android audio / TTS engine"]
+  SESSION --> PLAYER["Media3 ExoPlayer"]
+  PROVIDER["LiveEventProvider contract"] -. "adapter belum aktif" .-> ENGINE["Creator event engine"]
 ```
 
-## Fitur yang sudah ada di source
+## ◇ Integrasi TikTok dan AI — status yang jujur
 
-- **Dashboard Android** berbasis Kotlin dan Jetpack Compose dengan navigasi Dashboard, TTS, Soundboard, dan Settings.
-- **TTS lokal Bahasa Indonesia** menggunakan mesin TextToSpeech perangkat; tersedia preview, pengaturan speech rate dan pitch, penyimpanan preferensi sederhana, tombol stop, serta callback mulai/selesai/error.
-- **Antrean TTS latar belakang** berbentuk bounded FIFO dengan kapasitas maksimum 40 permintaan. Ketika penuh, permintaan tertua yang masih menunggu dibuang agar permintaan terbaru tetap masuk.
-- **Foreground audio service** yang dimulai oleh pengguna, notifikasi persisten dengan perintah matikan layanan yang dikirim langsung ke service, tindakan hapus antrean, dan sinkronisasi status saat aplikasi kembali aktif.
-- **Proteksi callback TTS usang** agar callback dari utterance yang telah dibatalkan tidak mengubah status playback baru.
-- **Penyimpanan preferensi terpusat** menggunakan Preferences DataStore; pengaturan auto-start, pengingat reboot, speech rate, dan pitch dimigrasikan otomatis dari SharedPreferences lama. Nilai TTS divalidasi sebelum disimpan/dipakai.
-- **Playback soundboard menggunakan AndroidX Media3 1.11.1 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Metadata pustaka disimpan di Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama. Playback soundboard menggunakan AndroidX Media3 1.11.1 (rilis stabil) dan berjalan pada MediaSessionService terpisah dari lifecycle Compose. Kontrol sesi tersedia melalui notifikasi media Android, lockscreen, headset, dan perangkat Bluetooth yang kompatibel; koneksi UI dapat dilepas tanpa menghentikan sesi.
-- **Soundboard CC0 otomatis**: mengunduh 3 paket awal Kenney (210 suara) pada peluncuran pertama, opsi satu tombol untuk seluruh 16 paket (sekitar 1.444 aset), ekstraksi aman ke penyimpanan privat, lisensi/sumber per paket, serta playback offline melalui Media3. Pustaka memiliki pencarian dan filter Semua/Paket CC0/Impor dengan kontrol putar/hapus ringkas. Impor audio pribadi tetap opsional; tersedia tes speaker tanpa file audio. Lihat [katalog dan lisensi soundboard](docs/SOUND_LIBRARY.md).
-- **Picture-in-Picture** untuk panel status ringkas.
-- **Floating Control opsional** berupa bola overlay transparan yang dapat digeser, diatur ukuran/transparansinya, dan menyediakan pintasan layanan audio; memerlukan izin overlay Android yang diberikan secara eksplisit. Kontrol ini tidak membaca layar atau mengendalikan aplikasi lain.
-- **Kontrak LiveEventProvider** untuk adapter event read-only, status koneksi, dan aliran event terpisah dari UI; belum ada provider runtime yang aktif.
-- **Label semantik kontrol** Compose untuk nama tombol dan status yang jelas; aplikasi tidak meminta pengguna mengaktifkan TalkBack.
-- **Shortcut Settings** untuk pengaturan notifikasi, info aplikasi/izin, dan optimasi baterai.
-- **Auto-start opt-in** ketika pengguna membuka aplikasi dan pengingat reboot opsional; aplikasi tidak memaksa Android menjalankan layanan saat boot.
+Fondasi kontrak provider event sudah tersedia untuk memisahkan sumber event dari UI. Namun belum ada konektor TikTok LIVE runtime yang aktif. Aplikasi belum menerima event chat, gift, follow, share, atau like secara real-time dan belum menjalankan aksi otomatis berdasarkan event tersebut.
 
-## Yang belum tersedia — tidak boleh dianggap aktif
+Integrasi berikutnya harus menggunakan akses/API resmi yang memang diberikan kepada aplikasi. Tidak ada scraping, cookie sesi pribadi, atau reverse-engineered connector yang diklaim sebagai integrasi resmi. Persetujuan API, batasan platform, privasi, dan kelayakan distribusi harus diperiksa sebelum rilis publik.
 
-| Area | Status saat ini |
-|---|---|
-| TikTok LIVE real-time event ingestion | Kontrak adapter read-only tersedia; konektor runtime belum terintegrasi |
-| Komentar, gift, follow, share, like event processor | Belum tersedia |
-| Autentikasi/provider LIVE resmi | Belum tersedia |
-| Soundboard otomatis berdasarkan event | Belum tersedia |
-| Mixing beberapa kanal audio dan sesi soundboard persisten | Belum tersedia |
-| AI cloud provider | Belum tersedia |
-| AI lokal GGUF/llama.cpp | Belum terintegrasi |
-| Speech-to-text streaming | Belum tersedia |
-| Database Room untuk seluruh data aplikasi | Belum tersedia |
-| APK release production-signed | Belum tersedia |
+AI cloud, model lokal GGUF/llama.cpp, dan streaming speech-to-text juga belum terintegrasi. Ketika dikembangkan, modul tersebut harus opsional, memiliki kontrol izin, batas penggunaan resource, dan fallback yang jelas.
 
-Aplikasi tidak membuat event LIVE palsu, tidak mensimulasikan AI, dan tidak menampilkan status provider tersambung jika koneksi nyata belum ada.
+## ⇧ Unduh dan instalasi
 
-## Audit repository eksternal
+- **[Unduh APK debug terbaru](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)**
+- [Buka GitHub Releases dan Assets](https://github.com/adebojel/LiveCreatorStudio/releases)
+- [Lihat GitHub Actions / status build](https://github.com/adebojel/LiveCreatorStudio/actions)
 
-Kami meninjau sejumlah proyek publik untuk menemukan komponen yang bisa dipelajari dan diadaptasi. Hasil audit, lisensi, risiko, dan rencana integrasinya dicatat di [docs/REPOSITORY_AUDIT.md](docs/REPOSITORY_AUDIT.md).
+APK yang diterbitkan workflow saat ini adalah **debug APK untuk pengujian**, bukan APK produksi bertanda tangan untuk Google Play. Android/Play Protect dapat menampilkan peringatan ketika memasang APK sideload. Jangan menonaktifkan perlindungan perangkat untuk mengatasi peringatan tersebut.
 
-Kandidat penting:
-- [Llamatik](https://github.com/llamatik/Llamatik) — SDK Kotlin untuk inferensi lokal, agent, memori, RAG, dan speech; lisensi MIT untuk kode inti, tetapi memiliki native build dan kebutuhan perangkat yang harus dievaluasi.
-- [LocalMind](https://github.com/tk85457/LocalMind) dan [Offline AI Assistant](https://github.com/its-hazratbilal/offline-ai-assistant) — referensi aplikasi Android offline AI, model GGUF, llama.cpp/JNI, manajemen model, dan riwayat lokal; keduanya menyatakan lisensi MIT.
-- [Hush AI](https://github.com/hushai-app/hushai-android) dan [On-device LLM](https://github.com/ThalzeronLabs/android-on-device-llm) — alternatif Android lokal berbasis llama.cpp; Apache-2.0, dengan biaya model besar, native build, dan kebutuhan RAM/ARM64 yang perlu diperhitungkan.
-- [Parakeet Android](https://github.com/meet30997/parakeet-android-on-device-speech-recognition) — referensi speech-to-text offline berbasis JNI/NeMo-Speech.cpp; MIT, tetapi model sekitar 714 MB dan bukan streaming native sejati.
-- [TikTokLiveJava](https://github.com/jwdeveloper/TikTokLiveJava) dan [TikTok-Live-Connector](https://github.com/zerodytrash/TikTok-Live-Connector) — referensi event LIVE tidak resmi berbasis reverse engineering; **tidak dimasukkan sebagai dependensi produksi**.
-- [SwaraPlayer](https://github.com/kannan-ai/SwaraPlayer) — referensi AndroidX Media3/ExoPlayer dan MediaSessionService; metadata lisensi GitHub belum terverifikasi, jadi tidak diadopsi.
-- [HexaPlayer](https://github.com/OxoGhost01/HexaPlayer) — referensi pengelolaan pustaka, antrean, playlist, dan audio UI; metadata lisensi tidak terdeteksi, tidak disalin.
-- [PulsePlayer-Android](https://github.com/Shivaanshe/PulsePlayer-Android) — referensi UI glassmorphism dan audio service; GPL-3.0, sehingga kode tidak disalin.
-- [MusicPlayer-JetpackCompose](https://github.com/UmairOye/MusicPlayer-JetpackCompose) — referensi pola UI/pengelolaan audio; kode dan aset tidak disalin.
-
-Tidak ada kode pihak ketiga yang disalin secara membabi buta. Lisensi harus diverifikasi untuk setiap komponen dan dependensi sebelum distribusi.
-
-## Batasan Android dan keamanan
-
-- Android dan vendor perangkat dapat menghentikan atau membatasi foreground service, termasuk karena force-stop, penghemat baterai, dan kebijakan OEM.
-- `START_STICKY` bukan jaminan layanan hidup terus-menerus.
-- Pengingat setelah reboot meminta pengguna membuka aplikasi; tidak mengklaim auto-start paksa.
-- Aplikasi tidak memerlukan TalkBack dan tidak memasang AccessibilityService untuk membaca atau mengendalikan aplikasi lain. Label semantik Compose tetap dipakai agar kontrol mempunyai nama yang jelas.
-- Jangan memasukkan kata sandi TikTok, cookie sesi, atau token pribadi ke dalam issue, log, README, atau chat.
-- Integrasi provider harus memakai API/akses yang sah dan dapat diganti melalui adapter. Endpoint reverse-engineered dapat berubah dan berisiko melanggar ketentuan platform.
-- Izin Android ditambahkan hanya bila fitur terkait benar-benar diimplementasikan.
-
-## Build dari source
+## ⚙ Build dari source
 
 Persyaratan:
 - JDK 17
 - Android SDK 36
-- Gradle 8.13
-- Android Studio yang mendukung Kotlin dan Jetpack Compose pada konfigurasi proyek
+- Gradle 8.13 (workflow CI)
+- Android Gradle Plugin dan Kotlin plugin sesuai konfigurasi proyek
 
-Perintah:
+Jalankan dari root repository:
 
 ```bash
 gradle testDebugUnitTest assembleDebug
 ```
 
-Output APK debug:
+Output:
 
 ```text
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-CI menjalankan unit test JVM dan build APK pada setiap push ke `main`. Jika build berhasil, workflow mengunggah APK ke GitHub Actions artifact dan menerbitkannya sebagai asset di GitHub Release.
+GitHub Actions menjalankan tes dan build pada pull request serta push ke `main`. Setelah perubahan digabung ke `main` dan workflow berhasil, APK debug diunggah sebagai artifact dan asset GitHub Release otomatis. Release hanya boleh dianggap tersedia setelah workflow dan halaman Releases benar-benar menunjukkan hasil sukses.
 
-## Unduh aplikasi
+## ◉ Dokumentasi proyek
 
-- [Unduh APK terbaru — GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk)
-- [Buka halaman Releases dan Assets](https://github.com/adebojel/LiveCreatorStudio/releases)
-- [Lihat hasil GitHub Actions](https://github.com/adebojel/LiveCreatorStudio/actions)
+| Dokumen | Keterangan |
+|---|---|
+| [Website resmi](https://adebojel.github.io/LiveCreatorStudio/) | Beranda proyek |
+| [Fitur](https://adebojel.github.io/LiveCreatorStudio/features.html) | Ringkasan kemampuan |
+| [Panduan unduh](https://adebojel.github.io/LiveCreatorStudio/download.html) | Instalasi dan build |
+| [Status integrasi](https://adebojel.github.io/LiveCreatorStudio/integration.html) | Batasan konektor |
+| [Pusat bantuan](https://adebojel.github.io/LiveCreatorStudio/support.html) | Bantuan pengguna |
+| [Kebijakan privasi](https://adebojel.github.io/LiveCreatorStudio/privacy.html) | Privasi |
+| [Ketentuan layanan](https://adebojel.github.io/LiveCreatorStudio/terms.html) | Ketentuan |
+| [Audit repository](docs/REPOSITORY_AUDIT.md) | Evaluasi proyek eksternal dan lisensi |
+| [Katalog soundboard](docs/SOUND_LIBRARY.md) | Sumber dan lisensi aset audio |
+| [Checklist QA perangkat](docs/DEVICE_QA_CHECKLIST.md) | Pengujian manual Android |
+| [TikTok review readiness](docs/TIKTOK_REVIEW_READINESS.md) | Persiapan integrasi/review |
 
-**Catatan instalasi:** file yang dipublikasikan saat ini adalah APK debug, bukan rilis produksi yang ditandatangani untuk Play Store. Android/Play Protect dapat menampilkan peringatan pada APK sideload/debug. Proyek ini tidak menonaktifkan atau melewati perlindungan Android.
+## ▣ Batasan Android dan keamanan
 
-## Catatan perubahan 0.6.0
+- Android dapat menghentikan atau membatasi service; `START_STICKY` bukan jaminan berjalan tanpa henti.
+- Overlay memerlukan izin khusus dan tidak dapat menggantikan kontrol sistem Android.
+- Aplikasi tidak memasang AccessibilityService untuk mengendalikan aplikasi lain.
+- Jangan pernah memasukkan password, cookie, access token, atau kredensial pribadi ke issue, log, README, atau chat.
+- API key dan signing key untuk rilis produksi harus disimpan sebagai GitHub Actions Secrets, bukan di repository publik.
+- Lisensi proyek utama belum ditetapkan. Periksa lisensi masing-masing dependency dan aset sebelum redistribusi.
 
-Versi 0.6.0 menambahkan Floating Control opsional, aksesibilitas dasar untuk bola dan tombol panel, serta checklist QA khusus overlay. Fitur overlay tetap perlu diverifikasi pada perangkat fisik.
+## ⇢ Roadmap gabungan
 
-## Validasi build 0.5.9
+1. Perkuat lifecycle TTS, playback, import/delete, dan migrasi data dengan tes yang relevan.
+2. Lanjutkan QA perangkat untuk notifikasi, audio focus, lockscreen, Bluetooth, overlay, dan konsumsi baterai.
+3. Implementasikan adapter LIVE hanya setelah jalur akses resmi dan persetujuan platform tersedia.
+4. Kembangkan modul AI/STT opsional dengan fallback offline dan kontrol resource.
+5. Siapkan signing release, privacy/compliance review, dan distribusi publik setelah seluruh validasi selesai.
 
-Perubahan 0.5.9 merapikan kontrol notifikasi foreground service, rekonsiliasi status ketika aplikasi kembali ke foreground, navigasi dengan latar gradien gelap/transparan, serta filter sumber dan tombol ringkas pada soundboard. Pengujian otomatis mencakup klasifikasi URI suara paket dan URI impor. Pengujian notifikasi, audio focus, lockscreen, Bluetooth, unduh paket dan playback offline tetap harus diverifikasi pada perangkat Android fisik; CI tidak dapat membuktikan perilaku OEM/perangkat.
+---
 
-Lihat [checklist QA perangkat](docs/DEVICE_QA_CHECKLIST.md).
-
-## Rencana pengembangan
-
-1. Tambahkan pengujian unit untuk lifecycle dan pengelolaan status TTS.
-2. Migrasikan metadata soundboard ke Room dengan mekanisme pemulihan izin URI.
-3. Validasi MediaSession pada perangkat fisik: notifikasi, lockscreen, headset/Bluetooth, audio focus, dan lifecycle service.
-4. Bangun event-provider adapter hanya setelah jalur data LIVE yang sah, stabil, dan dapat diuji tersedia.
-5. Evaluasi AI lokal sebagai modul opsional dengan pemeriksaan RAM/storage, pengunduhan model yang aman, pembatalan generasi, dan fallback yang jelas.
-6. Setelah CI stabil, lakukan pengujian perangkat, aksesibilitas, konsumsi baterai, audio focus, dan kompatibilitas versi Android.
-7. Siapkan signing release dan pemeriksaan kebijakan Play Store secara terpisah.
-
-## Lisensi
-
-Lisensi proyek utama belum ditetapkan. Sampai lisensi resmi ditambahkan, jangan menganggap seluruh source proyek ini bebas digunakan ulang. Lihat [audit repository](docs/REPOSITORY_AUDIT.md) untuk status lisensi sumber eksternal.
-
-
-### Fondasi integrasi TikTok LIVE (0.5.6)
-
-- Ditambahkan kontrak provider read-only yang memisahkan koneksi LIVE dari Compose UI, normalisasi event, dan mesin aksi kreator.
-- Skema event mencakup chat, gift/combo, follow, share, like, join, subscription, question, battle, poll, caption, moderation, viewer count, room info, dan status live. Daftar ini adalah format internal yang bisa didukung adapter; bukan klaim bahwa seluruh event sudah diterima.
-- Status koneksi dan capability harus dilaporkan adapter berdasarkan hasil koneksi nyata. Provider wajib menyatakan apakah API resmi atau bukan.
-- Envelope tidak menyediakan field cookie, session token, atau raw payload agar kredensial tidak masuk ke riwayat event.
-- **Belum ada adapter TikTok yang terhubung pada versi ini.** TikTokLiveJava sedang dievaluasi sebagai POC read-only; protokolnya tidak resmi dan dapat berubah. Event likes juga dapat tidak selalu dikirim oleh upstream.
+<p align="center">
+  <strong>LiveCreator Studio</strong><br>
+  <sub>Built for creator workflows · Android · Open development</sub>
+</p>
