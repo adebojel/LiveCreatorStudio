@@ -15,7 +15,7 @@ No audio picker or manual import is needed for the starter library. If the devic
 
 ## Full optional library
 
-The Soundboard screen now lets users download each of the sixteen curated ZIP packs individually, or use one action to download the full catalog:
+The Soundboard screen now lets users download each of the eighteen curated ZIP packs individually, or use one action to download the full catalog:
 
 | Pack | Upstream count | Source |
 |---|---:|---|
@@ -36,11 +36,12 @@ The Soundboard screen now lets users download each of the sixteen curated ZIP pa
 | Battle Sound Effects | 4 | OpenGameArt / Ogrebane |
 | Retro UI Sound Pack | 70 | OpenGameArt / StumpyStrust |
 | Retro Arcade SFX Pack 2 | 110 | OpenGameArt / phoenix1291 |
-| **Total** | **1,554** | |
+| 30 Weird & Funny SFX | 30 | OpenGameArt / rubberduck |
+| **Total** | **1,584** | |
 
 The counts are upstream catalog counts, not a promise that every archive entry is playable. The app counts actual supported audio files after extraction.
 
-The OpenGameArt packs above include ZIP archives marked CC0 in the reviewed sources. Retro Arcade SFX Pack 2 adds 110 unique effects across 11 themed folders; the page identifies CC0 and lists MP3/OGG/WAV/FLAC formats. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
+The OpenGameArt packs above include ZIP archives marked CC0 in the reviewed sources. The new 30 Weird & Funny SFX pack contains 30 unusual/funny synthesized and edited effects; its OpenGameArt page explicitly marks it CC0. Retro Arcade SFX Pack 2 adds 110 unique effects across 11 themed folders; the page identifies CC0 and lists MP3/OGG/WAV/FLAC formats. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
 
 ## Licensing and attribution
 
