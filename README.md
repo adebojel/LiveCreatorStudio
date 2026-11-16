@@ -49,7 +49,7 @@ Website proyek: https://adebojel.github.io/LiveCreatorStudio/
 
 ## Status proyek
 
-**Versi sumber: 0.5.8 (dalam pengembangan).** Versi ini menambahkan pustaka soundboard CC0 otomatis: 210 suara awal diunduh saat aplikasi pertama kali dibuka, dengan opsi mengunduh seluruh 16 paket (sekitar 1.444 aset) dan tetap mendukung impor audio manual.
+**Versi sumber: 0.5.9 (dalam pengembangan).** Versi ini menambahkan pustaka soundboard CC0 otomatis: 210 suara awal diunduh saat aplikasi pertama kali dibuka, dengan opsi mengunduh seluruh 16 paket (sekitar 1.444 aset) dan tetap mendukung impor audio manual.
 
 > **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi yang tercantum pada halaman Releases adalah build sukses terbaru. APK debug bukan APK produksi bertanda tangan. Build debug bukan APK produksi bertanda tangan.
 
@@ -77,11 +77,11 @@ flowchart TD
 - **Dashboard Android** berbasis Kotlin dan Jetpack Compose dengan navigasi Dashboard, TTS, Soundboard, dan Settings.
 - **TTS lokal Bahasa Indonesia** menggunakan mesin TextToSpeech perangkat; tersedia preview, pengaturan speech rate dan pitch, penyimpanan preferensi sederhana, tombol stop, serta callback mulai/selesai/error.
 - **Antrean TTS latar belakang** berbentuk bounded FIFO dengan kapasitas maksimum 40 permintaan. Ketika penuh, permintaan tertua yang masih menunggu dibuang agar permintaan terbaru tetap masuk.
-- **Foreground audio service** yang dimulai oleh pengguna, notifikasi persisten, tindakan hentikan layanan, serta tindakan hapus antrean.
+- **Foreground audio service** yang dimulai oleh pengguna, notifikasi persisten dengan perintah matikan layanan yang dikirim langsung ke service, tindakan hapus antrean, dan sinkronisasi status saat aplikasi kembali aktif.
 - **Proteksi callback TTS usang** agar callback dari utterance yang telah dibatalkan tidak mengubah status playback baru.
 - **Penyimpanan preferensi terpusat** menggunakan Preferences DataStore; pengaturan auto-start, pengingat reboot, speech rate, dan pitch dimigrasikan otomatis dari SharedPreferences lama. Nilai TTS divalidasi sebelum disimpan/dipakai.
 - **Playback soundboard menggunakan AndroidX Media3 1.11.1 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Metadata pustaka disimpan di Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama. Playback soundboard menggunakan AndroidX Media3 1.11.1 (rilis stabil) dan berjalan pada MediaSessionService terpisah dari lifecycle Compose. Kontrol sesi tersedia melalui notifikasi media Android, lockscreen, headset, dan perangkat Bluetooth yang kompatibel; koneksi UI dapat dilepas tanpa menghentikan sesi.
-- **Soundboard CC0 otomatis**: mengunduh 3 paket awal Kenney (210 suara) pada peluncuran pertama, opsi satu tombol untuk seluruh 16 paket (sekitar 1.444 aset), ekstraksi aman ke penyimpanan privat, lisensi/sumber per paket, serta playback offline melalui Media3. Impor audio pribadi tetap opsional; tersedia tes speaker tanpa file audio. Lihat [katalog dan lisensi soundboard](docs/SOUND_LIBRARY.md).
+- **Soundboard CC0 otomatis**: mengunduh 3 paket awal Kenney (210 suara) pada peluncuran pertama, opsi satu tombol untuk seluruh 16 paket (sekitar 1.444 aset), ekstraksi aman ke penyimpanan privat, lisensi/sumber per paket, serta playback offline melalui Media3. Pustaka memiliki pencarian dan filter Semua/Paket CC0/Impor dengan kontrol putar/hapus ringkas. Impor audio pribadi tetap opsional; tersedia tes speaker tanpa file audio. Lihat [katalog dan lisensi soundboard](docs/SOUND_LIBRARY.md).
 - **Picture-in-Picture** untuk panel status ringkas.
 - **Kontrak LiveEventProvider** untuk adapter event read-only, status koneksi, dan aliran event terpisah dari UI; belum ada provider runtime yang aktif.
 - **Label semantik kontrol** Compose untuk nama tombol dan status yang jelas; aplikasi tidak meminta pengguna mengaktifkan TalkBack.
@@ -161,6 +161,12 @@ CI menjalankan unit test JVM dan build APK pada setiap push ke `main`. Jika buil
 - [Lihat hasil GitHub Actions](https://github.com/adebojel/LiveCreatorStudio/actions)
 
 **Catatan instalasi:** file yang dipublikasikan saat ini adalah APK debug, bukan rilis produksi yang ditandatangani untuk Play Store. Android/Play Protect dapat menampilkan peringatan pada APK sideload/debug. Proyek ini tidak menonaktifkan atau melewati perlindungan Android.
+
+## Validasi build 0.5.9
+
+Perubahan 0.5.9 merapikan kontrol notifikasi foreground service, rekonsiliasi status ketika aplikasi kembali ke foreground, navigasi dengan latar gradien gelap/transparan, serta filter sumber dan tombol ringkas pada soundboard. Pengujian otomatis mencakup klasifikasi URI suara paket dan URI impor. Pengujian notifikasi, audio focus, lockscreen, Bluetooth, unduh paket dan playback offline tetap harus diverifikasi pada perangkat Android fisik; CI tidak dapat membuktikan perilaku OEM/perangkat.
+
+Lihat [checklist QA perangkat](docs/DEVICE_QA_CHECKLIST.md).
 
 ## Rencana pengembangan
 
