@@ -9,6 +9,8 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
+import androidx.media3.common.PlaybackException
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import java.io.File
@@ -37,6 +39,9 @@ class FloatingControlService : Service() {
     private var dockedRight = false
     private var dockAnimator: ValueAnimator? = null
     private val mainHandler = Handler(Looper.getMainLooper())
+    private var effectController: MediaController? = null
+    private var effectControllerFuture: java.util.concurrent.Future<MediaController>? = null
+    private var serviceDestroyed = false
 
     override fun onCreate() {
         super.onCreate()
@@ -270,11 +275,39 @@ class FloatingControlService : Service() {
             Toast.makeText(this, "Unduh efek $title di Soundboard terlebih dahulu.", Toast.LENGTH_LONG).show()
             return
         }
+        // Reuse one controller for the overlay and release it when playback ends.
+        effectControllerFuture?.cancel(false)
+        effectControllerFuture = null
+        effectController?.let(::releaseEffectController)
+
         val token = SessionToken(this, ComponentName(this, SoundboardPlaybackService::class.java))
         val future = MediaController.Builder(this, token).buildAsync()
+        effectControllerFuture = future
         future.addListener({
+            if (serviceDestroyed || effectControllerFuture !== future) {
+                runCatching { future.get().release() }
+                return@addListener
+            }
             runCatching { future.get() }
                 .onSuccess { controller ->
+                    if (serviceDestroyed || effectControllerFuture !== future) {
+                        runCatching { controller.release() }
+                        return@onSuccess
+                    }
+                    effectControllerFuture = null
+                    effectController = controller
+                    controller.addListener(object : Player.Listener {
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            if (playbackState == Player.STATE_ENDED) {
+                                releaseEffectController(controller)
+                            }
+                        }
+
+                        override fun onPlayerError(error: PlaybackException) {
+                            releaseEffectController(controller)
+                            Toast.makeText(this@FloatingControlService, "Efek $title gagal diputar.", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                     runCatching {
                         val item = MediaItem.Builder()
                             .setUri(Uri.fromFile(audio))
@@ -283,16 +316,21 @@ class FloatingControlService : Service() {
                         controller.setMediaItem(item)
                         controller.prepare()
                         controller.play()
-                        mainHandler.postDelayed({ runCatching { controller.release() } }, 1_500L)
                     }.onFailure {
-                        runCatching { controller.release() }
+                        releaseEffectController(controller)
                         Toast.makeText(this, "Efek $title tidak dapat diputar.", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .onFailure {
+                    if (effectControllerFuture === future) effectControllerFuture = null
                     Toast.makeText(this, "Layanan Soundboard belum siap. Buka Soundboard sekali lalu coba lagi.", Toast.LENGTH_LONG).show()
                 }
         }, Executor { command -> mainHandler.post(command) })
+    }
+
+    private fun releaseEffectController(controller: MediaController) {
+        if (effectController === controller) effectController = null
+        runCatching { controller.release() }
     }
 
     private fun animateDock(root: LinearLayout, lp: WindowManager.LayoutParams, targetX: Int) {
@@ -320,6 +358,10 @@ class FloatingControlService : Service() {
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
     override fun onDestroy() {
+        serviceDestroyed = true
+        effectControllerFuture?.cancel(false)
+        effectControllerFuture = null
+        effectController?.let(::releaseEffectController)
         dockAnimator?.cancel()
         mainHandler.removeCallbacksAndMessages(null)
         removePanel()

@@ -26,8 +26,7 @@ internal sealed interface SoundPackInstallState {
 
 /**
  * Downloads and safely extracts the curated CC0 packs into app-private storage.
- * The installer never downloads arbitrary URLs: only reviewed catalog entries on kenney.nl
- * and opengameart.org are accepted. Starter packs are retried on the next app launch if offline.
+ * The installer never downloads arbitrary URLs: only reviewed catalog entries on kenney.nl, opengameart.org, and sfxmint.com are accepted. Starter packs are retried on the next app launch if offline.
  */
 internal object SoundPackInstaller {
     private const val MAX_ARCHIVE_BYTES = 120L * 1024L * 1024L
@@ -183,7 +182,7 @@ internal object SoundPackInstaller {
             readTimeout = 45_000
             instanceFollowRedirects = true
             requestMethod = "GET"
-            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.6.3")
+            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.6.4")
             setRequestProperty("Accept", "application/zip, application/octet-stream, */*")
             setRequestProperty("Referer", pack.sourceUrl)
         }

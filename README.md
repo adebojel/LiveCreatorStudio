@@ -49,7 +49,16 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.6.3 (pengembangan). Fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
+**Versi source:** 0.6.4 (final QA candidate). Semua fitur yang tercantum sebagai tersedia di source tetap memerlukan pengujian pada perangkat Android fisik sebelum dinyatakan siap produksi.
+
+## ◈ Status rilis dan validasi 0.6.4
+
+- **Source target:** 0.6.4 / versionCode 28.
+- **CI:** pull request harus lulus `testDebugUnitTest` dan `assembleDebug`; merge ke `main` akan memicu workflow rilis otomatis.
+- **APK:** gunakan tautan [APK debug terbaru](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk). Workflow juga mengunggah artifact `LiveCreatorStudio-debug-apk`.
+- **Build 0.6.3 sebelumnya:** [Release build-180](https://github.com/adebojel/LiveCreatorStudio/releases/tag/build-180) telah terbit, tetapi bukan pengganti rilis 0.6.4.
+- **Perangkat fisik:** belum dinyatakan lulus sampai checklist [DEVICE_QA_CHECKLIST.md](docs/DEVICE_QA_CHECKLIST.md) dijalankan pada ponsel Android dan hasilnya dicatat. CI tidak menguji speaker, izin overlay, notifikasi OEM, Bluetooth, atau TalkBack pada perangkat nyata.
+- **Signing:** workflow saat ini menghasilkan debug APK untuk pengujian; APK production-signed / Play Store belum tersedia.
 
 ## ✧ Fitur saat ini
 
