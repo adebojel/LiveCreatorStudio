@@ -186,7 +186,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         ) {
             Icon(Icons.Default.LibraryMusic, contentDescription = null)
             Spacer(Modifier.width(8.dp))
-            Text("Unduh semua paket suara (10 paket)")
+            Text("Unduh semua paket suara (16 paket)")
         }
         when (val state = packState) {
             is SoundPackInstallState.Downloading -> {
@@ -204,7 +204,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 }
             }
             SoundPackInstallState.Idle -> Text(
-                "Paket awal: 210 suara. Tersedia 10 paket dengan sekitar 730 aset CC0.",
+                "Paket awal: 210 suara. Tersedia 16 paket dengan sekitar 1.387 aset CC0.",
                 color = Color.LightGray, fontSize = 11.sp
             )
         }
