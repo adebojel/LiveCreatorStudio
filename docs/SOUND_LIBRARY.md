@@ -15,7 +15,7 @@ No audio picker or manual import is needed for the starter library. If the devic
 
 ## Full optional library
 
-The Soundboard screen now lets users download each of the eighteen curated ZIP packs individually, or use one action to download the full catalog:
+The Soundboard screen now lets users download each of the thirty-two curated sound packs (ZIP archives and individual CC0 audio files) individually, or use one action to download the full catalog:
 
 | Pack | Upstream count | Source |
 |---|---:|---|
@@ -37,11 +37,18 @@ The Soundboard screen now lets users download each of the eighteen curated ZIP p
 | Retro UI Sound Pack | 70 | OpenGameArt / StumpyStrust |
 | Retro Arcade SFX Pack 2 | 110 | OpenGameArt / phoenix1291 |
 | 30 Weird & Funny SFX | 30 | OpenGameArt / rubberduck |
-| **Total** | **1,584** | |
+| Laugh, giggle and villain laugh (6 individual MP3s) | 6 | SFXMint |
+| Cartoon kiss variations (3 individual MP3s) | 3 | SFXMint |
+| Short gunshot cue | 1 | SFXMint |
+| Cartoon boing | 1 | SFXMint |
+| Crowd applause | 1 | SFXMint |
+| Thunder ambience | 1 | SFXMint |
+| 100 Weird & Everyday SFX | 100 | OpenGameArt / rubberduck |
+| **Total** | **1,697** | |
 
-The counts are upstream catalog counts, not a promise that every archive entry is playable. The app counts actual supported audio files after extraction.
+The counts are upstream catalog counts, not a promise that every archive entry is playable. The catalog now contains 32 entries: 18 ZIP packs plus 14 individual CC0 MP3/WAV assets. The app counts actual supported audio files after extraction.
 
-The OpenGameArt packs above include ZIP archives marked CC0 in the reviewed sources. The new 30 Weird & Funny SFX pack contains 30 unusual/funny synthesized and edited effects; its OpenGameArt page explicitly marks it CC0. Retro Arcade SFX Pack 2 adds 110 unique effects across 11 themed folders; the page identifies CC0 and lists MP3/OGG/WAV/FLAC formats. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
+The OpenGameArt packs above include ZIP archives marked CC0 in the reviewed sources. The individual laugh, kiss, gunshot, boing, applause and thunder files are served as direct MP3s by SFXMint; its source pages state CC0 1.0 and allow direct hotlinking. These SFXMint recordings are AI-generated/procedurally synthesized, not human field recordings. The new 30 Weird & Funny SFX pack contains 30 unusual/funny synthesized and edited effects; its OpenGameArt page explicitly marks it CC0. Retro Arcade SFX Pack 2 adds 110 unique effects across 11 themed folders; the page identifies CC0 and lists MP3/OGG/WAV/FLAC formats. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
 
 ## Licensing and attribution
 
@@ -54,13 +61,13 @@ All ten pack pages are listed as Creative Commons CC0 by the upstream source ind
 
 ## Download and storage behavior
 
-- Downloads only fixed HTTPS URLs in the in-app catalog, from the fixed `kenney.nl` and `opengameart.org` catalog hosts and their subdomains.
+- Downloads only fixed HTTPS URLs in the in-app catalog, from the fixed `kenney.nl`, `opengameart.org`, and `sfxmint.com` catalog hosts and their subdomains.
 - Saves extracted audio in app-private storage; files are not exposed as public shared storage.
 - Uses staging directories and only replaces an installed pack after successful extraction.
 - Enforces archive, entry-count, per-file, and total extracted-size limits.
 - Retains a local license/source note with each pack.
-- The first-run starter download needs internet access. Users can also select optional packs individually or download all packs. Once installed, those sounds play offline. ZIP archives are downloaded directly from the original catalog sources at runtime; they are not embedded inside the APK or attached as separate GitHub Release assets.
-- The app does not mirror or rehost third-party files on its website; it downloads the original upstream archives directly. Individual pack installation is available in Soundboard, alongside the download-all action.
+- The first-run starter download needs internet access. Users can also select optional packs individually or download all packs. Once installed, those sounds play offline. ZIP archives and individual MP3 files are downloaded directly from the original catalog sources at runtime; they are not embedded inside the APK or attached as separate GitHub Release assets.
+- The app does not mirror or rehost third-party files on its website; it downloads the original upstream archives or direct CC0 files. SFXMint allows direct hotlinking; its API/MCP trial quota is separate from the licence and direct audio URLs. Individual pack installation is available in Soundboard, alongside the download-all action.
 
 ## Why other libraries are not included automatically
 
