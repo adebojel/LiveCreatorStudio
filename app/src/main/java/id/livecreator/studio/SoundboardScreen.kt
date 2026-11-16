@@ -143,7 +143,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         importResult.onSuccess { item ->
             if (sounds.none { it.uri == item.uri }) {
                 scope.launch { SoundboardStore.save(context, (sounds + item).sortedBy { it.title.lowercase() }) }
-                message = "File berhasil diimpor dan izin aksesnya disimpan."
+                message = "File berhasil disalin ke penyimpanan aplikasi."
             } else message = "File tersebut sudah ada di pustaka."
         }.onFailure { error ->
             message = "Impor gagal: ${error.message ?: "akses file tidak tersedia"}"
@@ -309,11 +309,16 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                             IconButton(
                                 onClick = {
                                     if (activeUri == sound.uri) stopPlayback()
-                                    scope.launch { SoundboardStore.save(context, sounds.filterNot { it.uri == sound.uri }) }
-                                    if (sound.uri.startsWith("content:", ignoreCase = true)) {
-                                        SoundboardFileImport.delete(context, Uri.parse(sound.uri))
+                                    scope.launch {
+                                        runCatching {
+                                            SoundboardStore.save(context, sounds.filterNot { it.uri == sound.uri })
+                                            SoundboardFileImport.delete(context, Uri.parse(sound.uri))
+                                        }.onSuccess {
+                                            message = "Suara dihapus dari pustaka."
+                                        }.onFailure { error ->
+                                            message = "Suara belum dapat dihapus: ${error.message ?: "kesalahan penyimpanan"}"
+                                        }
                                     }
-                                    message = "Suara dihapus dari pustaka."
                                 },
                                 modifier = Modifier.semantics { contentDescription = "Hapus ${sound.title} dari pustaka" }
                             ) {
