@@ -76,7 +76,9 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 ### 4. Floating Control
 - Bola overlay glass RGB berukuran 36–64 dp, dapat digeser, lalu menempel magnetis ke sisi kiri/kanan dengan grip 16 dp tetap terlihat.
 - Pintasan untuk kontrol layanan audio.
-- Ukuran default diperkecil; opasitas dapat diatur dan posisi dock disimpan. Memerlukan izin overlay Android yang diberikan secara eksplisit dan nonaktif secara default.
+- Ukuran default diperkecil; opasitas dapat diatur dan posisi dock disimpan.
+- Onboarding izin berurutan: notifikasi Android lebih dahulu, lalu penjelasan izin overlay opsional; mikrofon/kamera tidak diminta karena tidak dipakai fitur saat ini.
+- Memerlukan izin overlay Android yang diberikan secara eksplisit dan nonaktif secara default.
 - Tidak membaca layar, tidak mengendalikan aplikasi lain, dan bukan kontrol Quick Settings/notification shade.
 
 ### 5. Arsitektur dan kualitas
