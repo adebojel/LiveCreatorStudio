@@ -15,7 +15,7 @@ No audio picker or manual import is needed for the starter library. If the devic
 
 ## Full optional library
 
-The Soundboard screen also offers a one-tap download of all sixteen curated ZIP packs:
+The Soundboard screen also offers a one-tap download of all fifteen curated ZIP packs:
 
 | Pack | Upstream count | Source |
 |---|---:|---|
@@ -31,15 +31,14 @@ The Soundboard screen also offers a one-tap download of all sixteen curated ZIP 
 | Kenney Voiceover Pack Fighter | 45 | Kenney |
 | Retro 8-bit Effects | 512 | OpenGameArt / SubspaceAudio |
 | OpenGameArt RPG Sound Pack | 96 | OpenGameArt / artisticdude |
-| Level Up & Power Up | 13 | OpenGameArt / wobbleboxx |
 | Zombie Sounds | 24 | OpenGameArt / artisticdude |
 | Footsteps Surfaces | 8 | OpenGameArt / TinyWorlds |
 | Battle Sound Effects | 4 | OpenGameArt / Ogrebane |
-| **Total** | **1,387** | |
+| **Total** | **1,374** | |
 
 The counts are upstream catalog counts, not a promise that every archive entry is playable. The app counts actual supported audio files after extraction.
 
-The OpenGameArt packs above are the six ZIP archives marked CC0 in the reviewed source index. Two additional CC0 entries in that index are distributed as 7z archives and are deliberately excluded because the Android installer currently accepts ZIP only. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
+The OpenGameArt packs above are five ZIP archives marked CC0 in the reviewed source index. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
 
 ## Licensing and attribution
 
