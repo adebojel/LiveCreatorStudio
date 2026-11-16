@@ -69,6 +69,13 @@ class FloatingControlService : Service() {
                 setStroke(dp(1), Color.CYAN)
             }
             alpha = opacity
+            contentDescription = "LiveCreator Studio. Bola kontrol mengambang. Ketuk untuk membuka atau menutup panel, geser untuk memindahkan."
+            isFocusable = true
+            setOnClickListener {
+                expanded = !expanded
+                removePanel()
+                showPanel()
+            }
         }
         root.addView(bubble, LinearLayout.LayoutParams(dp(size), dp(size)))
         if (expanded) {
@@ -124,7 +131,7 @@ class FloatingControlService : Service() {
                 }
                 MotionEvent.ACTION_UP -> {
                     prefs.edit().putInt("x", lp.x).putInt("y", lp.y).apply()
-                    if (!moved) { expanded = !expanded; removePanel(); showPanel() }
+                    if (!moved) bubble.performClick()
                     true
                 }
                 else -> true
@@ -148,6 +155,10 @@ class FloatingControlService : Service() {
         parent.addView(TextView(this).apply {
             text = label; textSize = 12f; setTextColor(Color.WHITE); gravity = Gravity.CENTER
             setPadding(dp(8), dp(9), dp(8), dp(9))
+            minHeight = dp(48)
+            isFocusable = true
+            contentDescription = label
+            background = getDrawable(android.R.drawable.list_selector_background)
             setOnClickListener { action() }
         }, LinearLayout.LayoutParams(-1, -2))
     }
