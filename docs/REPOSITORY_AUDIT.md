@@ -416,3 +416,12 @@ README menggambarkan event relay, trigger-action, OBS overlays, Discord bot, cha
 - Tidak menjanjikan "membaca seluruh yang ada": private/moderated/deleted messages, hidden fields, platform-only signals, and events not emitted by upstream protocol cannot be guaranteed.
 - Fitur tulis (mengirim komentar/aksi ke TikTok) tidak termasuk POC dan memerlukan jalur resmi serta penilaian kebijakan tersendiri.
 
+
+
+## 22. Batas provider LIVE dan hasil build 99
+
+- Source aplikasi sekarang memiliki kontrak `LiveEventProvider`, `LiveConnectionState`, `LiveProviderCapabilities`, dan `LiveEventEnvelope` yang netral transport.
+- Empat test memeriksa envelope event, capability non-resmi, dan validasi ID/count. Kontrak tidak membuka koneksi sendiri dan tidak menambah izin jaringan/mikrofon.
+- Build 99 berhasil pada 16 November 2026: unit tests, compileDebugKotlin, assembleDebug, upload artifact, dan GitHub Release.
+- Keputusan sementara: TikTokLiveJava adalah kandidat POC native JVM read-only, tetapi belum diimpor sebagai dependency. Sebelum integrasi, lakukan uji build JitPack, D8/R8, minSdk 26, semua dependency transitif, lifecycle foreground service, dan event callback di perangkat. Jangan aktifkan method pengiriman chat.
+- tiktool/tiktok-live-events adalah opsi relay cloud Node/Python yang mengiklankan 90+ event dan memiliki MIT license, tetapi layanan API mempunyai paket berbayar dan batas rate/session; bukan solusi offline atau gratis tanpa batas. Integrasi hanya opsional setelah audit privacy, biaya, token/API key, dan persetujuan pengguna.
