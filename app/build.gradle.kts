@@ -5,7 +5,7 @@ plugins {
 }
 android {
     namespace = "id.livecreator.studio"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "id.livecreator.studio"
         minSdk = 26
