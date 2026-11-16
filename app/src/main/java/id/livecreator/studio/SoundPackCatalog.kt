@@ -69,8 +69,7 @@ internal object SoundPackCatalog {
             "voiceover-pack-fighter", "Voiceover Pack Fighter", 45,
             "https://kenney.nl/media/pages/assets/voiceover-pack-fighter/6ceb77c6f1-1677589837/kenney_voiceover-pack-fighter.zip",
             "https://kenney.nl/assets/voiceover-pack-fighter"
-        )
-        ,
+        ),
         SoundPack(
             "oga-512-retro", "Retro 8-bit Effects", 512,
             "https://opengameart.org/sites/default/files/The%20Essential%20Retro%20Video%20Game%20Sound%20Effects%20Collection%20%5B512%20sounds%5D.zip",
