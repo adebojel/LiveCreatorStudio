@@ -42,36 +42,44 @@ internal object SoundPackInstaller {
 
     suspend fun ensureStarterPacks(context: Context) {
         mutex.withLock {
+            var firstFailure: Pair<String, String>? = null
             for (pack in SoundPackCatalog.starterPacks) {
                 if (!isInstalled(context, pack)) {
                     runCatching { installPackLocked(context, pack) }
-                        .onFailure {
-                            mutableState.value = SoundPackInstallState.Failed(
-                                pack.title, it.message ?: "Unduhan belum berhasil"
-                            )
-                            return
+                        .onFailure { error ->
+                            if (firstFailure == null) {
+                                firstFailure = pack.title to (error.message ?: "Unduhan belum berhasil")
+                            }
                         }
                 }
+            }
+            firstFailure?.let { (title, reason) ->
+                mutableState.value = SoundPackInstallState.Failed(title, reason)
             }
         }
     }
 
     suspend fun installAll(context: Context) {
         mutex.withLock {
+            var firstFailure: Pair<String, String>? = null
             for (pack in SoundPackCatalog.packs) {
                 if (!isInstalled(context, pack)) {
                     runCatching { installPackLocked(context, pack) }
-                        .onFailure {
-                            mutableState.value = SoundPackInstallState.Failed(
-                                pack.title, it.message ?: "Unduhan belum berhasil"
-                            )
-                            return
+                        .onFailure { error ->
+                            if (firstFailure == null) {
+                                firstFailure = pack.title to (error.message ?: "Unduhan belum berhasil")
+                            }
                         }
                 }
             }
-            mutableState.value = SoundPackInstallState.Installed(
-                "Semua paket", SoundPackCatalog.packs.sumOf { it.assetCount }
-            )
+            val installedCount = SoundPackCatalog.packs
+                .filter { isInstalled(context, it) }
+                .sumOf { audioFiles(packDirectory(context, it)).size }
+            firstFailure?.let { (title, reason) ->
+                mutableState.value = SoundPackInstallState.Failed(title, reason)
+            } ?: run {
+                mutableState.value = SoundPackInstallState.Installed("Semua paket", installedCount)
+            }
         }
     }
 
