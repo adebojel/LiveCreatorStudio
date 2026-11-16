@@ -32,7 +32,7 @@ internal sealed interface SoundPackInstallState {
 internal object SoundPackInstaller {
     private const val MAX_ARCHIVE_BYTES = 120L * 1024L * 1024L
     private const val MAX_EXTRACTED_BYTES = 240L * 1024L * 1024L
-    private const val MAX_ENTRIES = 500
+    private const val MAX_ENTRIES = 1_500
     private const val MAX_AUDIO_FILE_BYTES = 24L * 1024L * 1024L
     private val supportedExtensions = setOf("ogg", "wav", "mp3", "flac", "m4a", "aac")
     private val mutex = Mutex()
@@ -115,7 +115,7 @@ internal object SoundPackInstaller {
             if (extracted.isEmpty()) error("Paket tidak berisi file audio yang didukung.")
 
             File(staging, "LICENSES.txt").writeText(
-                "${pack.title}\nCreator: ${SoundPackCatalog.CREATOR}\n" +
+                "${pack.title}\nCreator: ${pack.creator}\n" +
                     "Source: ${pack.sourceUrl}\nLicense: Creative Commons Zero 1.0 (CC0)\n" +
                     "License URL: https://creativecommons.org/publicdomain/zero/1.0/\n" +
                     "Original pack license is included in the upstream archive when provided.\n"
@@ -152,7 +152,9 @@ internal object SoundPackInstaller {
 
     private fun downloadArchive(pack: SoundPack, destination: File) {
         val source = URL(pack.archiveUrl)
-        require(source.protocol == "https" && source.host.equals("kenney.nl", ignoreCase = true)) {
+        require(source.protocol == "https" &&
+            (source.host.equals("kenney.nl", ignoreCase = true) ||
+                source.host.equals("opengameart.org", ignoreCase = true))) {
             "Sumber paket tidak diizinkan."
         }
         val connection = (source.openConnection() as HttpURLConnection).apply {
@@ -166,7 +168,10 @@ internal object SoundPackInstaller {
             val status = connection.responseCode
             require(status in 200..299) { "Server paket mengembalikan HTTP $status." }
             require(connection.url.protocol == "https" &&
-                (connection.url.host.equals("kenney.nl", ignoreCase = true) || connection.url.host.endsWith(".kenney.nl", ignoreCase = true))) {
+                (connection.url.host.equals("kenney.nl", ignoreCase = true) ||
+                    connection.url.host.endsWith(".kenney.nl", ignoreCase = true) ||
+                    connection.url.host.equals("opengameart.org", ignoreCase = true) ||
+                    connection.url.host.endsWith(".opengameart.org", ignoreCase = true))) {
                 "Pengalihan ke host unduhan yang tidak diizinkan."
             }
             val expected = connection.contentLengthLong
