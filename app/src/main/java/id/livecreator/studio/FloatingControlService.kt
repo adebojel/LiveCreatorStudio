@@ -106,7 +106,7 @@ class FloatingControlService : Service() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = savedX.coerceIn(0, max(0, displayWidth - width))
+            x = savedX.coerceIn(-width + dp(16), displayWidth - dp(16))
             y = max(dp(36), prefs.getInt("y", dp(190)))
         }
         dockedRight = lp.x > displayWidth / 2
