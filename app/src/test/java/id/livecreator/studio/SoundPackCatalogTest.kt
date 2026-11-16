@@ -2,6 +2,7 @@ package id.livecreator.studio
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import java.net.URI
 import org.junit.Test
 
 class SoundPackCatalogTest {
@@ -11,8 +12,12 @@ class SoundPackCatalogTest {
         SoundPackCatalog.packs.forEach { pack ->
             assertTrue(pack.archiveUrl.startsWith("https://"))
             assertTrue(pack.sourceUrl.startsWith("https://"))
+            val host = URI(pack.archiveUrl).host.lowercase()
             assertTrue(
-                pack.archiveUrl.contains("kenney.nl/") || pack.archiveUrl.contains("opengameart.org/") || pack.archiveUrl.contains("sfxmint.com/")
+                "Unexpected catalog host: $host",
+                host == "kenney.nl" || host.endsWith(".kenney.nl") ||
+                    host == "opengameart.org" || host.endsWith(".opengameart.org") ||
+                    host == "sfxmint.com" || host.endsWith(".sfxmint.com")
             )
         }
     }
