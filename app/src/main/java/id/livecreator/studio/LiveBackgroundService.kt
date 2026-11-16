@@ -163,7 +163,7 @@ class LiveBackgroundService : Service(), TextToSpeech.OnInitListener {
             .setContentIntent(openApp)
             .setCategory(Notification.CATEGORY_SERVICE)
             .setVisibility(Notification.VISIBILITY_PRIVATE)
-            .setColor(0xFF00D9FF)
+            .setColor(android.graphics.Color.rgb(0, 217, 255))
             .setColorized(false)
             .setShowWhen(false)
             .setLocalOnly(true)
