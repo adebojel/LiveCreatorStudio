@@ -15,7 +15,7 @@ No audio picker or manual import is needed for the starter library. If the devic
 
 ## Full optional library
 
-The Soundboard screen also offers a one-tap download of all sixteen curated ZIP packs:
+The Soundboard screen now lets users download each of the sixteen curated ZIP packs individually, or use one action to download the full catalog:
 
 | Pack | Upstream count | Source |
 |---|---:|---|
@@ -57,7 +57,7 @@ All ten pack pages are listed as Creative Commons CC0 by the upstream source ind
 - Uses staging directories and only replaces an installed pack after successful extraction.
 - Enforces archive, entry-count, per-file, and total extracted-size limits.
 - Retains a local license/source note with each pack.
-- The first-run starter download needs internet access. Once installed, those sounds play offline.
+- The first-run starter download needs internet access. Users can also select optional packs individually or download all packs. Once installed, those sounds play offline. ZIP archives are downloaded directly from the original catalog sources at runtime; they are not embedded inside the APK or attached as separate GitHub Release assets.
 - The app does not mirror or rehost third-party files on its website; it downloads the original upstream archives directly.
 
 ## Why other libraries are not included automatically
