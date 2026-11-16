@@ -14,13 +14,15 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import kotlin.math.abs
 import kotlin.math.max
 
-/** Optional user-enabled overlay shortcut; the audio foreground service stays independent. */
+/** Compact magnetic edge-dock overlay. It only exposes controls belonging to this app. */
 class FloatingControlService : Service() {
     private lateinit var windowManager: WindowManager
     private var panel: LinearLayout? = null
     private var expanded = false
+    private var dockedRight = false
 
     override fun onCreate() {
         super.onCreate()
@@ -45,67 +47,69 @@ class FloatingControlService : Service() {
         }
         if (panel != null) return
         val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
-        val size = sanitizeFloatingBubbleSize(prefs.getFloat("size", 58f)).toInt()
-        val opacity = sanitizeFloatingBubbleOpacity(prefs.getFloat("opacity", 0.82f))
+        val size = sanitizeFloatingBubbleSize(prefs.getFloat("size", 42f)).toInt()
+        val opacity = sanitizeFloatingBubbleOpacity(prefs.getFloat("opacity", 0.88f))
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             background = GradientDrawable().apply {
-                cornerRadius = dp(22).toFloat()
-                setColor(Color.argb((opacity * 205).toInt(), 13, 24, 43))
-                setStroke(dp(1), Color.argb(220, 0, 217, 255))
+                shape = GradientDrawable.OVAL
+                setColor(Color.argb((opacity * 190).toInt(), 9, 24, 43))
+                setStroke(dp(1), Color.argb(230, 0, 220, 255))
             }
-            elevation = dp(10).toFloat()
-            setPadding(dp(7), dp(7), dp(7), dp(7))
+            elevation = dp(14).toFloat()
+            setPadding(dp(3), dp(3), dp(3), dp(3))
         }
         val bubble = TextView(this).apply {
-            text = "LC"
-            textSize = 16f
+            text = "◈"
+            textSize = 27f
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(Color.argb((opacity * 225).toInt(), 0, 105, 145))
-                setStroke(dp(1), Color.CYAN)
+                setColor(Color.argb((opacity * 215).toInt(), 18, 76, 105))
+                setStroke(dp(1), Color.rgb(112, 242, 255))
             }
             alpha = opacity
-            contentDescription = "LiveCreator Studio. Bola kontrol mengambang. Ketuk untuk membuka atau menutup panel, geser untuk memindahkan."
+            elevation = dp(8).toFloat()
+            contentDescription = "LiveCreator Studio. Bola kontrol magnetik. Ketuk untuk membuka panel, geser untuk memindahkan."
             isFocusable = true
-            setOnClickListener {
-                expanded = !expanded
-                removePanel()
-                showPanel()
-            }
         }
         root.addView(bubble, LinearLayout.LayoutParams(dp(size), dp(size)))
         if (expanded) {
-            addLabel(root, "LIVECREATOR • KONTROL")
-            addAction(root, "Aktifkan layanan") { sendAudioAction(LiveBackgroundService.ACTION_START) }
-            addAction(root, "Matikan layanan") { stopService(Intent(this, LiveBackgroundService::class.java)) }
+            root.background = GradientDrawable().apply {
+                cornerRadius = dp(20).toFloat()
+                setColor(Color.argb(238, 12, 25, 46))
+                setStroke(dp(1), Color.argb(220, 0, 217, 255))
+            }
+            addLabel(root, "LIVE CREATOR")
+            addAction(root, "Mulai audio") { sendAudioAction(LiveBackgroundService.ACTION_START) }
+            addAction(root, "Matikan audio") { stopService(Intent(this, LiveBackgroundService::class.java)) }
             addAction(root, "Buka aplikasi") {
                 packageManager.getLaunchIntentForPackage(packageName)?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)?.let(::startActivity)
             }
             addAction(root, "Sembunyikan") { expanded = false; removePanel() }
-            addAction(root, "Tutup panel") {
+            addAction(root, "Nonaktifkan bola") {
                 prefs.edit().putBoolean("enabled", false).apply()
                 removePanel()
                 stopSelf()
             }
         }
         val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        else WindowManager.LayoutParams.TYPE_PHONE
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE
+        val displayWidth = resources.displayMetrics.widthPixels
+        val width = if (expanded) dp(184) else dp(size + 6)
+        val savedX = prefs.getInt("x", dp(8))
         val lp = WindowManager.LayoutParams(
-            if (expanded) dp(190) else dp(size + 14),
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            type,
+            width, WindowManager.LayoutParams.WRAP_CONTENT, type,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = prefs.getInt("x", 0)
-            y = max(dp(24), prefs.getInt("y", dp(180)))
+            x = savedX.coerceIn(0, max(0, displayWidth - width))
+            y = max(dp(36), prefs.getInt("y", dp(190)))
         }
+        dockedRight = lp.x > displayWidth / 2
         var downX = 0f
         var downY = 0f
         var startX = 0
@@ -121,17 +125,28 @@ class FloatingControlService : Service() {
                 MotionEvent.ACTION_MOVE -> {
                     val dx = (event.rawX - downX).toInt()
                     val dy = (event.rawY - downY).toInt()
-                    if (kotlin.math.abs(dx) > dp(4) || kotlin.math.abs(dy) > dp(4)) moved = true
+                    if (abs(dx) > dp(5) || abs(dy) > dp(5)) moved = true
                     if (moved) {
-                        lp.x = startX + dx
-                        lp.y = max(dp(24), startY + dy)
+                        lp.x = (startX + dx).coerceIn(0, max(0, displayWidth - width))
+                        lp.y = (startY + dy).coerceIn(dp(36), resources.displayMetrics.heightPixels - dp(90))
                         runCatching { windowManager.updateViewLayout(root, lp) }
                     }
                     true
                 }
                 MotionEvent.ACTION_UP -> {
-                    prefs.edit().putInt("x", lp.x).putInt("y", lp.y).apply()
-                    if (!moved) bubble.performClick()
+                    if (moved && !expanded) {
+                        dockedRight = lp.x + width / 2 >= displayWidth / 2
+                        // Leave a 16dp grip visible so the user can pull the bubble back.
+                        lp.x = if (dockedRight) displayWidth - dp(16) else -width + dp(16)
+                        lp.x = lp.x.coerceIn(-width + dp(16), displayWidth - dp(16))
+                        runCatching { windowManager.updateViewLayout(root, lp) }
+                    } else if (!moved) {
+                        expanded = !expanded
+                        removePanel()
+                        showPanel()
+                        return@setOnTouchListener true
+                    }
+                    prefs.edit().putInt("x", lp.x).putInt("y", lp.y).putBoolean("right", dockedRight).apply()
                     true
                 }
                 else -> true
@@ -146,7 +161,7 @@ class FloatingControlService : Service() {
 
     private fun addLabel(parent: LinearLayout, label: String) {
         parent.addView(TextView(this).apply {
-            text = label; textSize = 10f; setTextColor(Color.CYAN); gravity = Gravity.CENTER
+            text = label; textSize = 10f; setTextColor(Color.rgb(75, 230, 255)); gravity = Gravity.CENTER
             setPadding(0, dp(6), 0, dp(6))
         })
     }
@@ -154,8 +169,8 @@ class FloatingControlService : Service() {
     private fun addAction(parent: LinearLayout, label: String, action: () -> Unit) {
         parent.addView(TextView(this).apply {
             text = label; textSize = 12f; setTextColor(Color.WHITE); gravity = Gravity.CENTER
-            setPadding(dp(8), dp(9), dp(8), dp(9))
-            minHeight = dp(48)
+            setPadding(dp(8), dp(8), dp(8), dp(8))
+            minHeight = dp(44)
             isFocusable = true
             contentDescription = label
             background = getDrawable(android.R.drawable.list_selector_background)
@@ -165,8 +180,7 @@ class FloatingControlService : Service() {
 
     private fun sendAudioAction(action: String) {
         val serviceIntent = Intent(this, LiveBackgroundService::class.java).setAction(action)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(serviceIntent)
-        else startService(serviceIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(serviceIntent) else startService(serviceIntent)
     }
 
     private fun removePanel() {
@@ -175,7 +189,6 @@ class FloatingControlService : Service() {
     }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
-
     override fun onDestroy() { removePanel(); super.onDestroy() }
     override fun onBind(intent: Intent?): IBinder? = null
 
