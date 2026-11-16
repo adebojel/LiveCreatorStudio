@@ -1,6 +1,15 @@
 # LiveCreator Studio
 
 <p align="center">
+  <a href="https://adebojel.github.io/LiveCreatorStudio/"><strong>🌐 Website Resmi</strong></a> ·
+  <a href="https://adebojel.github.io/LiveCreatorStudio/features.html">Fitur</a> ·
+  <a href="https://adebojel.github.io/LiveCreatorStudio/download.html">Unduh</a> ·
+  <a href="https://adebojel.github.io/LiveCreatorStudio/support.html">Bantuan</a> ·
+  <a href="https://adebojel.github.io/LiveCreatorStudio/privacy.html">Privacy Policy</a> ·
+  <a href="https://adebojel.github.io/LiveCreatorStudio/terms.html">Terms of Service</a>
+</p>
+
+<p align="center">
   <img src="docs/assets/livecreator-studio-hero.svg" alt="Ilustrasi konseptual dashboard LiveCreator Studio" width="100%"/>
 </p>
 
@@ -23,6 +32,20 @@
 </p>
 
 ---
+
+## Website dan status integrasi
+
+Website proyek: https://adebojel.github.io/LiveCreatorStudio/
+
+- [Fitur](https://adebojel.github.io/LiveCreatorStudio/features.html)
+- [Panduan unduhan dan rilis](https://adebojel.github.io/LiveCreatorStudio/download.html)
+- [Pusat bantuan](https://adebojel.github.io/LiveCreatorStudio/support.html)
+- [Status integrasi TikTok](https://adebojel.github.io/LiveCreatorStudio/integration.html)
+- [Kebijakan Privasi](https://adebojel.github.io/LiveCreatorStudio/privacy.html)
+- [Ketentuan Layanan](https://adebojel.github.io/LiveCreatorStudio/terms.html)
+
+**Penting:** aplikasi Android belum tersedia di Google Play. APK yang dibangun CI saat ini adalah APK debug untuk pengujian, bukan rilis produksi. Integrasi TikTok resmi (Login Kit/Share Kit) dan konektor LIVE belum aktif. Jangan mengajukan app review Android sebelum persyaratan distribusi toko aplikasi, signing release, implementasi nyata, dan video demo terpenuhi. Lihat [TikTok review readiness](docs/TIKTOK_REVIEW_READINESS.md).
+
 
 ## Status proyek
 
