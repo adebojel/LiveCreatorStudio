@@ -62,7 +62,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     var soundCategoryFilter by remember { mutableStateOf("Semua") }
     var packCategoryFilter by remember { mutableStateOf("Semua") }
     var showPackCatalog by remember { mutableStateOf(false) }
-    var message by remember { mutableStateOf("Pustaka suara CC0 sedang disiapkan otomatis pada penggunaan pertama.") }
+    var message by remember { mutableStateOf("Pustaka audio sedang disiapkan otomatis pada penggunaan pertama.") }
     val packState by SoundPackInstaller.state.collectAsState()
 
     val playerListener = remember {
