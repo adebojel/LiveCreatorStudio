@@ -49,7 +49,7 @@ Website proyek: https://adebojel.github.io/LiveCreatorStudio/
 
 ## Status proyek
 
-**Versi sumber: 0.5.8 (dalam pengembangan).** Versi ini menambahkan pustaka soundboard CC0 otomatis: 210 suara awal diunduh saat aplikasi pertama kali dibuka, dengan opsi mengunduh seluruh 10 paket (sekitar 730 aset) dan tetap mendukung impor audio manual.
+**Versi sumber: 0.5.8 (dalam pengembangan).** Versi ini menambahkan pustaka soundboard CC0 otomatis: 210 suara awal diunduh saat aplikasi pertama kali dibuka, dengan opsi mengunduh seluruh 16 paket (sekitar 1.387 aset) dan tetap mendukung impor audio manual.
 
 > **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi yang tercantum pada halaman Releases adalah build sukses terbaru. APK debug bukan APK produksi bertanda tangan. Build debug bukan APK produksi bertanda tangan.
 
@@ -81,7 +81,7 @@ flowchart TD
 - **Proteksi callback TTS usang** agar callback dari utterance yang telah dibatalkan tidak mengubah status playback baru.
 - **Penyimpanan preferensi terpusat** menggunakan Preferences DataStore; pengaturan auto-start, pengingat reboot, speech rate, dan pitch dimigrasikan otomatis dari SharedPreferences lama. Nilai TTS divalidasi sebelum disimpan/dipakai.
 - **Playback soundboard menggunakan AndroidX Media3 1.11.1 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Metadata pustaka disimpan di Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama. Playback soundboard menggunakan AndroidX Media3 1.11.1 (rilis stabil) dan berjalan pada MediaSessionService terpisah dari lifecycle Compose. Kontrol sesi tersedia melalui notifikasi media Android, lockscreen, headset, dan perangkat Bluetooth yang kompatibel; koneksi UI dapat dilepas tanpa menghentikan sesi.
-- **Soundboard CC0 otomatis**: mengunduh 3 paket awal Kenney (210 suara) pada peluncuran pertama, opsi satu tombol untuk seluruh 10 paket (sekitar 730 aset), ekstraksi aman ke penyimpanan privat, lisensi/sumber per paket, serta playback offline melalui Media3. Impor audio pribadi tetap opsional; tersedia tes speaker tanpa file audio. Lihat [katalog dan lisensi soundboard](docs/SOUND_LIBRARY.md).
+- **Soundboard CC0 otomatis**: mengunduh 3 paket awal Kenney (210 suara) pada peluncuran pertama, opsi satu tombol untuk seluruh 16 paket (sekitar 1.387 aset), ekstraksi aman ke penyimpanan privat, lisensi/sumber per paket, serta playback offline melalui Media3. Impor audio pribadi tetap opsional; tersedia tes speaker tanpa file audio. Lihat [katalog dan lisensi soundboard](docs/SOUND_LIBRARY.md).
 - **Picture-in-Picture** untuk panel status ringkas.
 - **Kontrak LiveEventProvider** untuk adapter event read-only, status koneksi, dan aliran event terpisah dari UI; belum ada provider runtime yang aktif.
 - **Label semantik kontrol** Compose untuk nama tombol dan status yang jelas; aplikasi tidak meminta pengguna mengaktifkan TalkBack.
