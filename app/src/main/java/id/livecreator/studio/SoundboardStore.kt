@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.map
  */
 internal data class SoundItem(val uri: String, val title: String)
 
+/** Pack audio lives in app-private files; user-imported audio uses Storage Access Framework URIs. */
+internal fun isPackSoundUri(uri: String): Boolean = uri.startsWith("file:", ignoreCase = true)
+
 private val Context.soundboardDataStore by preferencesDataStore(
     name = "livecreator_soundboard_store",
     produceMigrations = { context ->
