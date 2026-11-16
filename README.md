@@ -69,7 +69,7 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 - Playback menggunakan AndroidX Media3 ExoPlayer dan MediaSessionService.
 - Kontrol media dapat tampil pada notifikasi media, lockscreen, headset, dan perangkat Bluetooth yang kompatibel.
 - Impor audio melalui Android document picker, dengan salinan lokal di penyimpanan privat aplikasi.
-- Tiga paket awal diunduh otomatis pada peluncuran pertama saat internet tersedia; pengguna juga dapat memilih paket satu per satu atau mengunduh seluruh katalog 32 paket. Setelah terpasang, suara dapat dipakai offline.
+- Tiga paket awal diunduh otomatis pada peluncuran pertama saat internet tersedia; pengguna juga dapat memilih paket satu per satu atau mengunduh seluruh katalog 34 paket. Setelah terpasang, suara dapat dipakai offline.
 - Arsip ZIP diambil langsung dari sumber resmi katalog saat runtime, bukan disisipkan ke APK atau disalin sebagai asset GitHub Release; sumber dan lisensi dicatat per paket.
 - Pencarian, filter sumber, play/stop, serta penghapusan file impor.
 - Penghapusan file dibatasi ke folder impor aplikasi agar aset paket tidak terhapus.
