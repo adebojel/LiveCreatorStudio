@@ -78,7 +78,6 @@ class MainActivity : ComponentActivity() {
                 onStartBackground = { startBackgroundAudio() },
                 onStopBackground = { stopBackgroundAudio() },
                 onOpenBatterySettings = { openBatterySettings() },
-                onOpenAccessibilitySettings = { openAccessibilitySettings() },
                 onOpenAppSettings = { openAppSettings() },
                 onOpenNotificationSettings = { openNotificationSettings() },
                 onEnterPip = { enterCompactMode() },
@@ -129,10 +128,6 @@ class MainActivity : ComponentActivity() {
         runCatching { startActivity(intent) }
     }
 
-    private fun openAccessibilitySettings() {
-        runCatching { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
-    }
-
     private fun openAppSettings() {
         runCatching {
             startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:$packageName")))
@@ -169,7 +164,6 @@ fun LiveCreatorApp(
     onStartBackground: () -> Unit,
     onStopBackground: () -> Unit,
     onOpenBatterySettings: () -> Unit,
-    onOpenAccessibilitySettings: () -> Unit,
     onOpenAppSettings: () -> Unit,
     onOpenNotificationSettings: () -> Unit,
     onEnterPip: () -> Unit,
@@ -194,7 +188,7 @@ fun LiveCreatorApp(
     )) {
         if (inPipMode) {
             PipMiniScreen(backgroundServiceRunning)
-        } else Row(Modifier.fillMaxSize().background(Ink)) {
+        } else Row(Modifier.fillMaxSize().background(Ink).windowInsetsPadding(WindowInsets.safeDrawing)) {
             NavigationRail(containerColor = Panel) {
                 listOf("Dashboard", "TTS", "Soundboard", "Settings").forEach { item ->
                     NavigationRailItem(
@@ -234,8 +228,7 @@ fun LiveCreatorApp(
                         }
                     },
                     onOpenBatterySettings = onOpenBatterySettings,
-                    onOpenAccessibilitySettings = onOpenAccessibilitySettings,
-                    onOpenAppSettings = onOpenAppSettings,
+                        onOpenAppSettings = onOpenAppSettings,
                     onOpenNotificationSettings = onOpenNotificationSettings
                 )
                 else -> DashboardScreen(
@@ -287,7 +280,7 @@ private fun DashboardScreen(
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(top = 22.dp, bottom = 28.dp)
+        contentPadding = PaddingValues(top = 16.dp, bottom = 28.dp)
     ) {
         item {
             Text("LIVE CREATOR STUDIO", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
@@ -325,7 +318,7 @@ private fun DashboardScreen(
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FeatureCard("Picture-in-Picture", "Panel mini saat pindah aplikasi", Icons.Default.PictureInPicture, Modifier.weight(1f), onEnterPip)
-                FeatureCard("Aksesibilitas", "Pengaturan TalkBack Android", Icons.Default.AccessibilityNew, Modifier.weight(1f)) { onNavigate("Settings") }
+                FeatureCard("Pengaturan Kreator", "Notifikasi, baterai, dan layanan audio", Icons.Default.Tune, Modifier.weight(1f)) { onNavigate("Settings") }
             }
         }
         item {
@@ -533,14 +526,6 @@ private fun SettingsScreen(
         }
         Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Aksesibilitas", color = Color.White, fontWeight = FontWeight.Bold)
-                Text("Tombol dan kontrol menggunakan semantik Compose agar dapat dibaca TalkBack. Aktifkan TalkBack melalui pengaturan Aksesibilitas Android.",
-                    color = Color.LightGray, fontSize = 12.sp)
-                OutlinedButton(onClick = onOpenAccessibilitySettings, modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Default.AccessibilityNew, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Buka pengaturan aksesibilitas Android")
-                }
                 OutlinedButton(onClick = onOpenNotificationSettings, modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Default.NotificationsActive, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
