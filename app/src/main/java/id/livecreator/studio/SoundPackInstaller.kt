@@ -130,13 +130,18 @@ internal object SoundPackInstaller {
             }
             backup.deleteRecursively()
 
-            val items = extracted.map { file ->
-                val label = file.nameWithoutExtension
+            val items = extracted.map { stagedFile ->
+                // The staging directory has been renamed; rebuild each URI against its final location.
+                val installedFile = File(destination, stagedFile.name)
+                val label = installedFile.nameWithoutExtension
                     .replace('_', ' ')
                     .replace('-', ' ')
-                    .replace(Regex("\\s+"), " ")
+                    .replace(Regex("\\\\s+"), " ")
                     .trim()
-                SoundItem(Uri.fromFile(file).toString(), "${pack.title} • ${label.ifBlank { file.nameWithoutExtension }}")
+                SoundItem(
+                    Uri.fromFile(installedFile).toString(),
+                    "${pack.title} • ${label.ifBlank { installedFile.nameWithoutExtension }}"
+                )
             }
             val existing = SoundboardStore.observe(context).first()
             SoundboardStore.save(context, (existing + items).distinctBy { it.uri })
