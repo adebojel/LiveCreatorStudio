@@ -214,7 +214,18 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 color = Color.LightGray, fontSize = 11.sp
             )
         }
-        OutlinedTextField(\n            value = searchQuery, onValueChange = { searchQuery = it },\n            modifier = Modifier.fillMaxWidth(), singleLine = true,\n            placeholder = { Text("Cari suara…", color = Color(0xFF8290A8)) },\n            leadingIcon = { Icon(Icons.Default.GraphicEq, contentDescription = "Cari suara", tint = Color(0xFF72DDEB)) },\n            colors = OutlinedTextFieldDefaults.colors(\n                focusedTextColor = Color.White, unfocusedTextColor = Color.White,\n                focusedBorderColor = Color(0xFF59DDEB), unfocusedBorderColor = Color(0x554E6A86),\n                cursorColor = Color(0xFF59DDEB), focusedContainerColor = Color(0x331B2940),\n                unfocusedContainerColor = Color(0x221B2940)\n            ), shape = RoundedCornerShape(16.dp)\n        )\n        Button(onClick = { picker.launch(arrayOf("audio/*")) }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF285F83), contentColor = Color.White)) {
+        OutlinedTextField(
+            value = searchQuery, onValueChange = { searchQuery = it },
+            modifier = Modifier.fillMaxWidth(), singleLine = true,
+            placeholder = { Text("Cari suara…", color = Color(0xFF8290A8)) },
+            leadingIcon = { Icon(Icons.Default.GraphicEq, contentDescription = "Cari suara", tint = Color(0xFF72DDEB)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.White, unfocusedTextColor = Color.White,
+                focusedBorderColor = Color(0xFF59DDEB), unfocusedBorderColor = Color(0x554E6A86),
+                cursorColor = Color(0xFF59DDEB), focusedContainerColor = Color(0x331B2940),
+                unfocusedContainerColor = Color(0x221B2940)
+            ), shape = RoundedCornerShape(16.dp)
+        )\n        Button(onClick = { picker.launch(arrayOf("audio/*")) }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF285F83), contentColor = Color.White)) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text("Tambah file audio")
