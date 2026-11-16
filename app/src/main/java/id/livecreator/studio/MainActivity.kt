@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
         }
         serviceReceiverRegistered = true
         backgroundServiceRunning = isBackgroundServiceRunning()
+        restoreFloatingControlIfAllowed()
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -100,6 +101,14 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         // Reconcile UI state after notification shade actions or returning from Settings.
         backgroundServiceRunning = isBackgroundServiceRunning()
+        restoreFloatingControlIfAllowed()
+    }
+
+    private fun restoreFloatingControlIfAllowed() {
+        val enabled = getSharedPreferences("floating_control", MODE_PRIVATE).getBoolean("enabled", false)
+        if (enabled && Settings.canDrawOverlays(this)) {
+            startService(Intent(this, FloatingControlService::class.java).setAction(FloatingControlService.ACTION_SHOW))
+        }
     }
 
     override fun onDestroy() {
@@ -512,6 +521,7 @@ private fun SettingsScreen(
     onOpenAppSettings: () -> Unit,
     onOpenNotificationSettings: () -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -520,6 +530,61 @@ private fun SettingsScreen(
         Text("Pengaturan", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
         Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("Kontrol mengambang", color = Color.White, fontWeight = FontWeight.Bold)
+                val overlayPrefs = context.getSharedPreferences("floating_control", android.content.Context.MODE_PRIVATE)
+                var overlayEnabled by remember { mutableStateOf(overlayPrefs.getBoolean("enabled", false)) }
+                var bubbleSize by remember { mutableFloatStateOf(overlayPrefs.getFloat("size", 58f)) }
+                var bubbleOpacity by remember { mutableFloatStateOf(overlayPrefs.getFloat("opacity", 0.82f)) }
+                val overlayAllowed = Settings.canDrawOverlays(context)
+                Text("Bola kontrol transparan yang dapat digeser di atas aplikasi lain. Izin tampil di atas aplikasi lain diperlukan.", color = Color.LightGray, fontSize = 11.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Aktifkan Floating Control", color = Color.White)
+                        Text(if (overlayAllowed) "Izin overlay tersedia" else "Izin overlay belum diberikan", color = if (overlayAllowed) Cyan else Color(0xFFFFD18A), fontSize = 11.sp)
+                    }
+                    Switch(checked = overlayEnabled, onCheckedChange = { enabled ->
+                        if (enabled && !Settings.canDrawOverlays(context)) {
+                            overlayEnabled = true
+                            overlayPrefs.edit().putBoolean("enabled", true).apply()
+                            runCatching {
+                                (context as? android.app.Activity)?.startActivity(
+                                    Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+                                )
+                            }
+                        } else {
+                            overlayEnabled = enabled
+                            overlayPrefs.edit().putBoolean("enabled", enabled).apply()
+                            val serviceIntent = Intent(context, FloatingControlService::class.java)
+                                .setAction(if (enabled) FloatingControlService.ACTION_SHOW else FloatingControlService.ACTION_STOP)
+                            if (enabled) context.startService(serviceIntent) else context.stopService(serviceIntent)
+                        }
+                    })
+                }
+                Text("Ukuran bola: ${bubbleSize.toInt()} dp", color = Color.White, fontSize = 12.sp)
+                Slider(value = bubbleSize, onValueChange = { value ->
+                    bubbleSize = value
+                    overlayPrefs.edit().putFloat("size", value).apply()
+                    context.startService(Intent(context, FloatingControlService::class.java).setAction(FloatingControlService.ACTION_REFRESH))
+                }, valueRange = 44f..84f)
+                Text("Transparansi: ${(bubbleOpacity * 100).toInt()}%", color = Color.White, fontSize = 12.sp)
+                Slider(value = bubbleOpacity, onValueChange = { value ->
+                    bubbleOpacity = value
+                    overlayPrefs.edit().putFloat("opacity", value).apply()
+                    context.startService(Intent(context, FloatingControlService::class.java).setAction(FloatingControlService.ACTION_REFRESH))
+                }, valueRange = 0.25f..1f)
+                OutlinedButton(onClick = {
+                    overlayPrefs.edit().putBoolean("enabled", true).apply()
+                    overlayEnabled = true
+                    if (Settings.canDrawOverlays(context)) {
+                        context.startService(Intent(context, FloatingControlService::class.java).setAction(FloatingControlService.ACTION_SHOW))
+                    } else {
+                        runCatching {
+                            (context as? android.app.Activity)?.startActivity(
+                                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+                            )
+                        }
+                    }
+                }, modifier = Modifier.fillMaxWidth()) { Text("Tampilkan / munculkan kembali bola") }
                 Text("Ketahanan layanan", color = Color.White, fontWeight = FontWeight.Bold)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
