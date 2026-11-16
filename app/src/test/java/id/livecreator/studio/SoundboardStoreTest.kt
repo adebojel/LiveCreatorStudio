@@ -6,6 +6,12 @@ import org.junit.Test
 
 class SoundboardStoreTest {
     @Test
+    fun classifiesPackFilesAndImportedDocumentUris() {
+        assertEquals(true, isPackSoundUri("file:///data/user/0/id.livecreator.studio/files/sound.ogg"))
+        assertEquals(false, isPackSoundUri("content://media/audio/1"))
+    }
+
+    @Test
     fun encodeAndDecodePreserveUriAndTitle() {
         val expected = listOf(
             SoundItem("content://media/audio/1", "Intro music"),

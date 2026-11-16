@@ -52,6 +52,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     var activeUri by remember { mutableStateOf<String?>(null) }
     var isPreparing by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
+    var sourceFilter by remember { mutableStateOf("Semua") }
     var message by remember { mutableStateOf("Pustaka suara CC0 sedang disiapkan otomatis pada penggunaan pertama.") }
     val packState by SoundPackInstaller.state.collectAsState()
 
@@ -184,7 +185,15 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("CREATOR TOOLKIT", color = Color(0xFF54D8E8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
         Text("Soundboard", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Text("Paket suara CC0 diunduh otomatis saat aplikasi pertama kali dibuka. Impor manual tetap tersedia sebagai pilihan.", color = Color.LightGray, fontSize = 12.sp)
+        Text("Audio siap pakai, tersusun rapi, dan bisa diputar offline setelah terpasang.", color = Color.LightGray, fontSize = 12.sp)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Surface(color = Color(0x5538CDE0), shape = RoundedCornerShape(50)) {
+                Text("${sounds.size} suara", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
+            }
+            Surface(color = Color(0x559B7BFF), shape = RoundedCornerShape(50)) {
+                Text("${SoundPackCatalog.packs.size} paket CC0", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
+            }
+        }
         OutlinedButton(
             onClick = { scope.launch { SoundPackInstaller.installAll(context) } },
             enabled = packState !is SoundPackInstallState.Downloading,
@@ -213,6 +222,20 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 "Paket awal: 210 suara. Tersedia ${SoundPackCatalog.packs.size} paket dengan sekitar 1.444 aset CC0.",
                 color = Color.LightGray, fontSize = 11.sp
             )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOf("Semua", "Paket CC0", "Impor").forEach { filter ->
+                FilterChip(
+                    selected = sourceFilter == filter,
+                    onClick = { sourceFilter = filter },
+                    label = { Text(filter, fontSize = 11.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(0x553A9CB8),
+                        selectedLabelColor = Color.White,
+                        labelColor = Color.LightGray
+                    )
+                )
+            }
         }
         OutlinedTextField(
             value = searchQuery, onValueChange = { searchQuery = it },
@@ -257,24 +280,44 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 }
             }
         } else {
-            val visibleSounds = sounds.filter { it.title.contains(searchQuery, ignoreCase = true) }
+            val visibleSounds = sounds.filter { sound ->
+                val matchesSearch = sound.title.contains(searchQuery, ignoreCase = true)
+                val isPackSound = isPackSoundUri(sound.uri)
+                val matchesSource = when (sourceFilter) {
+                    "Paket CC0" -> isPackSound
+                    "Impor" -> !isPackSound
+                    else -> true
+                }
+                matchesSearch && matchesSource
+            }
+            if (visibleSounds.isEmpty()) {
+                Text("Tidak ada suara yang cocok dengan pencarian atau filter ini.", color = Color.LightGray, fontSize = 12.sp)
+            }
             LazyColumn(modifier = Modifier.weight(1f, fill = true), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(visibleSounds, key = { it.uri }) { sound ->
                     Surface(color = Color(0xAA1A2940), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x3347CDE8)), modifier = Modifier.fillMaxWidth()) {
                         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Icon(Icons.Default.LibraryMusic, contentDescription = "Audio", tint = Color(0xFF66DDF1))
                             Text(sound.title, color = Color.White, modifier = Modifier.weight(1f), fontSize = 12.sp, maxLines = 2)
-                            OutlinedButton(onClick = { playSound(sound) }, enabled = activeUri != sound.uri && !isPreparing,
-                                modifier = Modifier.semantics { contentDescription = "Putar ${sound.title}" }) {
-                                Icon(Icons.Default.PlayArrow, contentDescription = null)
+                            IconButton(
+                                onClick = { playSound(sound) },
+                                enabled = activeUri != sound.uri && !isPreparing,
+                                modifier = Modifier.semantics { contentDescription = "Putar ${sound.title}" }
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color(0xFF72DDEB))
                             }
-                            OutlinedButton(onClick = {
-                                if (activeUri == sound.uri) stopPlayback()
-                                scope.launch { SoundboardStore.save(context, sounds.filterNot { it.uri == sound.uri }) }
-                                SoundboardFileImport.delete(context, Uri.parse(sound.uri))
-                                message = "File dihapus dari daftar aplikasi dan izin dokumennya dilepas."
-                            }, modifier = Modifier.semantics { contentDescription = "Hapus ${sound.title} dari pustaka" }) {
-                                Icon(Icons.Default.Delete, contentDescription = null)
+                            IconButton(
+                                onClick = {
+                                    if (activeUri == sound.uri) stopPlayback()
+                                    scope.launch { SoundboardStore.save(context, sounds.filterNot { it.uri == sound.uri }) }
+                                    if (sound.uri.startsWith("content:", ignoreCase = true)) {
+                                        SoundboardFileImport.delete(context, Uri.parse(sound.uri))
+                                    }
+                                    message = "Suara dihapus dari pustaka."
+                                },
+                                modifier = Modifier.semantics { contentDescription = "Hapus ${sound.title} dari pustaka" }
+                            ) {
+                                Icon(Icons.Default.Delete, contentDescription = null, tint = Color(0xFFFF8D9B))
                             }
                         }
                     }

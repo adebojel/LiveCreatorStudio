@@ -167,7 +167,7 @@ internal object SoundPackInstaller {
             readTimeout = 45_000
             instanceFollowRedirects = true
             requestMethod = "GET"
-            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.5.8")
+            setRequestProperty("User-Agent", "LiveCreatorStudio-Android/0.5.9")
         }
         try {
             val status = connection.responseCode
