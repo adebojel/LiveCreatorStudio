@@ -1,13 +1,20 @@
 package id.livecreator.studio
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Test
 
 class SoundboardStoreTest {
     @Test
     fun classifiesPackFilesAndImportedDocumentUris() {
-        assertEquals(true, isPackSoundUri("file:///data/user/0/id.livecreator.studio/files/sound.ogg"))
+        assertEquals(
+            true,
+            isPackSoundUri("file:///data/user/0/id.livecreator.studio/files/soundboard/packs/kenney/intro.ogg")
+        )
+        assertEquals(
+            false,
+            isPackSoundUri("file:///data/user/0/id.livecreator.studio/files/soundboard/imported-123.mp3")
+        )
+        assertEquals(false, isPackSoundUri("file:///data/user/0/id.livecreator.studio/files/sound.ogg"))
         assertEquals(false, isPackSoundUri("content://media/audio/1"))
     }
 
