@@ -223,6 +223,45 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 color = Color.LightGray, fontSize = 11.sp
             )
         }
+
+        Text("Pilih paket suara", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+        Text("Paket awal diunduh otomatis saat pertama kali aplikasi dibuka. Paket lain bisa dipilih satu per satu atau diunduh sekaligus. Setelah terpasang, audio dapat digunakan offline.",
+            color = Color.LightGray, fontSize = 11.sp)
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().heightIn(max = 250.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            items(SoundPackCatalog.packs, key = { it.id }) { pack ->
+                val installed = SoundPackInstaller.isInstalled(context, pack)
+                Surface(
+                    color = Color(0x66192339),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x3349C9E4))
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 7.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(pack.title, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                            Text(
+                                if (installed) "Terpasang • offline"
+                                else if (pack.includedInStarter) "Paket awal • unduh otomatis"
+                                else "Opsional • sekitar ${pack.assetCount} aset sumber",
+                                color = if (installed) Color(0xFF79D7A5) else Color.LightGray,
+                                fontSize = 10.sp
+                            )
+                        }
+                        TextButton(
+                            onClick = { scope.launch { SoundPackInstaller.install(context, pack.id) } },
+                            enabled = !installed && packState !is SoundPackInstallState.Downloading
+                        ) {
+                            Text(if (installed) "Siap" else "Unduh", fontSize = 11.sp)
+                        }
+                    }
+                }
+            }
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf("Semua", "Paket CC0", "Impor").forEach { filter ->
                 FilterChip(
