@@ -99,7 +99,9 @@ class FloatingControlService : Service() {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE
         val displayWidth = resources.displayMetrics.widthPixels
         val width = if (expanded) dp(184) else dp(size + 6)
-        val savedX = prefs.getInt("x", dp(8))
+        val savedX = if (expanded) {
+            if (prefs.getBoolean("right", false)) displayWidth - width else 0
+        } else prefs.getInt("x", dp(8))
         val lp = WindowManager.LayoutParams(
             width, WindowManager.LayoutParams.WRAP_CONTENT, type,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
