@@ -1,6 +1,6 @@
 # Audit Repository Eksternal — LiveCreator Studio
 
-Tanggal pemeriksaan: 16 November 2026  
+Tanggal pemeriksaan: 16 November 2026 (pembaruan Media3 1.11.1)  
 Repository target: https://github.com/adebojel/LiveCreatorStudio  
 Branch pengembangan: `main`
 
@@ -371,3 +371,10 @@ README mendokumentasikan Media3, MediaSession, Room, DataStore, MediaStore, dan 
 5. **Selanjutnya:** event adapter LIVE yang sah; setiap tindakan otomatis harus melewati rule engine, batas rate, audit log, dan konfigurasi persetujuan pengguna.
 
 Tidak ada repository yang diunduh atau digabungkan secara utuh. Integrasi source eksternal memerlukan lisensi eksplisit, atribusi, pemeriksaan dependency/transitive dependency, dan review keamanan.
+
+
+## Pembaruan dependensi media — 16 November 2026
+
+AndroidX Media3 diperbarui secara terkoordinasi dari 1.9.4 ke **1.11.1**, rilis stabil terbaru yang tercantum pada AndroidX release index saat pembaruan ini. Versi 1.12.0-beta01 tidak dipakai karena masih prarilis. Modul `media3-exoplayer` dan `media3-session` memakai versi yang sama. Kompatibilitas diuji melalui Android CI (unit tests dan assembleDebug); interaksi notifikasi sistem, lockscreen, headset, dan Bluetooth tetap memerlukan uji perangkat.
+
+Rujukan resmi: https://developer.android.com/jetpack/androidx/releases/media3

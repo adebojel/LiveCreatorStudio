@@ -4,6 +4,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -111,7 +113,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                         message = "Layanan playback belum dapat dihubungkan. Buka ulang Soundboard."
                     }
             }
-        }, Executor { command -> command.run() })
+        }, Executor { command -> Handler(Looper.getMainLooper()).post(command) })
 
         onDispose {
             disposed = true
