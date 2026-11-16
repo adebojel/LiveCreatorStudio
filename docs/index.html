@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101426">
+  <meta name="description" content="LiveCreator Studio — studio pendamping kreator livestream untuk audio, text-to-speech, dan soundboard lokal Android.">
+  <title>LiveCreator Studio — Creator Audio Companion</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1020;--panel:#141c31;--line:rgba(255,255,255,.12);--muted:#aab5cc;--text:#f6f8ff;--cyan:#63e6dc;--violet:#9b8cff;--pink:#ff6fae}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 15% 0%,rgba(99,230,220,.13),transparent 34rem),radial-gradient(ellipse at 90% 18%,rgba(155,140,255,.18),transparent 32rem),var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    a{color:inherit}.wrap{width:min(1120px,calc(100% - 40px));margin:auto}.nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--cyan),var(--violet));display:grid;place-items:center;color:#0b1020;font-weight:950}.navlinks{display:flex;gap:22px;color:var(--muted);font-size:14px}.navlinks a{text-decoration:none}.hero{padding:76px 0 54px;display:grid;grid-template-columns:1.05fr .95fr;gap:38px;align-items:center}.eyebrow{color:var(--cyan);font-weight:750;text-transform:uppercase;letter-spacing:2px;font-size:12px}.hero h1{font-size:clamp(42px,6vw,72px);line-height:1.02;letter-spacing:-2.8px;margin:16px 0 20px}.gradient{background:linear-gradient(100deg,var(--cyan),#b6aaff 65%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}.lead{color:var(--muted);font-size:18px;max-width:620px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:750;border:1px solid var(--line);background:rgba(255,255,255,.04)}.btn.primary{background:linear-gradient(100deg,var(--cyan),#a7a0ff);color:#0b1020;border:0}.visual{border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-radius:26px;padding:18px;box-shadow:0 30px 90px rgba(0,0,0,.28)}.visual img{display:block;width:100%;height:auto;border-radius:14px}.status{display:flex;gap:10px;align-items:center;margin-top:16px;color:var(--muted);font-size:13px}.dot{width:9px;height:9px;background:#f6c66b;border-radius:50%;box-shadow:0 0 14px #f6c66b}.section{padding:54px 0}.section h2{font-size:clamp(28px,4vw,42px);letter-spacing:-1px;margin:0 0 12px}.sub{color:var(--muted);max-width:720px;margin:0 0 26px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:rgba(20,28,49,.8);border:1px solid var(--line);border-radius:18px;padding:22px}.card .ico{font-size:24px}.card h3{margin:10px 0 6px}.card p{color:var(--muted);margin:0;font-size:14px}.notice{border:1px solid rgba(246,198,107,.35);background:rgba(246,198,107,.07);padding:18px 20px;border-radius:16px;color:#f2dfb6}.links{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}.links a{padding:10px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:#dce5ff;font-size:14px}.footer{border-top:1px solid var(--line);padding:28px 0 42px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    @media(max-width:800px){.hero{grid-template-columns:1fr;padding-top:52px}.grid{grid-template-columns:1fr}.navlinks{gap:12px;font-size:12px}.hero h1{letter-spacing:-1.8px}.visual{max-width:650px}}
+    @media(max-width:480px){.wrap{width:min(100% - 28px,1120px)}.navlinks a:nth-child(2){display:none}.nav{padding:16px 0}.hero{padding-top:42px}.lead{font-size:16px}}
+  </style>
+</head>
+<body>
+  <header class="wrap nav">
+    <a class="brand" href="./" aria-label="LiveCreator Studio beranda"><span class="mark">LC</span><span>LiveCreator Studio</span></a>
+    <nav class="navlinks" aria-label="Navigasi utama"><a href="#fitur">Fitur</a><a href="#status">Status proyek</a><a href="#unduh">Unduh</a></nav>
+  </header>
+  <main>
+    <section class="wrap hero">
+      <div>
+        <div class="eyebrow">Creator audio companion · Android</div>
+        <h1>Kontrol audio livestream dengan <span class="gradient">lebih terarah.</span></h1>
+        <p class="lead">LiveCreator Studio adalah aplikasi pendamping kreator livestream yang berfokus pada text-to-speech lokal, soundboard, dan kontrol audio dari perangkat Android.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/adebojel/LiveCreatorStudio/releases">Lihat unduhan &amp; rilis</a>
+          <a class="btn" href="https://github.com/adebojel/LiveCreatorStudio">Lihat source code</a>
+        </div>
+        <div class="status"><span class="dot"></span><span>Dalam pengembangan — integrasi TikTok LIVE belum aktif.</span></div>
+      </div>
+      <div class="visual">
+        <img src="./assets/livecreator-studio-hero.svg" alt="Ilustrasi konseptual dashboard LiveCreator Studio">
+      </div>
+    </section>
+    <section class="wrap section" id="fitur">
+      <div class="eyebrow">Fokus produk</div><h2>Perangkat kreator, satu studio.</h2>
+      <p class="sub">Fondasi aplikasi saat ini berpusat pada fitur audio lokal Android. Ketersediaan setiap kemampuan mengikuti versi aplikasi yang dirilis.</p>
+      <div class="grid">
+        <article class="card"><div class="ico" aria-hidden="true">🗣️</div><h3>Text-to-speech lokal</h3><p>Menggunakan mesin Android TextToSpeech yang tersedia pada perangkat, dengan pengaturan kecepatan dan pitch.</p></article>
+        <article class="card"><div class="ico" aria-hidden="true">🎚️</div><h3>Soundboard lokal</h3><p>Impor audio milik pengguna dan kendalikan pemutaran melalui layanan media Android.</p></article>
+        <article class="card"><div class="ico" aria-hidden="true">🎧</div><h3>Kontrol audio</h3><p>Fondasi layanan audio, notifikasi media, dan kontrol sesi untuk perangkat yang kompatibel.</p></article>
+      </div>
+    </section>
+    <section class="wrap section" id="status">
+      <div class="eyebrow">Transparansi</div><h2>Status integrasi</h2>
+      <div class="notice"><strong>Catatan penting:</strong> konektor runtime TikTok LIVE, autentikasi/provider resmi, pemrosesan komentar/gift/follow, dan aksi otomatis berdasarkan event belum tersedia. Website ini tidak menyatakan integrasi tersebut sudah aktif.</div>
+      <div class="links">
+        <a href="https://github.com/adebojel/LiveCreatorStudio/blob/main/README.md">Dokumentasi proyek</a>
+        <a href="https://github.com/adebojel/LiveCreatorStudio/blob/main/docs/REPOSITORY_AUDIT.md">Audit repository</a>
+        <a href="https://github.com/adebojel/LiveCreatorStudio/actions">Status build</a>
+      </div>
+    </section>
+    <section class="wrap section" id="unduh">
+      <div class="eyebrow">Mulai menjelajah</div><h2>Source dan rilis aplikasi</h2>
+      <p class="sub">Periksa catatan rilis untuk mengetahui build yang tersedia. APK debug bukan rilis produksi bertanda tangan dan dapat menampilkan peringatan saat sideload.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/adebojel/LiveCreatorStudio/releases">Buka GitHub Releases</a>
+        <a class="btn" href="mailto:livecreatorstudio.official@gmail.com">Hubungi pengembang</a>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap footer"><span>© <span id="year">2026</span> LiveCreator Studio · Dibuat untuk kreator.</span><span><a href="https://github.com/adebojel/LiveCreatorStudio">GitHub</a> · Kontak: livecreatorstudio.official@gmail.com</span></footer>
+</body>
+</html>
