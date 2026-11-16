@@ -15,7 +15,7 @@ No audio picker or manual import is needed for the starter library. If the devic
 
 ## Full optional library
 
-The Soundboard screen now lets users download each of the thirty-two curated sound packs (ZIP archives and individual CC0 audio files) individually, or use one action to download the full catalog:
+The Soundboard screen now lets users download each of the thirty-four curated sound packs (ZIP archives and individual CC0 audio files) individually, or use one action to download the full catalog:
 
 | Pack | Upstream count | Source |
 |---|---:|---|
@@ -44,11 +44,13 @@ The Soundboard screen now lets users download each of the thirty-two curated sou
 | Crowd applause | 1 | SFXMint |
 | Thunder ambience | 1 | SFXMint |
 | 100 Weird & Everyday SFX | 100 | OpenGameArt / rubberduck |
-| **Total** | **1,697** | |
+| Magic Poof | 1 | SFXMint |
+| Cartoon Camera Flash | 1 | SFXMint |
+| **Total** | **1,699** | |
 
-The counts are upstream catalog counts, not a promise that every archive entry is playable. The catalog now contains 32 entries: 18 ZIP packs plus 14 individual CC0 MP3/WAV assets. The app counts actual supported audio files after extraction.
+The counts are upstream catalog counts, not a promise that every archive entry is playable. The catalog now contains 34 entries: 19 ZIP packs plus 15 individual CC0 MP3/WAV assets. The app counts actual supported audio files after extraction.
 
-The OpenGameArt packs above include ZIP archives marked CC0 in the reviewed sources. The individual laugh, kiss, gunshot, boing, applause and thunder files are served as direct MP3s by SFXMint; its source pages state CC0 1.0 and allow direct hotlinking. These SFXMint recordings are AI-generated/procedurally synthesized, not human field recordings. The new 30 Weird & Funny SFX pack contains 30 unusual/funny synthesized and edited effects; its OpenGameArt page explicitly marks it CC0. Retro Arcade SFX Pack 2 adds 110 unique effects across 11 themed folders; the page identifies CC0 and lists MP3/OGG/WAV/FLAC formats. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
+The OpenGameArt packs above include ZIP archives marked CC0 in the reviewed sources. The individual laugh, kiss, gunshot, boing, applause, thunder, magic poof and camera flash files are served as direct MP3s by SFXMint; its source pages state CC0 1.0 and allow direct hotlinking. These SFXMint recordings are AI-generated/procedurally synthesized, not human field recordings. The new 30 Weird & Funny SFX pack contains 30 unusual/funny synthesized and edited effects; its OpenGameArt page explicitly marks it CC0. Retro Arcade SFX Pack 2 adds 110 unique effects across 11 themed folders; the page identifies CC0 and lists MP3/OGG/WAV/FLAC formats. Two additional CC0 entries are distributed as 7z archives and are excluded because the Android installer currently accepts ZIP only. One further ZIP archive is AIFF-only and is excluded until lossless AIFF-to-WAV conversion is implemented; this avoids offering a pack that the Android player may not decode. Kenney packs are downloaded from official Kenney archive URLs; OpenGameArt packs are downloaded from their published archive URLs.
 
 ## Licensing and attribution
 
