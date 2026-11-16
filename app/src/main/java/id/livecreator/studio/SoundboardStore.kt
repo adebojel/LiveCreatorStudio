@@ -1,9 +1,7 @@
 package id.livecreator.studio
 
 import android.content.Context
-import androidx.datastore.core.DataMigration
 import androidx.datastore.preferences.SharedPreferencesMigration
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -42,12 +40,12 @@ internal object SoundboardStore {
 
     internal fun encode(sounds: List<SoundItem>): Set<String> =
         sounds.map { item ->
-            "${item.uri}\t${item.title.replace("\\t", " ").replace("\\n", " ")}"
+            "${item.uri}\t${item.title.replace("\t", " ").replace("\n", " ")}"
         }.toSet()
 
     internal fun decode(entries: Set<String>): List<SoundItem> =
         entries.mapNotNull { entry ->
-            val tab = entry.indexOf('\\t')
+            val tab = entry.indexOf('\t')
             val separator = if (tab > 0) tab else entry.indexOf('|')
             if (separator <= 0 || separator == entry.lastIndex) {
                 null
