@@ -32,3 +32,9 @@ internal fun sanitizeSpeechRate(value: Float): Float =
 
 internal fun sanitizeSpeechPitch(value: Float): Float =
     if (value.isFinite()) value.coerceIn(0.5f, 2.0f) else 1.0f
+
+internal fun sanitizeFloatingBubbleSize(value: Float): Float =
+    if (value.isFinite()) value.coerceIn(44f, 84f) else 58f
+
+internal fun sanitizeFloatingBubbleOpacity(value: Float): Float =
+    if (value.isFinite()) value.coerceIn(0.25f, 1.0f) else 0.82f

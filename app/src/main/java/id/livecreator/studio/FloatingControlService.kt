@@ -45,8 +45,8 @@ class FloatingControlService : Service() {
         }
         if (panel != null) return
         val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
-        val size = prefs.getFloat("size", 58f).toInt().coerceIn(44, 84)
-        val opacity = prefs.getFloat("opacity", 0.82f).coerceIn(0.25f, 1f)
+        val size = sanitizeFloatingBubbleSize(prefs.getFloat("size", 58f)).toInt()
+        val opacity = sanitizeFloatingBubbleOpacity(prefs.getFloat("opacity", 0.82f))
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
@@ -69,6 +69,13 @@ class FloatingControlService : Service() {
                 setStroke(dp(1), Color.CYAN)
             }
             alpha = opacity
+            contentDescription = "LiveCreator Studio. Bola kontrol mengambang. Ketuk untuk membuka atau menutup panel, geser untuk memindahkan."
+            isFocusable = true
+            setOnClickListener {
+                expanded = !expanded
+                removePanel()
+                showPanel()
+            }
         }
         root.addView(bubble, LinearLayout.LayoutParams(dp(size), dp(size)))
         if (expanded) {
@@ -124,7 +131,7 @@ class FloatingControlService : Service() {
                 }
                 MotionEvent.ACTION_UP -> {
                     prefs.edit().putInt("x", lp.x).putInt("y", lp.y).apply()
-                    if (!moved) { expanded = !expanded; removePanel(); showPanel() }
+                    if (!moved) bubble.performClick()
                     true
                 }
                 else -> true
@@ -148,6 +155,10 @@ class FloatingControlService : Service() {
         parent.addView(TextView(this).apply {
             text = label; textSize = 12f; setTextColor(Color.WHITE); gravity = Gravity.CENTER
             setPadding(dp(8), dp(9), dp(8), dp(9))
+            minHeight = dp(48)
+            isFocusable = true
+            contentDescription = label
+            background = getDrawable(android.R.drawable.list_selector_background)
             setOnClickListener { action() }
         }, LinearLayout.LayoutParams(-1, -2))
     }

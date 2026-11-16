@@ -49,7 +49,7 @@ Website proyek: https://adebojel.github.io/LiveCreatorStudio/
 
 ## Status proyek
 
-**Versi sumber: 0.5.9 (dalam pengembangan).** Versi ini menambahkan pustaka soundboard CC0 otomatis: 210 suara awal diunduh saat aplikasi pertama kali dibuka, dengan opsi mengunduh seluruh 16 paket (sekitar 1.444 aset) dan tetap mendukung impor audio manual.
+**Versi sumber: 0.6.0 (dalam pengembangan).** Versi ini menambahkan pustaka soundboard CC0 otomatis: 210 suara awal diunduh saat aplikasi pertama kali dibuka, dengan opsi mengunduh seluruh 16 paket (sekitar 1.444 aset) dan tetap mendukung impor audio manual.
 
 > **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi yang tercantum pada halaman Releases adalah build sukses terbaru. APK debug bukan APK produksi bertanda tangan. Build debug bukan APK produksi bertanda tangan.
 
@@ -83,6 +83,7 @@ flowchart TD
 - **Playback soundboard menggunakan AndroidX Media3 1.11.1 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Metadata pustaka disimpan di Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama. Playback soundboard menggunakan AndroidX Media3 1.11.1 (rilis stabil) dan berjalan pada MediaSessionService terpisah dari lifecycle Compose. Kontrol sesi tersedia melalui notifikasi media Android, lockscreen, headset, dan perangkat Bluetooth yang kompatibel; koneksi UI dapat dilepas tanpa menghentikan sesi.
 - **Soundboard CC0 otomatis**: mengunduh 3 paket awal Kenney (210 suara) pada peluncuran pertama, opsi satu tombol untuk seluruh 16 paket (sekitar 1.444 aset), ekstraksi aman ke penyimpanan privat, lisensi/sumber per paket, serta playback offline melalui Media3. Pustaka memiliki pencarian dan filter Semua/Paket CC0/Impor dengan kontrol putar/hapus ringkas. Impor audio pribadi tetap opsional; tersedia tes speaker tanpa file audio. Lihat [katalog dan lisensi soundboard](docs/SOUND_LIBRARY.md).
 - **Picture-in-Picture** untuk panel status ringkas.
+- **Floating Control opsional** berupa bola overlay transparan yang dapat digeser, diatur ukuran/transparansinya, dan menyediakan pintasan layanan audio; memerlukan izin overlay Android yang diberikan secara eksplisit. Kontrol ini tidak membaca layar atau mengendalikan aplikasi lain.
 - **Kontrak LiveEventProvider** untuk adapter event read-only, status koneksi, dan aliran event terpisah dari UI; belum ada provider runtime yang aktif.
 - **Label semantik kontrol** Compose untuk nama tombol dan status yang jelas; aplikasi tidak meminta pengguna mengaktifkan TalkBack.
 - **Shortcut Settings** untuk pengaturan notifikasi, info aplikasi/izin, dan optimasi baterai.
@@ -161,6 +162,10 @@ CI menjalankan unit test JVM dan build APK pada setiap push ke `main`. Jika buil
 - [Lihat hasil GitHub Actions](https://github.com/adebojel/LiveCreatorStudio/actions)
 
 **Catatan instalasi:** file yang dipublikasikan saat ini adalah APK debug, bukan rilis produksi yang ditandatangani untuk Play Store. Android/Play Protect dapat menampilkan peringatan pada APK sideload/debug. Proyek ini tidak menonaktifkan atau melewati perlindungan Android.
+
+## Catatan perubahan 0.6.0
+
+Versi 0.6.0 menambahkan Floating Control opsional, aksesibilitas dasar untuk bola dan tombol panel, serta checklist QA khusus overlay. Fitur overlay tetap perlu diverifikasi pada perangkat fisik.
 
 ## Validasi build 0.5.9
 

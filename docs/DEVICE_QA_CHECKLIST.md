@@ -1,4 +1,4 @@
-# Checklist QA perangkat — LiveCreator Studio 0.5.9
+# Checklist QA perangkat — LiveCreator Studio 0.6.0
 
 Checklist ini membedakan pemeriksaan otomatis CI dari pengujian yang wajib dilakukan pada perangkat Android fisik. Jangan menandai langkah perangkat sebagai lulus hanya berdasarkan hasil kompilasi.
 
@@ -20,7 +20,18 @@ Checklist ini membedakan pemeriksaan otomatis CI dari pengujian yang wajib dilak
 - [ ] Tutup activity (bukan force-stop aplikasi); periksa kebijakan foreground service Android dan perilaku OEM.
 - [ ] Pastikan notifikasi diizinkan pada Android 13+.
 
-## C. Soundboard dan lisensi
+## C. Floating Control
+
+- [ ] Aktifkan bola kontrol dari Settings; izin overlay diminta hanya saat fitur diaktifkan.
+- [ ] Berikan izin **Tampil di atas aplikasi lain**; bola muncul setelah kembali ke aplikasi.
+- [ ] Geser bola ke beberapa sisi layar; pastikan posisi tersimpan dan bola tetap dapat dijangkau.
+- [ ] Ketuk bola untuk membuka/menutup panel; uji seluruh aksi layanan, buka aplikasi, sembunyikan, dan tutup panel.
+- [ ] Ubah ukuran 44–84 dp dan transparansi 25–100%; perubahan diterapkan tanpa crash.
+- [ ] Uji label TalkBack/aksesibilitas pada bola dan tombol panel; target aksi minimal 48 dp.
+- [ ] Cabut izin overlay dari Settings Android; pastikan aplikasi tetap dapat dibuka dan bola tidak memaksa tampil.
+- [ ] Matikan fitur, tutup aplikasi, lalu buka ulang; bola tidak muncul kembali.
+
+## D. Soundboard dan lisensi
 
 - [ ] Pada jaringan stabil, tiga paket starter dapat diunduh saat pertama kali aplikasi dibuka.
 - [ ] Putar beberapa file OGG/WAV/MP3 dari paket yang telah terpasang.
@@ -32,7 +43,7 @@ Checklist ini membedakan pemeriksaan otomatis CI dari pengujian yang wajib dilak
 - [ ] Jalankan unduh semua paket hanya setelah ruang penyimpanan cukup; periksa kegagalan jaringan dan coba ulang.
 - [ ] Pastikan file `LICENSES.txt` tersedia pada folder paket yang diekstrak.
 
-## D. UI, aksesibilitas, dan stabilitas
+## E. UI, aksesibilitas, dan stabilitas
 
 - [ ] Periksa tampilan pada layar kecil dan besar, portrait dan landscape.
 - [ ] Periksa tombol utama tidak terpotong dan target sentuh mudah dijangkau.
