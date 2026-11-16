@@ -19,15 +19,13 @@ class LiveEventProviderContractTest {
 
     @Test
     fun connectionStatesCoverLifecycleWithoutAssumingOfficialApi() {
-        assertTrue(LiveConnectionState.values().containsAll(
-            listOf(
-                LiveConnectionState.DISCONNECTED,
-                LiveConnectionState.CONNECTING,
-                LiveConnectionState.CONNECTED,
-                LiveConnectionState.RECONNECTING,
-                LiveConnectionState.ERROR
-            )
-        ))
+        val states = LiveConnectionState.values().toSet()
+        assertEquals(5, states.size)
+        assertTrue(states.contains(LiveConnectionState.DISCONNECTED))
+        assertTrue(states.contains(LiveConnectionState.CONNECTING))
+        assertTrue(states.contains(LiveConnectionState.CONNECTED))
+        assertTrue(states.contains(LiveConnectionState.RECONNECTING))
+        assertTrue(states.contains(LiveConnectionState.ERROR))
     }
 
     @Test
