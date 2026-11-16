@@ -3,14 +3,23 @@ package id.livecreator.studio
 import java.util.ArrayDeque
 
 /** Normalized, provider-agnostic creator event. External providers must be authorized adapters. */
-enum class CreatorEventType { FOLLOW, SUBSCRIPTION, GIFT, LIKE, SHARE, COMMENT, CUSTOM }
+enum class CreatorEventType {
+    FOLLOW, SUBSCRIPTION, GIFT, LIKE, SHARE, COMMENT,
+    JOIN, QUESTION, EMOTE, ROOM_UPDATE, BATTLE, POLL, SYSTEM, UNKNOWN, CUSTOM
+}
 
 data class CreatorEvent(
     val id: String,
     val type: CreatorEventType,
     val displayName: String,
     val message: String = "",
-    val quantity: Int = 1
+    val quantity: Int = 1,
+    val source: String = "unknown",
+    val occurredAtEpochMillis: Long = 0L,
+    val giftName: String? = null,
+    val giftValueDiamonds: Long? = null,
+    val viewerCount: Long? = null,
+    val rawEventType: String? = null
 )
 
 data class CreatorEventRule(

@@ -39,11 +39,11 @@ Teknologi yang didokumentasikan: Kotlin, Compose, MVVM/Clean Architecture, Room,
 
 Repository: https://github.com/jwdeveloper/TikTokLiveJava  
 Teknologi: Java client yang mengakses internal WebCast push service dan mendeskripsikan event comment, gift, follow, share, dan lainnya.  
-Lisensi: file LICENSE tidak ditemukan pada path yang diperiksa. README menyatakan proyek ini bukan API resmi dan merupakan reverse-engineering.
+Lisensi: MIT; file `license.txt` pada branch `master` diperiksa langsung dan memuat grant izin penggunaan/modifikasi/distribusi beserta kewajiban menyertakan notice. README menyatakan proyek ini bukan API resmi dan merupakan reverse-engineering.
 
 **Nilai guna:** memahami bentuk event dan model event-driven untuk adapter eksperimental.  
 **Risiko:** endpoint internal dapat berubah, tidak ada jaminan dukungan platform, dan lisensi kode belum terverifikasi.  
-**Keputusan:** tidak menyalin kode atau menambahkan dependency. Tidak boleh menjadi jalur produksi tanpa tinjauan legal/ketentuan platform dan validasi teknis.
+**Keputusan:** kandidat POC Android read-only; jangan menyalin kode atau menambahkan dependency ke jalur produksi sebelum uji Android, tinjauan ketentuan platform, dan validasi teknis. Lihat bagian 19 untuk penilaian terbaru.
 
 ### 4. TikTok-Live-Connector — referensi event Node.js
 

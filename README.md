@@ -60,6 +60,7 @@ flowchart TD
 - **Playback soundboard menggunakan AndroidX Media3 1.11.1 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Metadata pustaka disimpan di Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama. Playback soundboard menggunakan AndroidX Media3 1.11.1 (rilis stabil) dan berjalan pada MediaSessionService terpisah dari lifecycle Compose. Kontrol sesi tersedia melalui notifikasi media Android, lockscreen, headset, dan perangkat Bluetooth yang kompatibel; koneksi UI dapat dilepas tanpa menghentikan sesi.
 - **Soundboard lokal**: impor audio melalui Android document picker, validasi MIME, persistensi akses URI, penyimpanan daftar sederhana, playback berbasis AndroidX Media3 ExoPlayer, penanganan audio focus dan audio-becoming-noisy, play/stop/delete, penanganan error, dan pelepasan URI grant saat item dihapus/tidak dapat diakses.
 - **Picture-in-Picture** untuk panel status ringkas.
+- **Kontrak LiveEventProvider** untuk adapter event read-only, status koneksi, dan aliran event terpisah dari UI; belum ada provider runtime yang aktif.
 - **Label semantik kontrol** Compose untuk nama tombol dan status yang jelas; aplikasi tidak meminta pengguna mengaktifkan TalkBack.
 - **Shortcut Settings** untuk pengaturan notifikasi, info aplikasi/izin, dan optimasi baterai.
 - **Auto-start opt-in** ketika pengguna membuka aplikasi dan pengingat reboot opsional; aplikasi tidak memaksa Android menjalankan layanan saat boot.
@@ -68,7 +69,7 @@ flowchart TD
 
 | Area | Status saat ini |
 |---|---|
-| TikTok LIVE real-time event ingestion | Belum terintegrasi |
+| TikTok LIVE real-time event ingestion | Kontrak adapter read-only tersedia; konektor runtime belum terintegrasi |
 | Komentar, gift, follow, share, like event processor | Belum tersedia |
 | Autentikasi/provider LIVE resmi | Belum tersedia |
 | Soundboard otomatis berdasarkan event | Belum tersedia |
