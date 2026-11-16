@@ -36,7 +36,7 @@ A website-only submission is not a shortcut for this Android application. TikTok
 - Application ID / package name: `id.livecreator.studio`
 - Min SDK: 26
 - Target SDK: 35
-- Current source version: `0.5.6` / versionCode `20`
+- Current source version: `0.5.7` / versionCode `21`
 - CI artifact type: debug APK, not production-signed release.
 
 ## What must happen before Android app review
