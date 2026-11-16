@@ -543,6 +543,8 @@ private fun SettingsScreen(
                     }
                     Switch(checked = overlayEnabled, onCheckedChange = { enabled ->
                         if (enabled && !Settings.canDrawOverlays(context)) {
+                            overlayEnabled = true
+                            overlayPrefs.edit().putBoolean("enabled", true).apply()
                             runCatching {
                                 (context as? android.app.Activity)?.startActivity(
                                     Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
