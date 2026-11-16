@@ -111,6 +111,12 @@ internal object SoundPackCatalog {
             "https://opengameart.org/sites/default/files/Sound%20effects%20Pack%202.zip",
             "https://opengameart.org/content/sound-effects-pack-2",
             creator = "phoenix1291 / SwissArcadeGameEntertainment (OpenGameArt)"
+        ),
+        SoundPack(
+            "oga-30-weird-sfx", "30 Weird & Funny SFX", 30,
+            "https://opengameart.org/sites/default/files/30-cc0-weird-sfx.zip",
+            "https://opengameart.org/content/30-weird-cc0-sfx",
+            creator = "rubberduck (OpenGameArt)"
         )
     )
 
