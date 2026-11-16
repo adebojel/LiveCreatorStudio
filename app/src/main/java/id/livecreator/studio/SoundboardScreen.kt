@@ -224,7 +224,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 }
             }
             SoundPackInstallState.Idle -> Text(
-                "Paket awal: 210 suara. Tersedia ${SoundPackCatalog.packs.size} paket dengan sekitar 1.697 aset sumber CC0.",
+                "Paket awal: 210 suara. Tersedia ${SoundPackCatalog.packs.size} paket dengan sekitar 1.699 aset sumber CC0.",
                 color = Color.LightGray, fontSize = 11.sp
             )
         }
@@ -420,7 +420,7 @@ private fun packCategory(pack: SoundPack): String {
         id.contains("gunshot") || id.contains("retro") || id.contains("rpg") || id.contains("battle") || id.contains("arcade") -> "Game"
         id.contains("voice") -> "Voice"
         id.contains("ui") || id.contains("interface") || id.contains("digital") -> "UI"
-        id.contains("sci-fi") || id.contains("impact") || id.contains("casino") || id.contains("music") || id.contains("thunder") || id.contains("applause") -> "Film"
+        id.contains("sci-fi") || id.contains("impact") || id.contains("casino") || id.contains("music") || id.contains("thunder") || id.contains("applause") || id.contains("magic") || id.contains("camera-flash") -> "Film"
         else -> "Semua"
     }
 }
