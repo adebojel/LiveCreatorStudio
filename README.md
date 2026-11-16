@@ -26,9 +26,9 @@
 
 ## Status proyek
 
-**Versi sumber: 0.5.2 (dalam pengembangan).** Versi ini memindahkan metadata pustaka Soundboard ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, sekaligus mempertahankan kompatibilitas format data versi sebelumnya.
+**Versi sumber: 0.5.3 (dalam pengembangan).** Versi ini memindahkan metadata pustaka Soundboard ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, sekaligus mempertahankan kompatibilitas format data versi sebelumnya.
 
-> **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi 0.5.1 tersedia pada release build-85; versi 0.5.2 sedang dikembangkan dan belum tersedia sampai CI selesai sukses. Build debug bukan APK produksi bertanda tangan.
+> **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi yang tercantum pada halaman Releases adalah build sukses terbaru. APK debug bukan APK produksi bertanda tangan. Build debug bukan APK produksi bertanda tangan.
 
 ## Tampilan dan arsitektur
 
@@ -43,7 +43,9 @@ flowchart TD
   SVC --> Q["Bounded FIFO speech queue"]
   SVC --> NOTIF["Persistent notification"]
   SB --> DOC["Android document URI"]
-  SB --> PLAYER["Media3 ExoPlayer"]
+  SB --> CTRL["MediaController"]
+  CTRL --> SESSION["MediaSessionService"]
+  SESSION --> PLAYER["Media3 ExoPlayer + MediaSession"]
   SVC --> ANDROID["Android audio / TTS engine"]
 ```
 
@@ -55,7 +57,7 @@ flowchart TD
 - **Foreground audio service** yang dimulai oleh pengguna, notifikasi persisten, tindakan hentikan layanan, serta tindakan hapus antrean.
 - **Proteksi callback TTS usang** agar callback dari utterance yang telah dibatalkan tidak mengubah status playback baru.
 - **Penyimpanan preferensi terpusat** menggunakan Preferences DataStore; pengaturan auto-start, pengingat reboot, speech rate, dan pitch dimigrasikan otomatis dari SharedPreferences lama. Nilai TTS divalidasi sebelum disimpan/dipakai.
-- **Playback soundboard menggunakan AndroidX Media3 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Metadata pustaka disimpan di Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama. Playback masih berhenti saat halaman Soundboard ditutup; sesi soundboard persisten belum dibuat.
+- **Playback soundboard menggunakan AndroidX Media3 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Metadata pustaka disimpan di Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama. Playback soundboard berjalan pada MediaSessionService terpisah dari lifecycle Compose. Kontrol sesi tersedia melalui notifikasi media Android, lockscreen, headset, dan perangkat Bluetooth yang kompatibel; koneksi UI dapat dilepas tanpa menghentikan sesi.
 - **Soundboard lokal**: impor audio melalui Android document picker, validasi MIME, persistensi akses URI, penyimpanan daftar sederhana, playback berbasis AndroidX Media3 ExoPlayer, penanganan audio focus dan audio-becoming-noisy, play/stop/delete, penanganan error, dan pelepasan URI grant saat item dihapus/tidak dapat diakses.
 - **Picture-in-Picture** untuk panel status ringkas.
 - **Aksesibilitas dasar** melalui semantic labels Compose dan kompatibilitas TalkBack standar.
@@ -140,7 +142,7 @@ CI menjalankan unit test JVM dan build APK pada setiap push ke `main`. Jika buil
 
 1. Tambahkan pengujian unit untuk lifecycle dan pengelolaan status TTS.
 2. Migrasikan metadata soundboard ke Room dengan mekanisme pemulihan izin URI.
-3. Evaluasi AndroidX Media3 untuk sesi playback soundboard persisten dan audio focus.
+3. Validasi MediaSession pada perangkat fisik: notifikasi, lockscreen, headset/Bluetooth, audio focus, dan lifecycle service.
 4. Bangun event-provider adapter hanya setelah jalur data LIVE yang sah, stabil, dan dapat diuji tersedia.
 5. Evaluasi AI lokal sebagai modul opsional dengan pemeriksaan RAM/storage, pengunduhan model yang aman, pembatalan generasi, dan fallback yang jelas.
 6. Setelah CI stabil, lakukan pengujian perangkat, aksesibilitas, konsumsi baterai, audio focus, dan kompatibilitas versi Android.

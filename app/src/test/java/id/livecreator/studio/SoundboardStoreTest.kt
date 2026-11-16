@@ -15,6 +15,17 @@ class SoundboardStoreTest {
     }
 
     @Test
+    fun encodeSanitizesTabsAndNewlinesInTitles() {
+        val encoded = SoundboardStore.encode(
+            listOf(SoundItem("content://media/audio/9", "Line one\tLine two\nLine three"))
+        )
+        assertEquals(
+            listOf(SoundItem("content://media/audio/9", "Line one Line two Line three")),
+            SoundboardStore.decode(encoded)
+        )
+    }
+
+    @Test
     fun decodeSupportsLegacyPipeDelimitedEntries() {
         val decoded = SoundboardStore.decode(setOf("content://media/audio/3|Legacy title"))
         assertEquals(listOf(SoundItem("content://media/audio/3", "Legacy title")), decoded)
