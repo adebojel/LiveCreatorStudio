@@ -225,7 +225,8 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 cursorColor = Color(0xFF59DDEB), focusedContainerColor = Color(0x331B2940),
                 unfocusedContainerColor = Color(0x221B2940)
             ), shape = RoundedCornerShape(16.dp)
-        )\n        Button(onClick = { picker.launch(arrayOf("audio/*")) }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF285F83), contentColor = Color.White)) {
+        )
+        Button(onClick = { picker.launch(arrayOf("audio/*")) }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF285F83), contentColor = Color.White)) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text("Tambah file audio")
