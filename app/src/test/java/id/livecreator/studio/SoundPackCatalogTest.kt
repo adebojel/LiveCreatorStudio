@@ -29,6 +29,14 @@ class SoundPackCatalogTest {
     }
 
     @Test
+    fun thirdPartyPackLicensesAreNotAssumedToBeCc0() {
+        assertTrue(SoundPackCatalog.packs.filter { it.creator.contains("OpenGameArt") }
+            .all { it.license == "See source page" })
+        assertTrue(SoundPackCatalog.packs.filter { it.creator.startsWith("Kenney") || it.creator.startsWith("SFXMint") }
+            .all { it.license == "CC0-1.0" })
+    }
+
+    @Test
     fun allThirtyFourCuratedPacksContainMoreThanSixteenHundredAssets() {
         assertEquals(34, SoundPackCatalog.packs.size)
         assertEquals(1_699, SoundPackCatalog.packs.sumOf { it.assetCount })
