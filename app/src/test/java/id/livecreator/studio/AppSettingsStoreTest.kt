@@ -31,9 +31,9 @@ class AppSettingsStoreTest {
 
     @Test
     fun floatingBubbleSizeIsClampedAndInvalidValuesUseDefault() {
-        assertEquals(44f, sanitizeFloatingBubbleSize(10f), 0f)
-        assertEquals(84f, sanitizeFloatingBubbleSize(120f), 0f)
-        assertEquals(58f, sanitizeFloatingBubbleSize(Float.NaN), 0f)
+        assertEquals(36f, sanitizeFloatingBubbleSize(10f), 0f)
+        assertEquals(64f, sanitizeFloatingBubbleSize(120f), 0f)
+        assertEquals(42f, sanitizeFloatingBubbleSize(Float.NaN), 0f)
         assertEquals(64f, sanitizeFloatingBubbleSize(64f), 0f)
     }
 
