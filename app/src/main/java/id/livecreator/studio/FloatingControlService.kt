@@ -74,7 +74,7 @@ class FloatingControlService : Service() {
         if (expanded) {
             addLabel(root, "LIVECREATOR • KONTROL")
             addAction(root, "Aktifkan layanan") { sendAudioAction(LiveBackgroundService.ACTION_START) }
-            addAction(root, "Matikan layanan") { sendAudioAction(LiveBackgroundService.ACTION_STOP) }
+            addAction(root, "Matikan layanan") { stopService(Intent(this, LiveBackgroundService::class.java)) }
             addAction(root, "Buka aplikasi") {
                 packageManager.getLaunchIntentForPackage(packageName)?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)?.let(::startActivity)
             }
@@ -87,7 +87,7 @@ class FloatingControlService : Service() {
         }
         val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        else @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
+        else WindowManager.LayoutParams.TYPE_PHONE
         val lp = WindowManager.LayoutParams(
             if (expanded) dp(190) else dp(size + 14),
             WindowManager.LayoutParams.WRAP_CONTENT,
