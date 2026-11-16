@@ -24,8 +24,8 @@ class SoundPackCatalogTest {
     }
 
     @Test
-    fun allFifteenCuratedPacksContainAboutThirteenHundredAssets() {
-        assertEquals(15, SoundPackCatalog.packs.size)
-        assertEquals(1_374, SoundPackCatalog.packs.sumOf { it.assetCount })
+    fun allSixteenCuratedPacksContainMoreThanFourteenHundredAssets() {
+        assertEquals(16, SoundPackCatalog.packs.size)
+        assertEquals(1_444, SoundPackCatalog.packs.sumOf { it.assetCount })
     }
 }
