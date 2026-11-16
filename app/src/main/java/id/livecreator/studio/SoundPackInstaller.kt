@@ -26,8 +26,8 @@ internal sealed interface SoundPackInstallState {
 
 /**
  * Downloads and safely extracts the curated CC0 packs into app-private storage.
- * The installer never downloads arbitrary URLs: only catalog entries on kenney.nl
- * are accepted. Starter packs are retried on the next app launch if offline.
+ * The installer never downloads arbitrary URLs: only reviewed catalog entries on kenney.nl
+ * and opengameart.org are accepted. Starter packs are retried on the next app launch if offline.
  */
 internal object SoundPackInstaller {
     private const val MAX_ARCHIVE_BYTES = 120L * 1024L * 1024L
