@@ -223,6 +223,20 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 color = Color.LightGray, fontSize = 11.sp
             )
         }
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOf("Semua", "Paket CC0", "Impor").forEach { filter ->
+                FilterChip(
+                    selected = sourceFilter == filter,
+                    onClick = { sourceFilter = filter },
+                    label = { Text(filter, fontSize = 11.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(0x553A9CB8),
+                        selectedLabelColor = Color.White,
+                        labelColor = Color.LightGray
+                    )
+                )
+            }
+        }
         OutlinedTextField(
             value = searchQuery, onValueChange = { searchQuery = it },
             modifier = Modifier.fillMaxWidth(), singleLine = true,
