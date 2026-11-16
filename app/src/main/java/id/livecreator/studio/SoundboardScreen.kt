@@ -8,7 +8,12 @@ import android.media.AudioManager
 import android.media.ToneGenerator
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,7 +51,9 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     var controller by remember { mutableStateOf<MediaController?>(null) }
     var activeUri by remember { mutableStateOf<String?>(null) }
     var isPreparing by remember { mutableStateOf(false) }
-    var message by remember { mutableStateOf("Impor file audio dari perangkat untuk membuat pustaka suara.") }
+    var searchQuery by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("Pustaka suara CC0 sedang disiapkan otomatis pada penggunaan pertama.") }
+    val packState by SoundPackInstaller.state.collectAsState()
 
     val playerListener = remember {
         object : Player.Listener {
@@ -177,8 +184,49 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("CREATOR TOOLKIT", color = Color(0xFF54D8E8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
         Text("Soundboard", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Text("Impor audio lokal dan kendalikan playback melalui sesi media Android.", color = Color.LightGray, fontSize = 12.sp)
-        Button(onClick = { picker.launch(arrayOf("audio/*")) }, modifier = Modifier.fillMaxWidth()) {
+        Text("Paket suara CC0 diunduh otomatis saat aplikasi pertama kali dibuka. Impor manual tetap tersedia sebagai pilihan.", color = Color.LightGray, fontSize = 12.sp)
+        OutlinedButton(
+            onClick = { scope.launch { SoundPackInstaller.installAll(context) } },
+            enabled = packState !is SoundPackInstallState.Downloading,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.LibraryMusic, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Unduh semua paket suara (${SoundPackCatalog.packs.size} paket)")
+        }
+        when (val state = packState) {
+            is SoundPackInstallState.Downloading -> {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                Text("Mengunduh paket ${state.packTitle}…", color = Color(0xFF54D8E8), fontSize = 11.sp)
+            }
+            is SoundPackInstallState.Installed -> Text(
+                "${state.packTitle}: ${state.soundCount} suara siap digunakan.",
+                color = Color(0xFF79D7A5), fontSize = 11.sp
+            )
+            is SoundPackInstallState.Failed -> {
+                Text("Unduhan ${state.packTitle} tertunda: ${state.reason}", color = Color(0xFFFFC078), fontSize = 11.sp)
+                TextButton(onClick = { scope.launch { SoundPackInstaller.ensureStarterPacks(context) } }) {
+                    Text("Coba unduh ulang paket awal")
+                }
+            }
+            SoundPackInstallState.Idle -> Text(
+                "Paket awal: 210 suara. Tersedia ${SoundPackCatalog.packs.size} paket dengan sekitar 1.444 aset CC0.",
+                color = Color.LightGray, fontSize = 11.sp
+            )
+        }
+        OutlinedTextField(
+            value = searchQuery, onValueChange = { searchQuery = it },
+            modifier = Modifier.fillMaxWidth(), singleLine = true,
+            placeholder = { Text("Cari suara…", color = Color(0xFF8290A8)) },
+            leadingIcon = { Icon(Icons.Default.GraphicEq, contentDescription = "Cari suara", tint = Color(0xFF72DDEB)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.White, unfocusedTextColor = Color.White,
+                focusedBorderColor = Color(0xFF59DDEB), unfocusedBorderColor = Color(0x554E6A86),
+                cursorColor = Color(0xFF59DDEB), focusedContainerColor = Color(0x331B2940),
+                unfocusedContainerColor = Color(0x221B2940)
+            ), shape = RoundedCornerShape(16.dp)
+        )
+        Button(onClick = { picker.launch(arrayOf("audio/*")) }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF285F83), contentColor = Color.White)) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text("Tambah file audio")
@@ -197,11 +245,11 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
             Spacer(Modifier.width(8.dp))
             Text("Tes speaker tanpa file audio")
         }
-        Surface(color = Color(0xCC171F35), shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+        Surface(color = Color(0x99192339), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x4449C9E4)), modifier = Modifier.fillMaxWidth()) {
             Text(message, color = Color.LightGray, modifier = Modifier.padding(14.dp).semantics { contentDescription = message }, fontSize = 12.sp)
         }
         if (sounds.isEmpty()) {
-            Surface(color = Color(0xCC171F35), shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+            Surface(color = Color(0x99192339), shape = RoundedCornerShape(18.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x554E74A2)), modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF9B7BFF))
                     Text("Pustaka masih kosong", color = Color.White, fontWeight = FontWeight.SemiBold)
@@ -209,11 +257,12 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 }
             }
         } else {
+            val visibleSounds = sounds.filter { it.title.contains(searchQuery, ignoreCase = true) }
             LazyColumn(modifier = Modifier.weight(1f, fill = true), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(sounds, key = { it.uri }) { sound ->
-                    Surface(color = Color(0xCC171F35), shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+                items(visibleSounds, key = { it.uri }) { sound ->
+                    Surface(color = Color(0xAA1A2940), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x3347CDE8)), modifier = Modifier.fillMaxWidth()) {
                         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(Icons.Default.LibraryMusic, contentDescription = null, tint = Color(0xFF54D8E8))
+                            Icon(Icons.Default.LibraryMusic, contentDescription = "Audio", tint = Color(0xFF66DDF1))
                             Text(sound.title, color = Color.White, modifier = Modifier.weight(1f), fontSize = 12.sp, maxLines = 2)
                             OutlinedButton(onClick = { playSound(sound) }, enabled = activeUri != sound.uri && !isPreparing,
                                 modifier = Modifier.semantics { contentDescription = "Putar ${sound.title}" }) {
