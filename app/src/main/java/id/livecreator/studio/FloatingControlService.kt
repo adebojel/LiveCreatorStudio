@@ -2,11 +2,17 @@ package id.livecreator.studio
 
 import android.app.Service
 import android.content.Intent
+import android.content.ComponentName
+import android.net.Uri
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
-import android.media.AudioManager
-import android.media.ToneGenerator
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import java.io.File
+import java.util.concurrent.Executor
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -31,7 +37,6 @@ class FloatingControlService : Service() {
     private var dockedRight = false
     private var dockAnimator: ValueAnimator? = null
     private val mainHandler = Handler(Looper.getMainLooper())
-    private var tone: ToneGenerator? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -245,32 +250,49 @@ class FloatingControlService : Service() {
 
     private enum class Effect { LAUGH, KISS, THUNDER, CLAP, PARTY, MAGIC, ALERT, GAME }
 
-    /** Short original UI tones; these are cues, not recordings of human laughter or real thunder. */
+    /** Plays the real CC0 sound downloaded to the app-private Soundboard library. */
     private fun playEffect(effect: Effect) {
-        runCatching { tone?.release() }
-        tone = runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, 82) }.getOrNull() ?: return
-        val generator = tone ?: return
-        val sequence = when (effect) {
-            Effect.LAUGH -> listOf(ToneGenerator.TONE_PROP_BEEP to 90, ToneGenerator.TONE_PROP_ACK to 110, ToneGenerator.TONE_PROP_BEEP2 to 120)
-            Effect.KISS -> listOf(ToneGenerator.TONE_DTMF_9 to 115, ToneGenerator.TONE_PROP_ACK to 65)
-            Effect.THUNDER -> listOf(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD to 360)
-            Effect.CLAP -> listOf(ToneGenerator.TONE_PROP_ACK to 80, ToneGenerator.TONE_PROP_ACK to 80, ToneGenerator.TONE_PROP_ACK to 80)
-            Effect.PARTY -> listOf(ToneGenerator.TONE_PROP_BEEP2 to 90, ToneGenerator.TONE_PROP_BEEP to 90, ToneGenerator.TONE_PROP_ACK to 140)
-            Effect.MAGIC -> listOf(ToneGenerator.TONE_PROP_PROMPT to 180, ToneGenerator.TONE_PROP_ACK to 120)
-            Effect.ALERT -> listOf(ToneGenerator.TONE_SUP_ERROR to 160, ToneGenerator.TONE_SUP_ERROR to 160)
-            Effect.GAME -> listOf(ToneGenerator.TONE_DTMF_5 to 100, ToneGenerator.TONE_DTMF_8 to 100)
+        val (packId, title) = when (effect) {
+            Effect.LAUGH -> "sfx-laugh-giggle" to "Silly Giggle"
+            Effect.KISS -> "sfx-kiss-cartoon" to "Cartoon Kiss"
+            Effect.THUNDER -> "sfx-thunder" to "Thunder Rumble"
+            Effect.CLAP -> "sfx-applause" to "Crowd Applause"
+            Effect.PARTY -> "sfx-applause" to "Crowd Applause"
+            Effect.MAGIC -> "sfx-magic-poof" to "Magic Poof"
+            Effect.ALERT -> "sfx-camera-flash" to "Cartoon Flash"
+            Effect.GAME -> "sfx-gunshot" to "Short Gunshot"
         }
-        var delay = 0L
-        sequence.forEach { (toneType, duration) ->
-            mainHandler.postDelayed({ runCatching { generator.startTone(toneType, duration) } }, delay)
-            delay += duration + 55L
+        val folder = File(filesDir, "soundboard/packs/$packId")
+        val audio = folder.listFiles()?.firstOrNull {
+            it.isFile && it.extension.lowercase() in setOf("mp3", "ogg", "wav", "m4a", "aac")
         }
-        mainHandler.postDelayed({
-            if (tone === generator) {
-                runCatching { generator.release() }
-                tone = null
-            }
-        }, delay + 100L)
+        if (audio == null) {
+            Toast.makeText(this, "Unduh efek $title di Soundboard terlebih dahulu.", Toast.LENGTH_LONG).show()
+            return
+        }
+        val token = SessionToken(this, ComponentName(this, SoundboardPlaybackService::class.java))
+        val future = MediaController.Builder(this, token).buildAsync()
+        future.addListener({
+            runCatching { future.get() }
+                .onSuccess { controller ->
+                    runCatching {
+                        val item = MediaItem.Builder()
+                            .setUri(Uri.fromFile(audio))
+                            .setMediaMetadata(MediaMetadata.Builder().setTitle(title).build())
+                            .build()
+                        controller.setMediaItem(item)
+                        controller.prepare()
+                        controller.play()
+                        mainHandler.postDelayed({ runCatching { controller.release() } }, 1_500L)
+                    }.onFailure {
+                        runCatching { controller.release() }
+                        Toast.makeText(this, "Efek $title tidak dapat diputar.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .onFailure {
+                    Toast.makeText(this, "Layanan Soundboard belum siap. Buka Soundboard sekali lalu coba lagi.", Toast.LENGTH_LONG).show()
+                }
+        }, Executor { command -> mainHandler.post(command) })
     }
 
     private fun animateDock(root: LinearLayout, lp: WindowManager.LayoutParams, targetX: Int) {
@@ -300,8 +322,6 @@ class FloatingControlService : Service() {
     override fun onDestroy() {
         dockAnimator?.cancel()
         mainHandler.removeCallbacksAndMessages(null)
-        runCatching { tone?.release() }
-        tone = null
         removePanel()
         super.onDestroy()
     }
