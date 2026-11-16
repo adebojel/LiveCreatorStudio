@@ -49,7 +49,7 @@ Website proyek: https://adebojel.github.io/LiveCreatorStudio/
 
 ## Status proyek
 
-**Versi sumber: 0.5.6 (dalam pengembangan).** Versi ini memindahkan metadata pustaka Soundboard ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, sekaligus mempertahankan kompatibilitas format data versi sebelumnya.
+**Versi sumber: 0.5.7 (dalam pengembangan).** Versi ini memindahkan metadata pustaka Soundboard ke Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama, sekaligus mempertahankan kompatibilitas format data versi sebelumnya.
 
 > **Status APK:** tautan unduhan di atas selalu menunjuk ke release sukses terbaru yang tersedia. APK versi yang tercantum pada halaman Releases adalah build sukses terbaru. APK debug bukan APK produksi bertanda tangan. Build debug bukan APK produksi bertanda tangan.
 
@@ -81,7 +81,7 @@ flowchart TD
 - **Proteksi callback TTS usang** agar callback dari utterance yang telah dibatalkan tidak mengubah status playback baru.
 - **Penyimpanan preferensi terpusat** menggunakan Preferences DataStore; pengaturan auto-start, pengingat reboot, speech rate, dan pitch dimigrasikan otomatis dari SharedPreferences lama. Nilai TTS divalidasi sebelum disimpan/dipakai.
 - **Playback soundboard menggunakan AndroidX Media3 1.11.1 ExoPlayer** dengan audio focus handling dan penghentian saat audio output eksternal dicabut. Metadata pustaka disimpan di Preferences DataStore dengan migrasi otomatis dari SharedPreferences lama. Playback soundboard menggunakan AndroidX Media3 1.11.1 (rilis stabil) dan berjalan pada MediaSessionService terpisah dari lifecycle Compose. Kontrol sesi tersedia melalui notifikasi media Android, lockscreen, headset, dan perangkat Bluetooth yang kompatibel; koneksi UI dapat dilepas tanpa menghentikan sesi.
-- **Soundboard lokal**: impor audio melalui Android document picker, validasi MIME, persistensi akses URI, penyimpanan daftar sederhana, playback berbasis AndroidX Media3 ExoPlayer, penanganan audio focus dan audio-becoming-noisy, play/stop/delete, penanganan error, dan pelepasan URI grant saat item dihapus/tidak dapat diakses.
+- **Soundboard lokal**: impor audio melalui Android document picker, validasi MIME/ekstensi, penyalinan aman ke penyimpanan privat aplikasi (batas 50 MB per file), pustaka metadata DataStore, playback berbasis AndroidX Media3 ExoPlayer/MediaSessionService, penanganan audio focus dan audio-becoming-noisy, play/stop/delete, penanganan error, serta tombol tes speaker tanpa perlu file audio.
 - **Picture-in-Picture** untuk panel status ringkas.
 - **Kontrak LiveEventProvider** untuk adapter event read-only, status koneksi, dan aliran event terpisah dari UI; belum ada provider runtime yang aktif.
 - **Label semantik kontrol** Compose untuk nama tombol dan status yang jelas; aplikasi tidak meminta pengguna mengaktifkan TalkBack.
