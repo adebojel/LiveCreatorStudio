@@ -148,7 +148,20 @@ internal object SoundPackCatalog {
         SoundPack("sfx-gunshot", "Short Gunshot", 1,
             "https://sfxmint.com/dl/growth-65de718ff53302fbf797166e-retry.mp3",
             "https://sfxmint.com/sounds/short-gunshot",
-            creator = "SFXMint (CC0 1.0; AI-generated)")
+            creator = "SFXMint (CC0 1.0; AI-generated)"),
+        SoundPack("sfx-boing", "Cartoon Boing", 1,
+            "https://sfxmint.com/dl/cartoon-boing-09.mp3", "https://sfxmint.com/sounds/cartoon-boing-09",
+            creator = "SFXMint (CC0 1.0; AI-generated)"),
+        SoundPack("sfx-applause", "Crowd Applause", 1,
+            "https://sfxmint.com/dl/crowd-applause-58.mp3", "https://sfxmint.com/sounds/crowd-applause-58",
+            creator = "SFXMint (CC0 1.0; AI-generated)"),
+        SoundPack("sfx-thunder", "Thunder Rumble", 1,
+            "https://sfxmint.com/dl/city-night-ambience-04.mp3", "https://sfxmint.com/sounds/city-night-ambience-04",
+            creator = "SFXMint (CC0 1.0; AI-generated)"),
+        SoundPack("oga-100-cc0-sfx", "100 Weird & Everyday SFX", 100,
+            "https://opengameart.org/sites/default/files/100-CC0-SFX.zip",
+            "https://opengameart.org/content/100-cc0-sfx",
+            creator = "rubberduck (OpenGameArt)")
     )
 
     val starterPacks: List<SoundPack> = packs.filter { it.includedInStarter }
