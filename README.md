@@ -13,7 +13,7 @@
   <a href="https://github.com/adebojel/LiveCreatorStudio/actions/workflows/android.yml"><img src="https://img.shields.io/github/actions/workflow/status/adebojel/LiveCreatorStudio/android.yml?branch=main&label=Android%20CI&logo=githubactions" alt="Android CI"></a>
   <a href="https://github.com/adebojel/LiveCreatorStudio/releases"><img src="https://img.shields.io/github/v/release/adebojel/LiveCreatorStudio?display_name=tag&label=release" alt="Release"></a>
   <img src="https://img.shields.io/badge/Android-API%2026%2B-3DDC84?logo=android&logoColor=white" alt="Android API 26+">
-  <img src="https://img.shields.io/badge/Kotlin-Compose-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin Compose">
+  <img src="https://img.shields.io/badge/Kotlin-Compose-00C8D7?logo=kotlin&logoColor=white" alt="Kotlin Compose">
   <img src="https://img.shields.io/badge/Media3-audio%20engine-00C8D7" alt="Media3">
 </p>
 
