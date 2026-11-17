@@ -250,7 +250,7 @@ fun LiveCreatorApp(
                 .windowInsetsPadding(WindowInsets.safeDrawing)
         ) {
             NavigationRail(containerColor = Color(0x99131D33)) {
-                listOf("Dashboard", "TTS", "Soundboard", "TikTok", "Settings").forEach { item ->
+                listOf("Dashboard", "TTS", "Soundboard", "Rules", "TikTok", "Settings").forEach { item ->
                     NavigationRailItem(
                         selected = selected == item,
                         onClick = { selected = item },
@@ -259,6 +259,7 @@ fun LiveCreatorApp(
                                 "Dashboard" -> Icons.Default.Dashboard
                                 "TTS" -> Icons.Default.RecordVoiceOver
                                 "Soundboard" -> Icons.Default.LibraryMusic
+                                "Rules" -> Icons.Default.Rule
                                 "TikTok" -> Icons.Default.LiveTv
                                 else -> Icons.Default.Settings
                             }, contentDescription = item,
@@ -271,6 +272,7 @@ fun LiveCreatorApp(
             when (selected) {
                 "TTS" -> TtsScreen(Modifier.fillMaxSize(), onSpeakInBackground)
                 "Soundboard" -> SoundboardScreen(Modifier.fillMaxSize())
+                "Rules" -> CreatorRulesScreen(Modifier.fillMaxSize())
                 "TikTok" -> TikTokOfficialScreen(Modifier.fillMaxSize())
                 "Settings" -> SettingsScreen(
                     autoStartOnLaunch = autoStartOnLaunch,
@@ -752,3 +754,94 @@ private fun FeatureCard(
     }
 }
 
+
+@Composable
+private fun CreatorRulesScreen(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    var rules by remember { mutableStateOf(CreatorRuleStore.load(context)) }
+    var selectedType by remember { mutableStateOf(rules.firstOrNull()?.type ?: CreatorEventType.FOLLOW) }
+    var saved by remember { mutableStateOf("Perubahan tersimpan hanya di perangkat ini.") }
+    val rule = rules.firstOrNull { it.type == selectedType }
+        ?: CreatorEventRule("local-${selectedType.name.lowercase()}", selectedType, enabled = false)
+    Column(
+        modifier.verticalScroll(rememberScrollState()).padding(18.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text("AUTOMATION STUDIO", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Text("Actions & Events", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold)
+        Text("Atur respons lokal untuk tipe event. Ini adalah editor aturan; event TikTok LIVE belum terhubung dan tidak akan dibuat-buat.", color = Color.LightGray, fontSize = 12.sp)
+        Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
+            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("Jenis pemicu", color = Color.White, fontWeight = FontWeight.Bold)
+                var expanded by remember { mutableStateOf(false) }
+                Box {
+                    OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
+                        Text(selectedType.name.replace('_', ' '))
+                        Spacer(Modifier.weight(1f))
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Pilih jenis pemicu")
+                    }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        CreatorEventType.values().filter { it !in setOf(CreatorEventType.UNKNOWN, CreatorEventType.SYSTEM) }.forEach { type ->
+                            DropdownMenuItem(text = { Text(type.name.replace('_', ' ')) }, onClick = {
+                                selectedType = type
+                                expanded = false
+                            })
+                        }
+                    }
+                }
+                var enabled by remember(selectedType, rules) { mutableStateOf(rule.enabled) }
+                var minQuantity by remember(selectedType, rules) { mutableStateOf(rule.minQuantity.toString()) }
+                var cooldown by remember(selectedType, rules) { mutableStateOf((rule.cooldownMs / 1000L).toString()) }
+                var template by remember(selectedType, rules) { mutableStateOf(rule.speechTemplate.orEmpty()) }
+                var soundUri by remember(selectedType, rules) { mutableStateOf(rule.soundUri.orEmpty()) }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Aktifkan aturan", color = Color.White)
+                        Text("Aturan aktif hanya berjalan jika sumber event resmi kelak tersedia.", color = Color.LightGray, fontSize = 10.sp)
+                    }
+                    Switch(checked = enabled, onCheckedChange = { enabled = it })
+                }
+                OutlinedTextField(
+                    value = minQuantity, onValueChange = { minQuantity = it.filter(Char::isDigit).take(4) },
+                    label = { Text("Jumlah minimum") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                )
+                OutlinedTextField(
+                    value = cooldown, onValueChange = { cooldown = it.filter(Char::isDigit).take(4) },
+                    label = { Text("Jeda antar respons (detik)") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                )
+                OutlinedTextField(
+                    value = template, onValueChange = { template = it.take(500) },
+                    label = { Text("Template TTS") }, modifier = Modifier.fillMaxWidth(), minLines = 2
+                )
+                Text("Variabel: {name}, {message}, {quantity}", color = Cyan, fontSize = 11.sp)
+                OutlinedTextField(
+                    value = soundUri, onValueChange = { soundUri = it.take(500) },
+                    label = { Text("Sound URI (content://, opsional)") }, modifier = Modifier.fillMaxWidth(), singleLine = true
+                )
+                Button(onClick = {
+                    val updated = rule.copy(
+                        enabled = enabled,
+                        minQuantity = minQuantity.toIntOrNull()?.coerceIn(1, 9999) ?: 1,
+                        cooldownMs = (cooldown.toLongOrNull() ?: 0L).coerceIn(0L, 3600L) * 1000L,
+                        speechTemplate = template.trim().takeIf { it.isNotBlank() },
+                        soundUri = soundUri.takeIf { it.startsWith("content://") }
+                    )
+                    rules = (rules.filterNot { it.type == selectedType } + updated).sortedBy { it.type.ordinal }
+                    CreatorRuleStore.save(context, rules)
+                    saved = "Aturan ${selectedType.name} tersimpan di perangkat."
+                }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Save, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Simpan aturan")
+                }
+                Text(saved, color = Cyan, fontSize = 11.sp)
+            }
+        }
+        Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
+            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("Status integrasi", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Editor dan penyimpanan aturan sudah lokal. Engine menerima event normalisasi, tetapi belum ada adapter LIVE TikTok resmi yang disetujui. Tidak ada scraping, koneksi tidak resmi, atau simulasi yang ditampilkan sebagai event asli.", color = Color(0xFFFFD18A), fontSize = 11.sp)
+            }
+        }
+    }
+}
