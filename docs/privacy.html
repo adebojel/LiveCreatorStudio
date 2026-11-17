@@ -2,16 +2,16 @@
 <html lang="id">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101426">
-<meta name="description" content="Kebijakan Privasi LiveCreator Studio Android versi 0.6.4.">
+<meta name="description" content="Kebijakan Privasi LiveCreator Studio Android versi 0.7.3.">
 <title>Kebijakan Privasi — LiveCreator Studio</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1020;--panel:#141c31;--line:rgba(255,255,255,.13);--muted:#aab5cc;--text:#f6f8ff;--cyan:#63e6dc}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,rgba(99,230,220,.12),transparent 35rem),var(--bg);color:var(--text);font:16px/1.75 system-ui,sans-serif}.wrap{width:min(850px,calc(100% - 36px));margin:auto}.nav{padding:22px 0;border-bottom:1px solid var(--line)}a{color:var(--cyan)}h1{font-size:clamp(34px,6vw,52px);line-height:1.1;letter-spacing:-1.5px;margin:46px 0 10px}.date,.muted{color:var(--muted)}article{padding:12px 0 56px}h2{font-size:23px;margin:32px 0 8px}li{margin:7px 0}.panel{background:var(--panel);border:1px solid var(--line);padding:18px;border-radius:14px;margin:24px 0}.foot{border-top:1px solid var(--line);padding:22px 0 38px;color:var(--muted);font-size:14px}
 </style></head>
 <body><div class="wrap"><nav class="nav"><a href="./">← LiveCreator Studio</a></nav>
 <main><h1>Kebijakan Privasi</h1><p class="date">Terakhir diperbarui: 17 November 2026</p>
-<p class="muted">Kebijakan ini menjelaskan pemrosesan informasi oleh aplikasi Android LiveCreator Studio versi 0.6.4 dan situs informasi proyek.</p>
+<p class="muted">Kebijakan ini menjelaskan pemrosesan informasi oleh aplikasi Android LiveCreator Studio versi 0.7.3 dan situs informasi proyek.</p>
 <article>
-<div class="panel"><strong>Ringkasan:</strong> versi 0.6.4 berfokus pada audio lokal. Pengaturan, metadata soundboard, paket audio, dan salinan audio impor disimpan di penyimpanan privat aplikasi. Aplikasi mengakses internet untuk mengunduh paket suara yang dipilih. Source yang ditinjau tidak menunjukkan akun pengguna, backend pengembang, analitik, atau SDK iklan. Integrasi TikTok belum aktif.</div>
+<div class="panel"><strong>Ringkasan:</strong> versi 0.7.3 berfokus pada audio lokal. Pengaturan, metadata soundboard, audio impor, aturan Actions & Events yang tersedia pada versi aplikasi, dan data layanan lokal disimpan di perangkat. File audio impor dan paket yang dipasang disimpan di penyimpanan privat aplikasi. Versi 0.7.3 menyediakan ekspor/pemulihan arsip lokal yang dimulai sendiri oleh pengguna melalui pemilih file Android. Aplikasi mengakses internet untuk mengunduh paket suara yang dipilih. Source yang ditinjau tidak menunjukkan akun pengguna, backend pengembang, analitik, atau SDK iklan. Integrasi TikTok belum aktif.</div>
 <h2>1. Informasi yang diproses di perangkat</h2>
 <ul>
 <li><strong>Pengaturan:</strong> preferensi aplikasi seperti pengaturan TTS dan status/pilihan fitur disimpan secara lokal menggunakan Android DataStore.</li>
@@ -23,19 +23,19 @@
 <h2>2. Koneksi jaringan dan penyedia eksternal</h2>
 <p>Aplikasi menggunakan koneksi internet untuk mengambil paket suara dari domain sumber yang tercantum dalam katalog. Server sumber dapat menerima informasi teknis standar dari permintaan jaringan, seperti alamat IP, waktu permintaan, user-agent, dan header koneksi. Pengembang tidak mengendalikan kebijakan privasi atau retensi server tersebut. Aplikasi juga dapat membuka tautan GitHub dan situs proyek; layanan tersebut tunduk pada kebijakan penyedianya.</p>
 <h2>3. Pengumpulan, akun, dan pembagian data</h2>
-<p>Dalam source code aplikasi versi 0.6.4 yang ditinjau, tidak ditemukan implementasi akun pengguna, backend milik pengembang untuk mengumpulkan data aplikasi, SDK analitik, atau SDK iklan. Aplikasi tidak mengirim file audio impor, teks TTS, atau metadata soundboard ke server pengembang berdasarkan implementasi tersebut. Pernyataan ini hanya berlaku untuk source versi yang disebutkan dan dapat berubah jika fitur online baru ditambahkan.</p>
+<p>Versi 0.7.3 tidak memerlukan akun LiveCreator. Fitur lokal tidak mengirim file audio impor, teks TTS, pengaturan, atau arsip cadangan ke server LiveCreator. Cadangan dibuat hanya ketika pengguna memilih ekspor dan disimpan ke lokasi yang dipilih pengguna; pemulihan membaca arsip yang dipilih pengguna. Koneksi unduhan paket suara tetap menghubungi server sumber paket dan dapat memproses informasi jaringan standar. Pernyataan ini berlaku untuk versi 0.7.3 yang dirilis dan harus ditinjau ulang saat fitur online baru ditambahkan.</p>
 <h2>4. TikTok dan layanan LIVE</h2>
-<p>Versi 0.6.4 belum mengintegrasikan TikTok Login Kit, Share Kit, atau konektor TikTok LIVE runtime. Aplikasi tidak meminta kredensial TikTok dan tidak mengklaim mengumpulkan komentar, gift, follow, atau event LIVE. Jika integrasi resmi ditambahkan pada versi mendatang, kebijakan ini akan diperbarui sebelum fitur dirilis untuk menjelaskan data, tujuan, dasar pemrosesan, penyimpanan, dan kontrol pengguna yang relevan.</p>
+<p>Versi 0.7.3 belum mengintegrasikan TikTok Login Kit, Share Kit, atau konektor TikTok LIVE runtime. Aplikasi saat ini tidak mengintegrasikan Login Kit, Share Kit, Content Posting API, Webhooks, atau konektor TikTok LIVE runtime. Aplikasi tidak meminta kredensial TikTok dan tidak mengklaim mengumpulkan komentar, gift, follow, like, share, atau event LIVE. Jika integrasi resmi ditambahkan pada versi mendatang, kebijakan ini akan diperbarui sebelum fitur dirilis untuk menjelaskan data, tujuan, dasar pemrosesan, penyimpanan, dan kontrol pengguna yang relevan.</p>
 <h2>5. Izin dan kontrol pengguna</h2>
 <p>Izin Android digunakan untuk fungsi yang relevan, termasuk internet untuk unduhan paket, notifikasi/foreground media, dan overlay opsional. Pemilihan file audio dilakukan melalui document picker Android. Pengguna dapat mengelola izin melalui Pengaturan Android dan dapat menonaktifkan Floating Control. Paket suara dan audio impor disimpan pada direktori privat aplikasi.</p>
 <h2>6. Penyimpanan dan penghapusan</h2>
-<p>Data lokal disimpan selama aplikasi terpasang dan sampai pengguna menghapus item/data aplikasi atau mencopot pemasangan. Menghapus data aplikasi atau uninstall dapat menghapus pengaturan, metadata, paket suara, dan audio impor yang tersimpan secara privat. Pengaturan pencadangan Android untuk aplikasi dinonaktifkan pada konfigurasi yang ditinjau. Server penyedia paket suara memiliki kebijakan log dan retensinya sendiri.</p>
+<p>Data lokal disimpan selama aplikasi terpasang dan sampai pengguna menghapus item/data aplikasi atau mencopot pemasangan. Menghapus data aplikasi atau uninstall dapat menghapus pengaturan, metadata, paket suara, dan audio impor yang tersimpan secara privat. Cadangan manual ZIP versi 0.7.3 dapat berisi pengaturan aplikasi, preferensi Floating Control, metadata soundboard, serta audio impor yang disertakan. Arsip berada pada lokasi yang dipilih pengguna dan dapat berisi data privat; pengguna bertanggung jawab menjaga keamanan file tersebut. Data aplikasi yang belum diekspor dapat hilang ketika data aplikasi dihapus atau aplikasi dicopot. Server penyedia paket suara memiliki kebijakan log dan retensinya sendiri.</p>
 <h2>7. Anak-anak</h2>
 <p>Aplikasi ini merupakan alat bantu kreator livestream dan tidak dirancang khusus untuk anak-anak. Orang tua/wali dapat menghubungi pengembang jika memiliki pertanyaan mengenai privasi.</p>
 <h2>8. Perubahan kebijakan</h2>
 <p>Kebijakan ini diperbarui ketika fitur, dependensi, atau praktik pemrosesan data berubah. Tanggal revisi dicantumkan di bagian atas halaman. Pengguna disarankan memeriksa halaman ini setelah pembaruan aplikasi.</p>
 <h2>9. Kontak</h2>
 <p>Pertanyaan atau permintaan terkait privasi dapat dikirim ke <a href="mailto:livecreatorstudio.official@gmail.com">livecreatorstudio.official@gmail.com</a>.</p>
-<p class="muted">Dokumen ini merupakan penjelasan praktik berdasarkan source code versi 0.6.4 yang ditinjau, bukan nasihat hukum. Peninjauan hukum profesional tetap diperlukan sebelum distribusi komersial atau penambahan pemrosesan data online.</p>
+<p class="muted">Dokumen ini menjelaskan praktik yang dimaksudkan untuk versi 0.7.3 berdasarkan implementasi proyek yang ditinjau, bukan nasihat hukum. Pengguna sebaiknya meninjau izin mesin TextToSpeech Android dan penyedia paket audio pihak ketiga yang dipilih. Peninjauan hukum profesional tetap diperlukan sebelum distribusi komersial atau penambahan pemrosesan data online.</p>
 </article>
 <footer class="foot">© 2026 LiveCreator Studio · <a href="./terms.html">Ketentuan Layanan</a> · <a href="./">Beranda</a></footer></main></div></body></html>
