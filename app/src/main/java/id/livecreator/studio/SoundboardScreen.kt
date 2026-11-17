@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
 import androidx.compose.ui.window.Dialog
@@ -53,12 +55,14 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
     var controller by remember { mutableStateOf<MediaController?>(null) }
     var activeUri by remember { mutableStateOf<String?>(null) }
     var isPreparing by remember { mutableStateOf(false) }
+    var isPlaying by remember { mutableStateOf(false) }
+    var playbackVolume by remember { mutableFloatStateOf(1f) }
     var searchQuery by remember { mutableStateOf("") }
     var sourceFilter by remember { mutableStateOf("Semua") }
     var soundCategoryFilter by remember { mutableStateOf("Semua") }
     var packCategoryFilter by remember { mutableStateOf("Semua") }
     var showPackCatalog by remember { mutableStateOf(false) }
-    var message by remember { mutableStateOf("Pustaka suara CC0 sedang disiapkan otomatis pada penggunaan pertama.") }
+    var message by remember { mutableStateOf("Pustaka audio sedang disiapkan otomatis pada penggunaan pertama.") }
     val packState by SoundPackInstaller.state.collectAsState()
 
     val playerListener = remember {
@@ -89,8 +93,13 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 activeUri = mediaItem?.localConfiguration?.uri?.toString()
             }
 
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                if (isPlaying) {
+            override fun onVolumeChanged(volume: Float) {
+                playbackVolume = volume.coerceIn(0f, 1f)
+            }
+
+            override fun onIsPlayingChanged(playing: Boolean) {
+                isPlaying = playing
+                if (playing) {
                     isPreparing = false
                     message = "Audio sedang diputar."
                 } else if (controller?.playbackState == Player.STATE_READY) {
@@ -120,6 +129,8 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                         connected = mediaController
                         mediaController.addListener(playerListener)
                         controller = mediaController
+                        isPlaying = mediaController.isPlaying
+                        playbackVolume = mediaController.volume.coerceIn(0f, 1f)
                         message = "Soundboard siap. Playback dapat berlanjut saat halaman ditutup."
                     }
                     .onFailure {
@@ -162,30 +173,36 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         }
         activeUri = null
         isPreparing = false
+        isPlaying = false
     }
 
-    fun playSound(sound: SoundItem) {
+    fun playSounds(queue: List<SoundItem>) {
         val mediaController = controller
         if (mediaController == null) {
             message = "Layanan playback sedang disiapkan. Coba kembali sebentar lagi."
             return
         }
         try {
-            val item = MediaItem.Builder()
-                .setUri(Uri.parse(sound.uri))
-                .setMediaMetadata(MediaMetadata.Builder().setTitle(sound.title).build())
-                .build()
-            mediaController.setMediaItem(item)
+            val items = queue.map { sound ->
+                MediaItem.Builder()
+                    .setUri(Uri.parse(sound.uri))
+                    .setMediaMetadata(MediaMetadata.Builder().setTitle(sound.title).build())
+                    .build()
+            }
+            mediaController.setMediaItems(items)
             mediaController.prepare()
             mediaController.play()
-            activeUri = sound.uri
+            activeUri = queue.firstOrNull()?.uri
             isPreparing = true
-            message = "Membuka audio: ${sound.title}"
+            isPlaying = true
+            message = if (queue.size > 1) "Memutar antrean ${queue.size} suara." else "Membuka audio: ${queue.firstOrNull()?.title ?: "audio"}"
         } catch (error: Exception) {
             stopPlayback()
             message = "Tidak dapat membuka audio: ${error.message ?: "file tidak tersedia"}"
         }
     }
+
+    fun playSound(sound: SoundItem) = playSounds(listOf(sound))
 
     Column(modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("CREATOR TOOLKIT", color = Color(0xFF54D8E8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
@@ -196,7 +213,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 Text("${sounds.size} suara", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
             }
             Surface(color = Color(0x5553DDF2), shape = RoundedCornerShape(50)) {
-                Text("${SoundPackCatalog.packs.size} paket CC0", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
+                Text("${SoundPackCatalog.packs.size} paket audio", color = Color.White, modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp), fontSize = 11.sp)
             }
         }
         OutlinedButton(
@@ -287,7 +304,7 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            listOf("Semua", "Paket CC0", "Impor").forEach { filter ->
+            listOf("Semua", "Paket", "Impor").forEach { filter ->
                 FilterChip(
                     selected = sourceFilter == filter,
                     onClick = { sourceFilter = filter },
@@ -339,6 +356,16 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
         Surface(color = Color(0x99192339), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x4449C9E4)), modifier = Modifier.fillMaxWidth()) {
             Text(message, color = Color.LightGray, modifier = Modifier.padding(14.dp).semantics { contentDescription = message }, fontSize = 12.sp)
         }
+        val visibleSounds = sounds.filter { sound ->
+            val matchesSearch = sound.title.contains(searchQuery, ignoreCase = true)
+            val isPackSound = isPackSoundUri(sound.uri)
+            val matchesSource = when (sourceFilter) {
+                "Paket" -> isPackSound
+                "Impor" -> !isPackSound
+                else -> true
+            }
+            matchesSearch && matchesSource && (soundCategoryFilter == "Semua" || soundCategory(sound.title) == soundCategoryFilter)
+        }
         if (sounds.isEmpty()) {
             Surface(color = Color(0x99192339), shape = RoundedCornerShape(18.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x554E74A2)), modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -348,16 +375,6 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 }
             }
         } else {
-            val visibleSounds = sounds.filter { sound ->
-                val matchesSearch = sound.title.contains(searchQuery, ignoreCase = true)
-                val isPackSound = isPackSoundUri(sound.uri)
-                val matchesSource = when (sourceFilter) {
-                    "Paket CC0" -> isPackSound
-                    "Impor" -> !isPackSound
-                    else -> true
-                }
-                matchesSearch && matchesSource && (soundCategoryFilter == "Semua" || soundCategory(sound.title) == soundCategoryFilter)
-            }
             if (visibleSounds.isEmpty()) {
                 Text("Tidak ada suara yang cocok dengan pencarian atau filter ini.", color = Color.LightGray, fontSize = 12.sp)
             }
@@ -397,14 +414,63 @@ fun SoundboardScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
-        if (activeUri != null) {
-            OutlinedButton(onClick = {
-                stopPlayback()
-                message = "Pemutaran dihentikan."
-            }, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.Stop, contentDescription = null)
+        if (sounds.isNotEmpty()) {
+            OutlinedButton(
+                onClick = { playSounds(visibleSounds) },
+                enabled = controller != null && visibleSounds.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.PlayArrow, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text(if (isPreparing) "Batalkan pemuatan audio" else "Hentikan suara")
+                Text("Putar semua hasil filter (${visibleSounds.size})")
+            }
+        }
+        if (activeUri != null || isPreparing) {
+            Surface(
+                color = Color(0xAA1A2940), shape = RoundedCornerShape(16.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x5547CDE8)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(Icons.Default.VolumeUp, contentDescription = null, tint = Color(0xFF72DDEB))
+                        Text("Volume media", color = Color.White, fontSize = 12.sp, modifier = Modifier.weight(1f))
+                        Text("${(playbackVolume * 100).toInt()}%", color = Color.LightGray, fontSize = 11.sp)
+                    }
+                    Slider(
+                        value = playbackVolume,
+                        onValueChange = { value ->
+                            playbackVolume = value.coerceIn(0f, 1f)
+                            controller?.volume = playbackVolume
+                        },
+                        valueRange = 0f..1f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(
+                            onClick = {
+                                controller?.let { player -> if (player.isPlaying) player.pause() else player.play() }
+                            },
+                            enabled = controller != null && !isPreparing,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, contentDescription = null)
+                            Spacer(Modifier.width(6.dp))
+                            Text(if (isPlaying) "Jeda" else "Lanjutkan")
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                stopPlayback()
+                                message = "Pemutaran dihentikan dan antrean dibersihkan."
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.Stop, contentDescription = null)
+                            Spacer(Modifier.width(6.dp))
+                            Text("Stop")
+                        }
+                    }
+                }
             }
         }
         Text("Playback berjalan pada layanan media terpisah. Gunakan notifikasi media, lockscreen, headset, atau Bluetooth untuk kontrol saat aplikasi berada di latar belakang.", color = Color.LightGray, fontSize = 10.sp)

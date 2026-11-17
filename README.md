@@ -40,6 +40,7 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Antrean TTS bounded FIFO | Tersedia di source |
 | Foreground audio service + notifikasi | Tersedia di source |
 | Soundboard Media3 / MediaSession | Tersedia di source |
+| Kontrol volume, jeda/lanjutkan, putar antrean | Ditambahkan pada kandidat 0.7.0; menunggu CI |
 | Impor audio dan pustaka paket CC0 | Tersedia di source |
 | Floating Control overlay opsional | Tersedia di source; perlu QA perangkat |
 | Picture-in-Picture | Dihapus dari navigasi dan manifest |
@@ -49,20 +50,20 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.6.4 (debug release, build-183). Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
+**Versi source:** 0.7.0 (candidate; awaiting CI and release). Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
 
 ## ◈ Status rilis dan validasi 0.6.4
 
-- **Source target:** 0.6.4 / versionCode 28.
+- **Source target:** 0.7.0 / versionCode 29 (candidate).
 - **CI:** pull request harus lulus `testDebugUnitTest` dan `assembleDebug`; merge ke `main` akan memicu workflow rilis otomatis.
 - **APK:** gunakan tautan [APK debug terbaru](https://github.com/adebojel/LiveCreatorStudio/releases/latest/download/LiveCreatorStudio-debug.apk). Workflow juga mengunggah artifact `LiveCreatorStudio-debug-apk`.
-- **Rilis saat ini:** [LiveCreator Studio build-183](https://github.com/adebojel/LiveCreatorStudio/releases/tag/build-183) telah terbit dengan APK `LiveCreatorStudio-debug.apk`.
+- **Rilis sebelumnya:** [LiveCreator Studio build-183](https://github.com/adebojel/LiveCreatorStudio/releases/tag/build-183) telah terbit dengan APK `LiveCreatorStudio-debug.apk`.
 - **Perangkat fisik:** belum dinyatakan lulus sampai checklist [DEVICE_QA_CHECKLIST.md](docs/DEVICE_QA_CHECKLIST.md) dijalankan pada ponsel Android dan hasilnya dicatat. CI tidak menguji speaker, izin overlay, notifikasi OEM, Bluetooth, atau TalkBack pada perangkat nyata.
 - **Signing:** workflow saat ini menghasilkan debug APK untuk pengujian; APK production-signed / Play Store belum tersedia.
 
 ## ◈ Tahap pengembangan berikutnya
 
-Tahap berikut berfokus pada kesiapan integrasi platform secara resmi: sinkronisasi kebijakan privasi/ketentuan dengan source 0.6.4, dokumentasi batas API TikTok, dan rancangan jalur OAuth yang aman. Katalog produk publik TikTok for Developers yang ditinjau saat ini mencakup Login Kit, Share Kit, Content Posting API, Display API, dan produk lain; katalog tersebut tidak mendokumentasikan produk publik untuk membaca event LIVE (komentar/gift/follow) secara real-time. Karena itu aplikasi tidak mengklaim konektor LIVE resmi. Lihat [roadmap integrasi](docs/TIKTOK_INTEGRATION_ROADMAP.md) dan [status integrasi](https://adebojel.github.io/LiveCreatorStudio/integration.html).
+Versi 0.7.0 menambahkan kontrol volume, jeda/lanjutkan, dan antrean pemutaran Soundboard. TikTok LIVE tetap menunggu produk/izin resmi yang sesuai; AI Assistant cloud/lokal dan speech-to-text streaming belum tersedia. Katalog produk publik TikTok for Developers yang ditinjau saat ini mencakup Login Kit, Share Kit, Content Posting API, Display API, dan produk lain; katalog tersebut tidak mendokumentasikan produk publik untuk membaca event LIVE (komentar/gift/follow) secara real-time. Karena itu aplikasi tidak mengklaim konektor LIVE resmi. Lihat [roadmap integrasi](docs/TIKTOK_INTEGRATION_ROADMAP.md) dan [status integrasi](https://adebojel.github.io/LiveCreatorStudio/integration.html).
 
 ## ✧ Fitur saat ini
 
