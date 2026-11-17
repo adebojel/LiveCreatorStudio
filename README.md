@@ -40,17 +40,17 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Antrean TTS bounded FIFO | Tersedia di source |
 | Foreground audio service + notifikasi | Tersedia di source |
 | Soundboard Media3 / MediaSession | Tersedia di source |
-| Kontrol volume, jeda/lanjutkan, putar antrean | Tersedia di source 0.7.0; CI berhasil |
+| Kontrol volume, jeda/lanjutkan, putar antrean | Tersedia di source 0.7.1; CI berhasil |
 | Impor audio dan pustaka paket CC0 | Tersedia di source |
 | Floating Control overlay opsional | Tersedia di source; perlu QA perangkat |
 | Picture-in-Picture | Dihapus dari navigasi dan manifest |
-| Adapter TikTok LIVE resmi | Belum terintegrasi |
+| Pusat status integrasi TikTok resmi | Tersedia di 0.7.1; bukan konektor LIVE |
 | Event chat/gift/follow/share real-time | Belum tersedia |
 | AI cloud / AI lokal | Belum tersedia |
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.7.0 (versionCode 29); build debug terbit pada GitHub Release `build-192`. Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
+**Versi source:** 0.7.0 (versionCode 30); build debug terbit pada GitHub Release `build-192`. Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
 
 ## ◈ Status rilis dan validasi 0.7.0
 
