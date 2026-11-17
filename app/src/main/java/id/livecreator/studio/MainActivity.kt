@@ -248,7 +248,7 @@ fun LiveCreatorApp(
                 .windowInsetsPadding(WindowInsets.safeDrawing)
         ) {
             NavigationRail(containerColor = Color(0x99131D33)) {
-                listOf("Dashboard", "TTS", "Soundboard", "Settings").forEach { item ->
+                listOf("Dashboard", "TTS", "Soundboard", "TikTok", "Settings").forEach { item ->
                     NavigationRailItem(
                         selected = selected == item,
                         onClick = { selected = item },
@@ -257,7 +257,8 @@ fun LiveCreatorApp(
                                 "Dashboard" -> Icons.Default.Dashboard
                                 "TTS" -> Icons.Default.RecordVoiceOver
                                 "Soundboard" -> Icons.Default.LibraryMusic
-                                                                else -> Icons.Default.Settings
+                                "TikTok" -> Icons.Default.LiveTv
+                                else -> Icons.Default.Settings
                             }, contentDescription = item,
                                 modifier = Modifier.semantics { contentDescription = "Buka menu $item" })
                         },
@@ -268,6 +269,7 @@ fun LiveCreatorApp(
             when (selected) {
                 "TTS" -> TtsScreen(Modifier.fillMaxSize(), onSpeakInBackground)
                 "Soundboard" -> SoundboardScreen(Modifier.fillMaxSize())
+                "TikTok" -> TikTokOfficialScreen(Modifier.fillMaxSize())
                 "Settings" -> SettingsScreen(
                     autoStartOnLaunch = autoStartOnLaunch,
                     onAutoStartChange = { enabled ->
