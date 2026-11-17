@@ -27,6 +27,8 @@
 
 ## ✦ Tentang proyek
 
+**Actions & Events (0.7.4):** editor aturan lokal untuk FOLLOW, GIFT, LIKE, SHARE, COMMENT, JOIN, dan tipe event lain; mendukung template TTS, ambang jumlah, cooldown, serta referensi audio `content://`. Aturan tersimpan di perangkat. Ini belum berarti event TikTok LIVE sudah terhubung; adapter resmi hanya dapat ditambahkan setelah akses yang sesuai disetujui.
+
 LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Android. Fokus saat ini adalah audio yang dapat dijalankan secara lokal: text-to-speech (TTS), soundboard, antrean ucapan, dan kontrol layanan audio melalui notifikasi Android.
 
 > **Transparansi visual:** gambar hero di atas adalah artwork konseptual bergaya glassmorphism/neon 3D, bukan screenshot aplikasi, bukan hasil render dari perangkat, dan bukan indikator bahwa seluruh modul sudah aktif.
@@ -50,7 +52,7 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source yang sedang disiapkan:** 0.7.3 (versionCode 32) pada PR penguatan Floating Control. Build utama terbaru sebelum PR ini adalah `build-199`; lihat [GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases). Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
+**Versi source yang sedang disiapkan:** 0.7.4 (versionCode 33) pada PR penguatan Floating Control. Build utama terbaru sebelum PR ini adalah `build-199`; lihat [GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases). Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
 
 ## ◈ Status rilis dan validasi
 
