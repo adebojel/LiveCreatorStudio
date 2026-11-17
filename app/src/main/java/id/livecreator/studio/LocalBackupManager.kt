@@ -90,9 +90,8 @@ internal object LocalBackupManager {
                 require(entry.name == MANIFEST || entry.name.startsWith(AUDIO_PREFIX)) {
                     "Arsip berisi file yang tidak dikenali."
                 }
-                val bytes = zip.readBytes()
+                val bytes = zip.readBoundedBytes(MAX_ARCHIVE_BYTES - total)
                 total += bytes.size
-                require(total <= MAX_ARCHIVE_BYTES) { "File cadangan melebihi batas 100 MB." }
                 require(entries.put(entry.name, bytes) == null) { "Arsip memiliki nama file duplikat." }
                 zip.closeEntry()
             }
@@ -148,4 +147,20 @@ internal object LocalBackupManager {
             throw error
         }
     }
+}
+
+
+private fun ZipInputStream.readBoundedBytes(remaining: Long): ByteArray {
+    require(remaining >= 0L) { "File cadangan melebihi batas 100 MB." }
+    val output = java.io.ByteArrayOutputStream()
+    val buffer = ByteArray(8192)
+    var copied = 0L
+    while (true) {
+        val count = read(buffer)
+        if (count < 0) break
+        copied += count
+        require(copied <= remaining) { "File cadangan melebihi batas 100 MB." }
+        output.write(buffer, 0, count)
+    }
+    return output.toByteArray()
 }
