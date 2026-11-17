@@ -78,3 +78,18 @@ GitHub Pages is a static project website, not a trusted OAuth token-exchange bac
 ## Honest capability labels
 
 Use “Available” only for implemented and tested behavior. Use “In development” for code not yet released or device-verified. Use “Requires official TikTok access” for event-driven features with no permitted source. Never show a fake “Connected” state or simulated live event as real.
+
+
+## Actions & Events — 0.7.4
+- Local rule editor with event type, enabled state, minimum quantity, cooldown, TTS template, and optional content URI.
+- Rule configuration is stored on-device and does not require a LiveCreator account.
+- The editor is configuration only. No live TikTok adapter is implied or enabled.
+- The provider-neutral engine remains isolated from platform networking; only authorized adapters may submit normalized events.
+- Next validation: exercise rule persistence across process restart, verify accessibility labels, and connect actions to actual TTS/Soundboard sinks behind explicit user controls.
+
+## TikTok Developer submission gate (Android)
+- Existing Developer Portal app remains a Draft; do not submit an Android platform configuration before Play Store publication and platform identity requirements are met.
+- TikTok's current App Review Guidelines state Android apps must be published on Google Play and provide package name, app signature, and Play Store URL.
+- The current GitHub Pages site is project information, not a substitute for a published Android app or a functioning web application.
+- Do not select unrelated products/scopes or claim LIVE comments/gifts access. Request only documented products actually implemented and demonstrable.
+- Official guidance: https://developers.tiktok.com/docs/en/app-review-guidelines and https://developers.tiktok.com/docs/en/getting-started-create-an-app
