@@ -44,17 +44,17 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Impor audio dan pustaka paket CC0 | Tersedia di source |
 | Floating Control overlay opsional | Tersedia di source; perlu QA perangkat |
 | Picture-in-Picture | Dihapus dari navigasi dan manifest |
-| Adapter TikTok LIVE resmi | Belum terintegrasi |
+| Pusat status integrasi TikTok resmi | Tersedia di 0.7.1; bukan konektor LIVE |
 | Event chat/gift/follow/share real-time | Belum tersedia |
 | AI cloud / AI lokal | Belum tersedia |
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.7.0 (versionCode 29); build debug terbit pada GitHub Release `build-192`. Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
+**Versi source:** 0.7.1 (versionCode 30); perubahan status TikTok sedang divalidasi di PR #19. Build 0.7.0 sebelumnya terbit pada GitHub Release `build-192`. Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
 
-## ◈ Status rilis dan validasi 0.7.0
+## ◈ Status rilis dan validasi
 
-- **Versi source:** 0.7.0 / versionCode 29 (tergabung ke `main`).
+- **Versi source saat ini:** 0.7.1 / versionCode 30 pada PR #19; belum digabung ke `main`.
 - **CI utama:** workflow #192 berhasil; `testDebugUnitTest`, `assembleDebug`, unggah artifact, dan publikasi GitHub Release sukses.
 - **APK 0.7.0:** [Unduh LiveCreatorStudio-debug.apk dari build-192](https://github.com/adebojel/LiveCreatorStudio/releases/download/build-192/LiveCreatorStudio-debug.apk). Artifact Actions: `LiveCreatorStudio-debug-apk` (SHA-256 `f7d79297acb3e2a0137bce647b7ecbe4548356fe52ca5eb78485b758b99b47fc`).
 - **Halaman rilis:** [LiveCreator Studio build-192](https://github.com/adebojel/LiveCreatorStudio/releases/tag/build-192) telah terbit dengan asset APK `LiveCreatorStudio-debug.apk`.

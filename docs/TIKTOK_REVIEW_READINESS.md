@@ -9,11 +9,11 @@ Website: https://adebojel.github.io/LiveCreatorStudio/
 - [x] GitHub Pages project website exists.
 - [x] Public Privacy Policy and Terms of Service pages exist and are linked from the website.
 - [x] Public feature, download, support, and integration status pages exist.
-- [x] Android source version is 0.6.4 / versionCode 28.
-- [x] GitHub Actions run #183 succeeded and published debug APK as Release `build-183`.
+- [x] Android source version is 0.7.1 / versionCode 30.
+- [x] GitHub Actions run #183 succeeded and published debug APK as Release `build-192`.
 - [ ] Production-signed Android APK/AAB is not established.
 - [ ] App is not published on Google Play or Apple App Store.
-- [ ] TikTok Login Kit / Share Kit is not integrated.
+- [ ] TikTok Login Kit / Share Kit is not integrated; 0.7.1 only adds a status screen and official documentation links.
 - [ ] TikTok LIVE event connector is not active in app runtime.
 - [ ] No end-to-end TikTok integration demo video exists.
 - [ ] TikTok app review has not been submitted.
@@ -36,6 +36,8 @@ A marketing website is not a shortcut around mobile app requirements. A web Logi
 - CI artifact: debug APK, not production-signed.
 
 ## Official product fit — important limitation
+
+The public Webhooks Events documentation lists authorization, Video Kit, and data portability notifications; it does not list LIVE comments, gifts, likes, follows, shares, viewer counts, or PK events. Generic webhook availability must not be treated as LIVE event access.
 
 The public TikTok for Developers product catalog currently documents products such as Login Kit, Share Kit, Content Posting API, Display API, Research API, and Embed Videos. The public product documentation reviewed for this project does not describe a general API product for subscribing to TikTok LIVE comments, gifts, follows, or likes in real time.
 
