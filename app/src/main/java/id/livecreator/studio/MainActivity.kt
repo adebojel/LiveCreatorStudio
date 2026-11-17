@@ -16,6 +16,8 @@ import android.util.Rational
 import android.speech.tts.TextToSpeech
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -560,12 +562,75 @@ private fun SettingsScreen(
     onOpenNotificationSettings: () -> Unit
 ) {
     val context = LocalContext.current
+    val backupScope = rememberCoroutineScope()
+    var backupMessage by remember { mutableStateOf("Cadangan disimpan di lokasi yang kamu pilih; tidak diunggah ke cloud.") }
+    var pendingRestore by remember { mutableStateOf<Uri?>(null) }
+    var showRestoreConfirmation by remember { mutableStateOf(false) }
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri ->
+        if (uri != null) backupScope.launch {
+            backupMessage = "Membuat cadangan lokal…"
+            runCatching { LocalBackupManager.export(context, uri) }
+                .onSuccess { backupMessage = "Cadangan berhasil dibuat di lokasi pilihanmu." }
+                .onFailure { backupMessage = "Cadangan gagal: ${it.message ?: "kesalahan tidak diketahui"}" }
+        }
+    }
+    val restoreLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            pendingRestore = uri
+            showRestoreConfirmation = true
+        }
+    }
+    if (showRestoreConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showRestoreConfirmation = false; pendingRestore = null },
+            title = { Text("Pulihkan cadangan?") },
+            text = { Text("Pemulihan akan mengganti pengaturan, Floating Control, dan daftar Soundboard saat ini. Buat cadangan kondisi sekarang terlebih dahulu jika masih diperlukan.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    val uri = pendingRestore
+                    showRestoreConfirmation = false
+                    pendingRestore = null
+                    if (uri != null) backupScope.launch {
+                        backupMessage = "Memeriksa dan memulihkan cadangan…"
+                        runCatching { LocalBackupManager.restore(context, uri) }
+                            .onSuccess { backupMessage = "Pemulihan selesai. Periksa kembali pengaturan dan pustaka audio." }
+                            .onFailure { backupMessage = "Pemulihan gagal: ${it.message ?: "file tidak valid"}" }
+                    }
+                }) { Text("Pulihkan") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRestoreConfirmation = false; pendingRestore = null }) { Text("Batal") }
+            }
+        )
+    }
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text("PREFERENCES", color = Cyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
         Text("Pengaturan", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+        Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                Text("Backup & pemulihan lokal", color = Color.White, fontWeight = FontWeight.Bold)
+                Text("Ekspor pengaturan, konfigurasi Floating Control, metadata Soundboard, dan audio impor ke file ZIP. Arsip tetap berada di lokasi yang kamu pilih.", color = Color.LightGray, fontSize = 11.sp)
+                Button(onClick = { exportLauncher.launch("LiveCreatorStudio-backup.zip") }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Archive, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Buat cadangan")
+                }
+                OutlinedButton(onClick = { restoreLauncher.launch(arrayOf("application/zip", "application/octet-stream")) }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Restore, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Pulihkan dari file ZIP")
+                }
+                Text(backupMessage, color = Cyan, fontSize = 11.sp)
+                Text("Sebelum memulihkan, aplikasi meminta konfirmasi karena data pengaturan dan daftar suara saat ini akan diganti. Simpan cadangan secara berkala di luar perangkat.", color = Color(0xFFFFD18A), fontSize = 10.sp)
+            }
+        }
         Surface(color = Panel, shape = RoundedCornerShape(18.dp)) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text("Kontrol mengambang", color = Color.White, fontWeight = FontWeight.Bold)
