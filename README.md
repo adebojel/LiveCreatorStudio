@@ -119,6 +119,16 @@ flowchart TD
   PROVIDER["LiveEventProvider contract"] -. "adapter belum aktif" .-> ENGINE["Creator event engine"]
 ```
 
+## ◇ Privasi, gratis, dan tanpa akun
+
+LiveCreator Studio dirancang sebagai aplikasi **local-first**: TTS, Soundboard, dan pengaturan inti tidak memerlukan akun LiveCreator, login cloud, atau langganan. Preferensi dan metadata Soundboard saat ini disimpan di penyimpanan privat Android; audio impor berada di penyimpanan privat aplikasi.
+
+**Catatan ketahanan data:** penyimpanan lokal bertahan saat aplikasi ditutup atau ponsel dimulai ulang, tetapi bukan cadangan permanen. Menghapus aplikasi, menghapus data aplikasi, kerusakan perangkat, atau reset pabrik dapat menghapus file lokal. Karena itu ekspor/impor cadangan yang dipilih pengguna menjadi pekerjaan wajib sebelum rilis stabil; fitur cadangan tersebut belum boleh dianggap tersedia sampai implementasi dan tesnya selesai.
+
+Login TikTok tidak diwajibkan untuk membuka aplikasi atau menggunakan TTS/Soundboard. Jika kelak fitur TikTok resmi tertentu mensyaratkan OAuth, izin itu hanya diminta secara opsional ketika pengguna memilih fitur TikTok tersebut. Tidak ada login TikTok palsu atau pengumpulan password/cookie.
+
+Google Play Console, biaya pendaftaran, dan publikasi toko tetap ditunda sampai fungsi inti dan QA perangkat mantap. Lihat [kebijakan local-first dan backup](docs/LOCAL_FIRST_PRODUCT_POLICY.md).
+
 ## ◇ Integrasi TikTok dan AI — status yang jujur
 
 Fondasi kontrak provider event sudah tersedia untuk memisahkan sumber event dari UI. Namun belum ada konektor TikTok LIVE runtime yang aktif. Aplikasi belum menerima event chat, gift, follow, share, atau like secara real-time dan belum menjalankan aksi otomatis berdasarkan event tersebut.
