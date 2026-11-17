@@ -1,8 +1,8 @@
 # LiveCreator Studio — Official TikTok Integration Roadmap
 
 Last reviewed: 2026-11-17  
-Current app version: 0.6.4 / versionCode 28  
-Current release: [build-183](https://github.com/adebojel/LiveCreatorStudio/releases/tag/build-183)
+Current app version: 0.7.1 / versionCode 30  
+Current verified baseline before this PR: 0.7.0 / build-192; 0.7.1 capability-center build is pending CI
 
 ## Objective
 
@@ -14,11 +14,14 @@ Prepare LiveCreator Studio for legitimate platform integration without misrepres
 - `CreatorEvent` normalizes event types such as FOLLOW, GIFT, LIKE, SHARE, COMMENT, JOIN, and UNKNOWN.
 - `CreatorEventEngine` applies bounded rules, duplicate suppression, cooldowns, and a maximum dispatch rate.
 - No production provider is wired to the app UI/runtime.
+- Version 0.7.1 adds a status-only official TikTok screen; it does not perform OAuth or claim a connected account.
 - No TikTok OAuth credentials, token store, or LIVE event connection are present.
 
 The contract and rule engine are foundations only. They do not imply an active TikTok connection.
 
 ## Official API capability check
+
+The public Webhooks Events reference currently lists authorization removal, Video Kit upload/publish notifications, and data portability readiness events; it does not list LIVE chat, gift, like, follow, share, viewer-count, or PK events.
 
 The public TikTok for Developers catalog and documentation reviewed on 2026-11-17 list products including Login Kit, Share Kit, Content Posting API, Display API, Research API, and Embed Videos. The public documentation reviewed does not describe a general-purpose API product to subscribe to TikTok LIVE chat, gifts, follows, or likes in real time.
 
@@ -36,7 +39,9 @@ The public TikTok for Developers catalog and documentation reviewed on 2026-11-1
 
 ### Stage B — official OAuth readiness (design only until credentials/prerequisites exist)
 
-- [ ] Confirm which TikTok product is actually approved/enabled in the developer portal.
+The public scopes documentation states that app scope approval alone is insufficient: each end user must also authorize the requested scope. Do not infer LIVE event access from Login Kit, Display API, or generic webhook support.
+
+- [ ] Confirm which TikTok product is actually approved/enabled in the developer portal. The app screen currently provides links/status only.
 - [ ] Confirm a genuine redirect URI and the app platform configuration.
 - [ ] Choose and provision a trusted backend (not GitHub Pages) for OAuth code exchange and token lifecycle.
 - [ ] Define encrypted token storage, least-privilege scopes, CSRF/state validation, refresh/revocation, deletion, audit logging, and rate limiting.
