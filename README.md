@@ -42,7 +42,7 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Soundboard Media3 / MediaSession | Tersedia di source |
 | Kontrol volume, jeda/lanjutkan, putar antrean | Tersedia di source 0.7.0; CI berhasil |
 | Impor audio dan pustaka paket CC0 | Tersedia di source |
-| Floating Control overlay opsional | Tersedia di source; perlu QA perangkat |
+| Floating Control overlay opsional | Tersedia di source; penguatan docking/collapse pada PR 0.7.2; perlu QA perangkat |
 | Picture-in-Picture | Dihapus dari navigasi dan manifest |
 | Pusat status integrasi TikTok resmi | Tersedia di 0.7.1; bukan konektor LIVE |
 | Event chat/gift/follow/share real-time | Belum tersedia |
@@ -50,13 +50,13 @@ LiveCreator Studio adalah aplikasi pendamping kreator livestream berbasis Androi
 | Speech-to-text streaming | Belum tersedia |
 | APK production-signed | Belum tersedia |
 
-**Versi source:** 0.7.1 (versionCode 30); perubahan status TikTok sedang divalidasi di PR #19. Build 0.7.0 sebelumnya terbit pada GitHub Release `build-192`. Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
+**Versi source yang sedang disiapkan:** 0.7.2 (versionCode 31) pada PR penguatan Floating Control. Build utama terbaru sebelum PR ini adalah `build-199`; lihat [GitHub Releases](https://github.com/adebojel/LiveCreatorStudio/releases). Pengujian perangkat fisik bersifat terpisah dari CI dan belum dinyatakan lulus secara formal.
 
 ## ◈ Status rilis dan validasi
 
-- **Versi source saat ini:** 0.7.1 / versionCode 30 pada PR #19; belum digabung ke `main`.
-- **CI utama:** workflow #192 berhasil; `testDebugUnitTest`, `assembleDebug`, unggah artifact, dan publikasi GitHub Release sukses.
-- **APK 0.7.0:** [Unduh LiveCreatorStudio-debug.apk dari build-192](https://github.com/adebojel/LiveCreatorStudio/releases/download/build-192/LiveCreatorStudio-debug.apk). Artifact Actions: `LiveCreatorStudio-debug-apk` (SHA-256 `f7d79297acb3e2a0137bce647b7ecbe4548356fe52ca5eb78485b758b99b47fc`).
+- **Versi source yang sedang disiapkan:** 0.7.2 / versionCode 31 pada PR penguatan Floating Control.
+- **CI utama:** workflow #199 berhasil; unit test, `assembleDebug`, unggah artifact, dan publikasi GitHub Release sukses.
+- **APK terbaru:** [Unduh LiveCreatorStudio-debug.apk dari build-199](https://github.com/adebojel/LiveCreatorStudio/releases/download/build-199/LiveCreatorStudio-debug.apk). SHA-256 `7c72cf81ad98092e421f00b8c954cf5457f40d03ea3d2f6f9d1dfd91143b9956`.
 - **Halaman rilis:** [LiveCreator Studio build-192](https://github.com/adebojel/LiveCreatorStudio/releases/tag/build-192) telah terbit dengan asset APK `LiveCreatorStudio-debug.apk`.
 - **Perangkat fisik:** belum dinyatakan lulus sampai checklist [DEVICE_QA_CHECKLIST.md](docs/DEVICE_QA_CHECKLIST.md) dijalankan pada ponsel Android dan hasilnya dicatat. CI tidak menguji speaker, izin overlay, notifikasi OEM, Bluetooth, atau TalkBack pada perangkat nyata.
 - **Signing:** workflow saat ini menghasilkan debug APK untuk pengujian; APK production-signed / Play Store belum tersedia.

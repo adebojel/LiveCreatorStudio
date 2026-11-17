@@ -120,7 +120,7 @@ class FloatingControlService : Service() {
                     packageManager.getLaunchIntentForPackage(packageName)?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)?.let(::startActivity)
                 }),
                 Triple("⌄", "Tutup", { expanded = false; removePanel(); showPanel() }),
-                Triple("◌", "Hide", { expanded = false; removePanel() }),
+                Triple("◌", "Ciutkan", { expanded = false; removePanel(); showPanel() }),
                 Triple("×", "Off", {
                     prefs.edit().putBoolean("enabled", false).apply()
                     removePanel()
@@ -133,9 +133,14 @@ class FloatingControlService : Service() {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE
         val displayWidth = resources.displayMetrics.widthPixels
         val width = if (expanded) dp(232) else dp(size + 6)
+        val dockRight = prefs.getBoolean("right", false)
         val savedX = if (expanded) {
-            if (prefs.getBoolean("right", false)) displayWidth - width else 0
-        } else prefs.getInt("x", dp(8))
+            if (dockRight) displayWidth - width else 0
+        } else if (dockRight) {
+            displayWidth - dp(16)
+        } else {
+            -width + dp(16)
+        }
         val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
